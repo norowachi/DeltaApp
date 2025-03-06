@@ -19,7 +19,7 @@
 
 	onMount(async () => {
 		const entry = new Entry('Delta', data.user.id, 'test');
-		const secret = await entry.getPassword();
+		const secret = await entry.getPassword().catch(() => null);
 
 		console.log(secret);
 		if (!secret) {
