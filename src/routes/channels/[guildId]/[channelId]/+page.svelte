@@ -73,6 +73,14 @@
 
 		const chat = document.getElementById('chat')!;
 		new ResizeObserver(ChatLength).observe(chat);
+		// body resize observer
+		new ResizeObserver(() => {
+			if (messageContainer)
+				messageContainer.scrollTo({
+					top: messageContainer.scrollHeight,
+					behavior: 'instant',
+				});
+		}).observe(document.body);
 		document.onkeydown = (e) => {
 			if ((e.ctrlKey && e.key !== 'v') || e.altKey) return;
 			const target = e.target as HTMLElement;

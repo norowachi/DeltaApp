@@ -12,6 +12,7 @@
 :root .light {
 	--background-color: #eeeeee;
 	--other-background: #111111;
+	--text-color: black;
 }
 
 body {

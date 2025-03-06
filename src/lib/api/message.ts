@@ -19,7 +19,7 @@ export async function sendMessage(
 				Authorization: `Bearer ${token}`,
 			},
 			body: JSON.stringify({
-				content: input.content,
+				content: input.content?.replace(/@\w+(\s+?|$)/g, (match) => `<${match.trim()}> `),
 				embeds: input.embeds,
 			} as Partial<IMessage>),
 		},
