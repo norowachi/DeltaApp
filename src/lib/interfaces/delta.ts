@@ -61,15 +61,15 @@ export interface IMessage {
 
 export interface IEmbed {
 	type: 'image' | 'video' | 'link';
-	title: string;
-	url: string;
-	image: {
+	title?: string;
+	url?: string;
+	image?: {
 		url: string;
-		width: number;
-		height: number;
+		width?: number;
+		height?: number;
 	};
-	description: string;
-	thumbnail: string;
+	description?: string;
+	thumbnail?: string;
 }
 
 // Guild & Channel Interface

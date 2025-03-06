@@ -1,5 +1,4 @@
 use serde_json::json;
-use std::collections::HashMap;
 use tauri_plugin_http::reqwest;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
@@ -13,7 +12,7 @@ async fn login(
     username: Option<String>,
     handle: Option<String>,
     password: String,
-) -> HashMap<std::string::String, std::string::String> {
+) -> serde_json::Value {
     let res = reqwest::Client::new()
         .post("https://api.noro.cc/auth/login")
         .header("Content-Type", "application/json")
@@ -27,7 +26,7 @@ async fn login(
         .send()
         .await
         .unwrap();
-    return res.json::<HashMap<String, String>>().await.unwrap();
+    return res.json().await.unwrap();
 }
 
 #[cfg_attr(mobile, tauri::mobile_entry_point)]

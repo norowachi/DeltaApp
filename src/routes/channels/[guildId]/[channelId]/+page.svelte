@@ -7,7 +7,7 @@
 	import { WebSocketOP, type IMessage } from '$lib/interfaces/delta';
 	import MessageBox from '$lib/components/app/MessageBox.client.svelte';
 	import { afterNavigate } from '$app/navigation';
-	import { fetch } from '@tauri-apps/plugin-http';
+	import { getMessages } from '$lib/api/message';
 
 	let { data }: PageProps = $props();
 
@@ -18,13 +18,9 @@
 
 	onMount(() => {
 		if (!messages.length)
-			fetch(`/api/message/${data.guild.id}/${data.channel.id}`, {
-				method: 'GET',
-				cache: 'no-store',
-			})
-				.then(async (res) => {
-					const data = await res.json();
-					messages = data.messages;
+			getMessages(data.guild.id, data.channel.id)
+				.then((data) => {
+					messages = data;
 				})
 				.catch(console.error);
 

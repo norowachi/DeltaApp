@@ -1,6 +1,4 @@
 <script lang="ts">
-	import { redirect } from '@sveltejs/kit';
-
 	function confirmPassword() {
 		const passwordInput = document.getElementById('password') as HTMLInputElement;
 		const confirmPasswordInput = document.getElementById('confirm-password') as HTMLInputElement;
@@ -24,8 +22,8 @@
 
 		const data = await response.json();
 
-		if (data.redirect) location.href = data.redirect;
-		
+		if (data.redirect) location.assign(data.redirect);
+
 		return alert(data.message);
 	}
 </script>
@@ -84,10 +82,7 @@
 			I agree to the <a href="/terms">terms and conditions</a>.
 		</label>
 	</div>
-	<button
-		class="text-sm py-2 px-4 rounded-md transition duration-300 float-right"
-		type="submit"
-	>
+	<button class="text-sm py-2 px-4 rounded-md transition duration-300 float-right" type="submit">
 		Register
 	</button>
 	<slot />

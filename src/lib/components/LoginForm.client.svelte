@@ -28,7 +28,7 @@
 
 		if (response.token) {
 			localStorage.setItem('token', response.token);
-			location.href = '/app';
+			location.assign('/app');
 		}
 
 		if (response.message) {

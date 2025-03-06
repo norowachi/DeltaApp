@@ -1,7 +1,5 @@
 <script lang="ts">
-	import { error } from '@sveltejs/kit';
-	import Tenor from './Tenor.client.svelte';
-	import { page } from '$app/state';
+	//import Tenor from './Tenor.client.svelte';
 	import { sendMessage } from '$lib/api/message';
 
 	let { guildId, channelId } = $props();
@@ -21,6 +19,8 @@
 		// TODO: invoke
 		await sendMessage({
 			content: message,
+			guildId,
+			channelId,
 		});
 
 		return;
@@ -61,7 +61,7 @@
 		class="absolute h-lg bottom-60px overflow-y-auto snap-y snap-proximity"
 		style="display: none;"
 	>
-		<Tenor {guildId} {channelId} />
+		<!-- <Tenor {guildId} {channelId} /> -->
 	</div>
 	<button
 		type="button"

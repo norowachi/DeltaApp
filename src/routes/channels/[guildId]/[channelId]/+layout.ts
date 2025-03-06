@@ -1,14 +1,17 @@
+export const prerender = false;
+export const ssr = false;
 import { error, redirect } from '@sveltejs/kit';
-import type { IGuild, IMessage, IUser } from '$lib/interfaces/delta';
+import type { IGuild, IMessage } from '$lib/interfaces/delta';
 import { fetch } from '@tauri-apps/plugin-http';
+import { getMessages } from '$lib/api/message.js';
+import type { LayoutLoad } from './$types';
 
-export const load = async ({ params }) => {
+export const load: LayoutLoad = async ({ params }) => {
 	const token = localStorage.getItem('token');
 
 	if (!token) return redirect(303, '/');
 
-	console.log(token);
-	const user = (await (
+	const user = await (
 		await fetch('https://api.noro.cc/v1/users/@me', {
 			headers: {
 				Authorization: `Bearer ${token}`,
@@ -16,10 +19,11 @@ export const load = async ({ params }) => {
 		}).catch(console.error)
 	)
 		?.json()
-		.catch(console.error)) as IUser;
+		.catch(console.error);
 	if (!user) return error(401, 'Unauthorized');
 
-	const { guildId, channelId } = params;
+	const guildId = params.guildId;
+	const channelId = params.channelId;
 
 	// Fetch guild
 	const guild = (await (
@@ -44,17 +48,7 @@ export const load = async ({ params }) => {
 	if (!TargetChannel) return error(404, 'Channel not found');
 
 	// Fetch messages
-	let messages: IMessage[] = (
-		await (
-			await fetch(`https://api.noro.cc/v1/channels/${guildId}/${channelId}/messages`, {
-				headers: {
-					Authorization: `Bearer ${token}`,
-				},
-			}).catch(console.error)
-		)
-			?.json()
-			.catch(console.error)
-	)?.messages;
+	let messages: IMessage[] = await getMessages(guildId, channelId);
 
 	messages ||= [];
 

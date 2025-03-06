@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { sendMessage } from '$lib/api/message';
 	import type { IEmbed } from '$lib/interfaces/delta';
 	import type {
 		CATEGORY_OBJECT,
@@ -50,7 +51,7 @@
 		width: number;
 		height: number;
 	}) {
-		const embed: Partial<IEmbed> = {
+		const embed: IEmbed = {
 			type: 'image',
 			image: {
 				url,
@@ -59,11 +60,10 @@
 			},
 		};
 
-		await fetch(`/api/message/${guildId}/${channelId}`, {
-			method: 'POST',
-			body: JSON.stringify({
-				embeds: [embed],
-			}),
+		await sendMessage({
+			embeds: [embed],
+			guildId,
+			channelId,
 		});
 
 		return;
