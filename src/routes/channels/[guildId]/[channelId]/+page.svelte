@@ -8,6 +8,7 @@
 	import MessageBox from '$lib/components/app/MessageBox.client.svelte';
 	import { afterNavigate } from '$app/navigation';
 	import { getMessages } from '$lib/api/message';
+	import { Entry } from '$lib/plugins/keyring';
 
 	let { data }: PageProps = $props();
 
@@ -16,9 +17,17 @@
 	let messages = $state<IMessage[]>([]);
 	const socket = writable<Socket>();
 
-	onMount(() => {
+	onMount(async () => {
+		const entry = new Entry('Delta', data.user.id, 'test');
+		const secret = await entry.getPassword();
+
+		console.log(secret);
+		if (!secret) {
+			await entry.setPassword('also test');
+		}
+
 		if (!messages.length)
-			getMessages(data.guild.id, data.channel.id)
+			getMessages({ guildId: data.guild.id, channelId: data.channel.id })
 				.then((data) => {
 					messages = data;
 				})

@@ -1,0 +1,21 @@
+[package]
+name = "tauri-plugin-keyring"
+version = "0.0.0"
+authors = ["You"]
+description = ""
+edition = "2021"
+rust-version = "1.70"
+links = "tauri-plugin-keyring"
+
+[dependencies]
+tauri = { version = "2" }
+serde = "1.0"
+thiserror = "1.0"
+keyring = { version = "3", features = [
+    "apple-native",
+    "windows-native",
+    "sync-secret-service",
+] }
+
+[build-dependencies]
+tauri-plugin = { version = "2", features = ["build"] }

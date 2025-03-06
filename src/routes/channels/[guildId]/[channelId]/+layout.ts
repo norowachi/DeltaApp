@@ -2,11 +2,10 @@ export const prerender = false;
 export const ssr = false;
 import { error, redirect } from '@sveltejs/kit';
 import type { IGuild, IMessage } from '$lib/interfaces/delta';
-import { fetch } from '@tauri-apps/plugin-http';
 import { getMessages } from '$lib/api/message.js';
 import type { LayoutLoad } from './$types';
 
-export const load: LayoutLoad = async ({ params }) => {
+export const load: LayoutLoad = async ({ params, fetch }) => {
 	const token = localStorage.getItem('token');
 
 	if (!token) return redirect(303, '/');
@@ -48,7 +47,7 @@ export const load: LayoutLoad = async ({ params }) => {
 	if (!TargetChannel) return error(404, 'Channel not found');
 
 	// Fetch messages
-	let messages: IMessage[] = await getMessages(guildId, channelId);
+	let messages: IMessage[] = await getMessages({ guildId, channelId, fetch });
 
 	messages ||= [];
 

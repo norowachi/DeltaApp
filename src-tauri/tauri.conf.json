@@ -12,7 +12,7 @@
 	"app": {
 		"windows": [
 			{
-				"title": "delta-app",
+				"title": "Delta",
 				"width": 800,
 				"height": 600
 			}

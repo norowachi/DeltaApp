@@ -1,0 +1,13 @@
+"$schema" = "schemas/schema.json"
+
+[[set]]
+identifier = "allow-all"
+description = "Allows connecting and sending messages through a WebSocket"
+permissions = [
+  "allow-set-password",
+  "allow-set-password-with-target",
+  "allow-get-password",
+  "allow-get-password-with-target",
+  "allow-delete-password",
+  "allow-delete-password-with-target",
+]

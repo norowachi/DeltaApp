@@ -13,6 +13,7 @@
 					"url": "https://api.noro.cc/*"
 				}
 			]
-		}
+		},
+		"keyring:allow-all"
 	]
 }
