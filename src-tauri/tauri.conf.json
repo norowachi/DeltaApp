@@ -1,6 +1,6 @@
 {
 	"$schema": "https://schema.tauri.app/config/2",
-	"productName": "delta-app",
+	"productName": "delta",
 	"version": "0.1.0",
 	"identifier": "cc.noro.delta",
 	"build": {
