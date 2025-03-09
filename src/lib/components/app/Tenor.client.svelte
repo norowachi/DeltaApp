@@ -26,7 +26,7 @@
 			next: input_next,
 		};
 
-		const res = await fetch('/api/tenor', {
+		const res = await fetch('https://api.noro.cc/tenor', {
 			method: 'POST',
 			body: JSON.stringify(body),
 		});
@@ -83,7 +83,7 @@
 			return;
 		});
 
-		fetch('/api/tenor')
+		fetch('https://api.noro.cc/tenor')
 			.then((res) => res.json().then((data: CategoryResponse) => categories.set(data.tags)))
 			.catch(console.error);
 
