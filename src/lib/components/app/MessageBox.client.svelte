@@ -1,5 +1,5 @@
 <script lang="ts">
-	//import Tenor from './Tenor.client.svelte';
+	import Tenor from './Tenor.client.svelte';
 	import { sendMessage } from '$lib/api/message';
 
 	let { guildId, channelId } = $props();
@@ -61,7 +61,7 @@
 		class="absolute h-lg bottom-60px overflow-y-auto snap-y snap-proximity"
 		style="display: none;"
 	>
-		<!-- <Tenor {guildId} {channelId} /> -->
+		<Tenor {guildId} {channelId} />
 	</div>
 	<button
 		type="button"
