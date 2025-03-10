@@ -12,8 +12,6 @@
 	import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
 	import { listen } from '@tauri-apps/api/event';
 	import { getCurrentWindow } from '@tauri-apps/api/window';
-	import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
-	import { getCurrentWebview } from '@tauri-apps/api/webview';
 
 	let { data }: PageProps = $props();
 
@@ -74,17 +72,24 @@
 		$socket.on('mention', async (message: IMessage) => {
 			const { author, content, guildId, channelId } = message;
 			// send a notification if the overlay errored out
-			if (!(await showMessageOverlay(message)))
+			const result = await showMessageOverlay(message);
+			if (!result) {
+				const largeContent = content.replace(/<@\w+>/g, (match) => match.slice(1, -1)).trim();
+				const guild = data.user.guilds.find((g) => g.id === guildId);
 				await sendTauriNotification({
 					title: author.username,
-					body: content.replace(/<@\w+>/g, (match) => match.slice(1, -1)).trim(),
-					icon: author.avatar || undefined,
+					body: largeContent.substring(0, 40),
+					largeBody: largeContent,
+					summary: guild
+						? `${guild.name} (#${guild.channels.find((c) => c.id === channelId)?.name})`
+						: author.username,
 					extra: {
 						guildId,
 						channelId,
-						tag: 'mention',
+						type: 'mention',
 					},
 				});
+			}
 		});
 
 		const chat = document.getElementById('chat')!;
@@ -146,14 +151,15 @@
 	}
 
 	// tauri notification click handling
+	// #desktop
 	listen('open', async (event) => {
 		// TODO: do message shiz
 		const { messageId, channelId, guildId } = event.payload as any;
-		const rest = await getCurrentWindow().setFocus();
-		console.log(rest);
 		// if we're already in the channel, we don't need to do anything
-		if (location.pathname === `/channels/${guildId}/${channelId}`) return;
-		location.assign(`/channels/${guildId}/${channelId}`);
+		if (location.pathname !== `/channels/${guildId}/${channelId}`)
+			location.assign(`/channels/${guildId}/${channelId}`);
+		const window = getCurrentWindow();
+		await window.setFocus();
 	});
 </script>
 

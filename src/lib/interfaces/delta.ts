@@ -50,7 +50,7 @@ export interface IMessage {
 	system: boolean;
 	author: PrivateUser;
 	channelId: string;
-	guildId?: string | null;
+	guildId: string | null;
 	ephemeral: boolean;
 	readBy: string[];
 	createdAt: Date;

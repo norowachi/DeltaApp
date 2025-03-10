@@ -7,10 +7,13 @@ import {
 import type { IMessage } from '$lib/interfaces/delta';
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { invoke } from '@tauri-apps/api/core';
+import { platform } from '@tauri-apps/plugin-os';
 
-let lastNotification: number;
-
-export async function sendTauriNotification(options: Options) {
+export async function sendTauriNotification(
+	options: Options & {
+		extra: { guildId: string | null; channelId: string; type: 'mention' };
+	},
+) {
 	let permissionGranted = await isPermissionGranted();
 
 	if (!permissionGranted) {
@@ -18,16 +21,29 @@ export async function sendTauriNotification(options: Options) {
 		permissionGranted = permission === 'granted';
 	}
 
-	if (permissionGranted) sendNotification(options);
+	if (permissionGranted)
+		sendNotification({
+			...options,
+			icon: 'icon',
+		});
 }
 
+let lastNotification: number;
+
 export async function showMessageOverlay(message: IMessage) {
+	// skip #mobile
+	if (['android', 'ios'].includes(platform())) return false;
+	// #desktop
 	let overlayWindow = await WebviewWindow.getByLabel('message_overlay');
 
 	if (!overlayWindow) {
-		await invoke('create_notification');
-		overlayWindow = await WebviewWindow.getByLabel('message_overlay');
-		if (!overlayWindow) return;
+		try {
+			await invoke('create_notification');
+			overlayWindow = await WebviewWindow.getByLabel('message_overlay');
+			if (!overlayWindow) return false;
+		} catch {
+			return false;
+		}
 	}
 
 	overlayWindow.show();
