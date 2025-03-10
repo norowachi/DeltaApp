@@ -1,23 +1,28 @@
 {
-	"$schema": "../gen/schemas/desktop-schema.json",
-	"identifier": "default",
-	"description": "Capability for the main window",
-	"windows": ["main", "message_overlay"],
-	"permissions": [
-		"core:default",
-		"opener:default",
-		{
-			"identifier": "http:default",
-			"allow": [
-				{
-					"url": "https://api.noro.cc/*"
-				}
-			]
-		},
-		"keyring:allow-all",
-		"notification:default",
-		"core:window:allow-show",
-		"core:window:allow-hide",
-		"core:window:allow-set-focus"
-	]
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "default",
+  "description": "Capability for the main window",
+  "windows": [
+    "main",
+    "message_overlay"
+  ],
+  "permissions": [
+    "core:default",
+    "opener:default",
+    {
+      "identifier": "http:default",
+      "allow": [
+        {
+          "url": "https://api.noro.cc/*"
+        }
+      ]
+    },
+    "keyring:allow-all",
+    "notification:default",
+    "core:window:allow-show",
+    "core:window:allow-hide",
+    "core:window:allow-close",
+    "core:window:allow-set-focus",
+    "os:default"
+  ]
 }
