@@ -26,7 +26,7 @@
 				"resizable": false,
 				"transparent": true,
 				"create": true,
-				"visible": true,
+				"visible": false,
 				"contentProtected": true,
 				"dragDropEnabled": false,
 				"focus": false,
