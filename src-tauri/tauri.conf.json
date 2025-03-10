@@ -12,9 +12,28 @@
 	"app": {
 		"windows": [
 			{
+				"label": "main",
 				"title": "Delta",
 				"width": 800,
 				"height": 600
+			},
+			{
+				"label": "message_overlay",
+				"title": "Message Overlay",
+				"url": "/app/overlay",
+				"decorations": false,
+				"alwaysOnTop": true,
+				"resizable": false,
+				"transparent": true,
+				"create": true,
+				"visible": true,
+				"contentProtected": true,
+				"dragDropEnabled": false,
+				"focus": false,
+				"width": 300,
+				"height": 100,
+				"y": 0,
+				"x": 0
 			}
 		],
 		"security": {

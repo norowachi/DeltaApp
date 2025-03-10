@@ -5,10 +5,6 @@
 	let { guildId, channelId } = $props();
 
 	async function OnClickSend() {
-		// request perm if not granted, here to avoid being blocked by the browser
-		if ('Notification' in window && Notification.permission === 'default')
-			Notification.requestPermission();
-
 		const chat = document.getElementById('chat') as HTMLTextAreaElement;
 		if (!chat) return;
 		const message = chat.value.trim();

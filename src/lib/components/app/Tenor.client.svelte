@@ -9,6 +9,7 @@
 	} from '$lib/interfaces/tenor';
 	import { onDestroy, onMount } from 'svelte';
 	import { writable } from 'svelte/store';
+	import { fetch } from '@tauri-apps/plugin-http';
 
 	let { guildId, channelId } = $props();
 
@@ -17,7 +18,7 @@
 	const next = writable<string | undefined>();
 	const gifs = writable<GIF_OBJECT[]>([]);
 	const categories = writable<CATEGORY_OBJECT[]>([]);
-	let controller = writable<AbortController>();
+	const controller = writable<AbortController>();
 
 	async function getTenorGifs(input_next?: string) {
 		if ($gifs.length >= 100) return;
@@ -28,6 +29,9 @@
 
 		const res = await fetch('https://api.noro.cc/tenor', {
 			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+			},
 			body: JSON.stringify(body),
 		});
 		const data: SearchResponse = await res.json();

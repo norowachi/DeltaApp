@@ -9,6 +9,11 @@
 	import { afterNavigate } from '$app/navigation';
 	import { getMessages } from '$lib/api/message';
 	import { Entry } from '$lib/plugins/keyring';
+	import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
+	import { listen } from '@tauri-apps/api/event';
+	import { getCurrentWindow } from '@tauri-apps/api/window';
+	import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
+	import { getCurrentWebview } from '@tauri-apps/api/webview';
 
 	let { data }: PageProps = $props();
 
@@ -66,17 +71,19 @@
 			}
 		});
 
-		$socket.on('mention', async ({ author, content, guildId, channelId }: IMessage) => {
-			const sw = await navigator.serviceWorker.getRegistration();
-			if (sw)
-				sw.showNotification(author.username, {
+		$socket.on('mention', async (message: IMessage) => {
+			const { author, content, guildId, channelId } = message;
+			// send a notification if the overlay errored out
+			if (!(await showMessageOverlay(message)))
+				await sendTauriNotification({
+					title: author.username,
 					body: content.replace(/<@\w+>/g, (match) => match.slice(1, -1)).trim(),
 					icon: author.avatar || undefined,
-					data: {
+					extra: {
 						guildId,
 						channelId,
+						tag: 'mention',
 					},
-					tag: 'mention',
 				});
 		});
 
@@ -137,6 +144,17 @@
 		}
 		return;
 	}
+
+	// tauri notification click handling
+	listen('open', async (event) => {
+		// TODO: do message shiz
+		const { messageId, channelId, guildId } = event.payload as any;
+		const rest = await getCurrentWindow().setFocus();
+		console.log(rest);
+		// if we're already in the channel, we don't need to do anything
+		if (location.pathname === `/channels/${guildId}/${channelId}`) return;
+		location.assign(`/channels/${guildId}/${channelId}`);
+	});
 </script>
 
 <main bind:this={app} class="flex flex-col-reverse w-full" style="height: calc(100dvh - 100px)">
