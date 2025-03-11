@@ -25,6 +25,7 @@
 </script>
 
 <div
+	{id}
 	class="w-full px-2 rounded-md transition-colors duration-100 ease-in-out hover:bg-[var(--background-hover)]"
 >
 	{#if !GroupUp}
