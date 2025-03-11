@@ -12,6 +12,7 @@
 	import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
 	import { listen } from '@tauri-apps/api/event';
 	import { getCurrentWindow } from '@tauri-apps/api/window';
+	import { page } from '$app/state';
 
 	let { data }: PageProps = $props();
 
@@ -19,6 +20,8 @@
 	let messageContainer: HTMLElement;
 	let messages = $state<IMessage[]>([]);
 	const socket = writable<Socket>();
+
+	let itemId: string | null = null;
 
 	onMount(async () => {
 		const entry = new Entry('Delta', data.user.id, 'test');
@@ -124,14 +127,29 @@
 		$socket?.disconnect();
 	});
 
-	// Auto-scroll
+	// Auto-scroll on new messages
 	$effect(() => {
+		// TODO: add check if the user is scrolled up
+		// and if so, don't scroll down
 		messages;
 		if (messageContainer) {
-			messageContainer.scrollTo({
-				top: messageContainer.scrollHeight,
-				behavior: 'instant',
-			});
+			// get message id from url fragment
+			itemId = page.url.hash?.replace('#', '');
+			// TODO: add a way to load around a message not from the recents
+			if (itemId) {
+				// if item exists scroll to it
+				const element = document.getElementById(itemId!);
+				if (!element) return;
+				setTimeout(() => {
+					element.scrollIntoView({ behavior: 'smooth', block: 'center' });
+					element.style.animation = 'color-pulse 2s linear';
+				}, 100);
+			} else {
+				messageContainer.scrollTo({
+					top: messageContainer.scrollHeight,
+					behavior: 'instant',
+				});
+			}
 		}
 	});
 
