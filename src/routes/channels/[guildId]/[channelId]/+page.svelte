@@ -160,6 +160,7 @@
 		// if we're just entering the page, we don't need to do anything
 		if (nav.type === 'enter') return;
 		messages = data.messages;
+                MessagePages = 1;
 		// TODO: create room joining for the new channel
 		// and leaving the old one (missing in backend)
 		// for now it's not a big deal as we just join the whole guild's room
