@@ -24,7 +24,7 @@
 			}, 10);
 		});
 
-		listen('tauri://close-requested', currentWindow.close);
+		listen('tauri://close-requested', () => currentWindow.close());
 	});
 
 	message.subscribe(async (value) => {

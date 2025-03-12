@@ -155,6 +155,7 @@
 <div class="flex flex-col overflow-hidden w-full h-full">
 	<input
 		type="text"
+		name="search"
 		placeholder="Search for a gif"
 		class="sticky w-full border-3 border-gray-7 p-2 text-white placeholder-gray-8 rounded-lg rounded-b-0 focus:outline-none bg-gradient-to-b from-white to-gray-7 focus:from-cyan focus:to-gray-7"
 		maxlength="50"

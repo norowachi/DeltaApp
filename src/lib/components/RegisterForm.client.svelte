@@ -77,7 +77,13 @@
 		/>
 	</div>
 	<div class="my-4 text-center">
-		<input type="checkbox" id="terms" class="bottom-0 h-5 left-0 right-0 top-0 !w-5" required />
+		<input
+			type="checkbox"
+			id="terms"
+			name="terms"
+			class="bottom-0 h-5 left-0 right-0 top-0 !w-5"
+			required
+		/>
 		<label for="terms" class="cursor-pointer">
 			I agree to the <a href="/terms">terms and conditions</a>.
 		</label>
