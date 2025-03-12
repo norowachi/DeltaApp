@@ -43,7 +43,9 @@
 	}
 
 	function message_content() {
-		return $message?.content.substring(0, 37) + ($message?.content.length > 37 ? '...' : '');
+		const content = $message?.content?.trim();
+		if (!content) return;
+		return content.substring(0, 37) + (content.length > 37 ? '...' : '');
 	}
 
 	let date = new Date($message?.createdAt || Date.now());
