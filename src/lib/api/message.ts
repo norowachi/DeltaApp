@@ -13,22 +13,25 @@ export async function sendMessage({
 		fetch?: typeof window.fetch;
 	}) {
 	if (!content && !embeds) return error(400, 'No content or embeds provided');
-	if (!guildId || !channelId) return error(400, 'Invalid guild or channel ID');
+	if (!channelId) return error(400, 'Invalid channel ID');
 
 	const token = localStorage.getItem('token');
 	if (!token) return error(401, 'Unauthorized');
 
-	const result = await fetch(`https://api.noro.cc/v1/channels/${guildId}/${channelId}/messages`, {
-		method: 'POST',
-		headers: {
-			'Content-Type': 'application/json',
-			Authorization: `Bearer ${token}`,
+	const result = await fetch(
+		`https://api.noro.cc/v1/channels/${guildId || '@me'}/${channelId}/messages`,
+		{
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json',
+				Authorization: `Bearer ${token}`,
+			},
+			body: JSON.stringify({
+				content: content?.replace(/@\w+(\s+?|$)/g, (match) => `<${match.trim()}> `),
+				embeds: embeds,
+			} as Partial<IMessage>),
 		},
-		body: JSON.stringify({
-			content: content?.replace(/@\w+(\s+?|$)/g, (match) => `<${match.trim()}> `),
-			embeds: embeds,
-		} as Partial<IMessage>),
-	}).catch(console.error);
+	).catch(console.error);
 
 	if (!result || !result.ok)
 		return error(result?.status || 500, result?.statusText || 'Internal Server Error');
@@ -45,7 +48,7 @@ export async function getMessages({
 	channelId,
 	fetch = TauriFetch,
 }: {
-	guildId: string;
+	guildId?: string;
 	channelId: string;
 	fetch?: typeof window.fetch;
 }) {
@@ -54,13 +57,16 @@ export async function getMessages({
 	const token = localStorage.getItem('token');
 	if (!token) return error(401, 'Unauthorized');
 
-	const result = await fetch(`https://api.noro.cc/v1/channels/${guildId}/${channelId}/messages`, {
-		method: 'GET',
-		headers: {
-			Authorization: `Bearer ${token}`,
+	const result = await fetch(
+		`https://api.noro.cc/v1/channels/${guildId || '@me'}/${channelId}/messages`,
+		{
+			method: 'GET',
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+			cache: 'no-store',
 		},
-		cache: 'no-store',
-	}).catch(console.error);
+	).catch(console.error);
 
 	if (!result || !result.ok)
 		return error(result?.status || 500, result?.statusText || 'Internal Server Error');
