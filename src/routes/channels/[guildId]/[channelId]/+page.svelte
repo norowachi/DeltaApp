@@ -121,11 +121,11 @@
 		// and leaving the old one (missing in backend)
 		// for now it's not a big deal as we just join the whole guild's room
 	});
-
-	onDestroy(() => {
-		console.log('[WS] Disconnecting from the server');
-		$socket?.disconnect();
-	});
+        // todo: disconnect on app close, not page destroy
+	//onDestroy(() => {
+	//	console.log('[WS] Disconnecting from the server');
+	//	$socket?.disconnect();
+	//});
 
 	// Auto-scroll on new messages
 	$effect(() => {
