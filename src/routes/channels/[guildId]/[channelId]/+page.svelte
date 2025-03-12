@@ -127,7 +127,7 @@
 		if (loader)
 			new IntersectionObserver(
 				async (entries) => {
-					if (entries[0].isIntersecting && entries[0].time > 1000) {
+					if (entries[0].isIntersecting) {
 						if (messages.length) {
 							const result = await getMessages({
 								guildId: data.guild.id,
