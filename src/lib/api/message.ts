@@ -46,19 +46,21 @@ export async function sendMessage({
 export async function getMessages({
 	guildId,
 	channelId,
+	page = 1,
 	fetch = TauriFetch,
 }: {
 	guildId?: string;
 	channelId: string;
+	page?: number;
 	fetch?: typeof window.fetch;
-}) {
+}): Promise<{ currentPage: number; pages: number; messages: IMessage[] }> {
 	if (!guildId || !channelId) return error(400, 'Invalid guild or channel ID');
 
 	const token = localStorage.getItem('token');
 	if (!token) return error(401, 'Unauthorized');
 
 	const result = await fetch(
-		`https://api.noro.cc/v1/channels/${guildId || '@me'}/${channelId}/messages`,
+		`https://api.noro.cc/v1/channels/${guildId || '@me'}/${channelId}/messages?page=${page}`,
 		{
 			method: 'GET',
 			headers: {
@@ -75,7 +77,7 @@ export async function getMessages({
 
 	if (!data) return error(500, 'Internal Server Error');
 
-	return data.messages as IMessage[];
+	return data;
 }
 
 export function formatContent(content?: string) {

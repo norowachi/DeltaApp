@@ -61,3 +61,24 @@ a {
 			rotate(var(--tw-exit-rotate, 0));
 	}
 }
+
+@keyframes color-pulse {
+	0% {
+		background-color: var(--background-hover);
+	}
+	20% {
+		background-color: var(--background-color);
+	}
+	40% {
+		background-color: var(--background-hover);
+	}
+	60% {
+		background-color: var(--background-color);
+	}
+	80% {
+		background-color: var(--background-hover);
+	}
+	100% {
+		background-color: var(--background-color);
+	}
+}
