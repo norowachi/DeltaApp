@@ -1,7 +1,23 @@
-# Ignore files for PNPM, NPM and YARN
+# Ignore files for PNPM, NPM and YARN + CARGO
+Cargo.toml
+Cargo.lock
 pnpm-lock.yaml
 package-lock.json
 yarn.lock
 
 # Ignore files for Tauri
+src-tauri/icons/
 src-tauri/target/
+src-tauri/gen/
+plugins/tauri-*/
+
+# Ignore android and rust files
+**/android/
+*.rs
+
+# Ignore static files for svelte
+static/
+
+# Misc
+## anything that starts with a dot
+.*

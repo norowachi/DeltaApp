@@ -1,14 +1,14 @@
-import { invoke } from '@tauri-apps/api/core'
+import { invoke } from '@tauri-apps/api/core';
 
 export class Entry {
   target: string | null;
   service: string;
-  user: string
+  user: string;
 
   constructor(target: string | null, service: string, user: string) {
-    this.target = target
-    this.service = service
-    this.user = user
+    this.target = target;
+    this.service = service;
+    this.user = user;
   }
 
   async setPassword(password: string) {
@@ -17,29 +17,29 @@ export class Entry {
         target: this.target,
         service: this.service,
         user: this.user,
-        password
-      })
+        password,
+      });
     } else {
       await invoke('plugin:keyring|set_password', {
         service: this.service,
         user: this.user,
-        password
-      })
+        password,
+      });
     }
   }
-  
+
   async getPassword() {
     if (this.target) {
       return await invoke('plugin:keyring|get_password_with_target', {
         target: this.target,
         service: this.service,
         user: this.user,
-      })
+      });
     } else {
       return await invoke('plugin:keyring|get_password', {
         service: this.service,
         user: this.user,
-      })
+      });
     }
   }
 
@@ -49,13 +49,12 @@ export class Entry {
         target: this.target,
         service: this.service,
         user: this.user,
-      })
+      });
     } else {
       await invoke('plugin:keyring|get_password', {
         service: this.service,
         user: this.user,
-      })
+      });
     }
   }
 }
-

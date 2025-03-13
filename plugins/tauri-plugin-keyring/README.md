@@ -6,7 +6,8 @@ Store and retrieve secrets in the underlying platform secure store using [keyrin
 
 Android support is added using Encrypted SharedPreferences.
 
-The following line might need to be added to ```src-tauri\gen\android\app\proguard-rules.pro``` to fix a compiler error:
+The following line might need to be added to `src-tauri\gen\android\app\proguard-rules.pro` to fix a compiler error:
+
 ```
 -dontwarn javax.annotation.**
 ```
@@ -50,17 +51,17 @@ fn main() {
 Afterwards all the plugin's APIs are available through the JavaScript guest bindings:
 
 ```javascript
-import { Entry } from "tauri-plugin-keyring-api";
+import { Entry } from 'tauri-plugin-keyring-api';
 
-const entry = new Entry("my_target", "my_service", "my_name")
+const entry = new Entry('my_target', 'my_service', 'my_name');
 
-const entry2 = new Entry(null, "my_service", "my_name")
+const entry2 = new Entry(null, 'my_service', 'my_name');
 
-entry.setPassword("topS3cr3tP4$$w0rd")
+entry.setPassword('topS3cr3tP4$$w0rd');
 
-console.log(await entry.getPassword())
+console.log(await entry.getPassword());
 
-entry.deletePassword()
+entry.deletePassword();
 ```
 
 ## Contributing
