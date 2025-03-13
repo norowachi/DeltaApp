@@ -33,5 +33,13 @@
     "typescript": "~5.8.2",
     "unocss": "66.1.0-beta.3",
     "vite": "^6.2.0"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "esbuild"
+    ],
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }
