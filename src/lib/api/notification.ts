@@ -4,10 +4,10 @@ import {
   sendNotification,
   type Options,
 } from '@tauri-apps/plugin-notification';
-import type { IMessage } from '$lib/interfaces/delta';
-import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 import { invoke } from '@tauri-apps/api/core';
 import { platform } from '@tauri-apps/plugin-os';
+import { Webview } from '@tauri-apps/api/webview';
+import type { IMessage } from '$lib/interfaces/delta';
 
 export async function sendTauriNotification(
   options: Options & {
@@ -24,7 +24,7 @@ export async function sendTauriNotification(
   if (permissionGranted)
     sendNotification({
       ...options,
-      icon: 'icon',
+      icon: 'delta_notification',
     });
 }
 
@@ -34,12 +34,12 @@ export async function showMessageOverlay(message: IMessage) {
   // skip #mobile
   if (['android', 'ios'].includes(platform())) return false;
   // #desktop
-  let overlayWindow = await WebviewWindow.getByLabel('message_overlay');
+  let overlayWindow = await Webview.getByLabel('message_overlay');
 
   if (!overlayWindow) {
     try {
       await invoke('create_notification');
-      overlayWindow = await WebviewWindow.getByLabel('message_overlay');
+      overlayWindow = await Webview.getByLabel('message_overlay');
       if (!overlayWindow) return false;
     } catch {
       return false;
