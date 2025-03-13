@@ -83,7 +83,7 @@
             {chunk.replace(/<|>/g, '')}
           </span>
         {:else}
-          {(new RegExp('^\s+').test(chunk) ? '\s' : '') + chunk.trim()}
+          {chunk}
         {/if}
       {/each}
     </div>
