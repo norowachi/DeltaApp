@@ -4,6 +4,10 @@ on:
   push:
     branches:
       - release
+    paths:
+      - "src/**"
+      - "src-tauri/**"
+
 
 # On each push to the `release` branch it will create or update a GitHub release, build your app, and upload the artifacts to the release.
 
@@ -39,7 +43,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'pnpm'
+          cache: "pnpm"
 
 
       - name: install Rust stable
@@ -64,6 +68,6 @@ jobs:
           tagName: app-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: "App v__VERSION__"
           releaseBody: "See the assets to download this version and install."
-          releaseDraft: true
+          releaseDraft: false
           prerelease: false
           args: ${{ matrix.args }}
