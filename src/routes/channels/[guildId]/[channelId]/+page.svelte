@@ -17,13 +17,14 @@
   let { data }: PageProps = $props();
 
   let app: HTMLElement;
-  let loader: HTMLSpanElement;
   let messageContainer: HTMLElement;
+  let loading = $state<boolean>(false);
   let messages = $state<IMessage[]>([]);
   /**
-   * messages page
+   * messages current page
    */
   let MessagePages = $state<number>(1);
+  let MessageMaxPages = $state<boolean>(false);
   const socket = writable<Socket>();
 
   let itemId: string | null = null;
@@ -47,6 +48,7 @@
       if (result) {
         messages = result.messages;
         MessagePages = result.currentPage;
+        MessageMaxPages = result.pages === result.currentPage;
       }
     }
 
@@ -123,31 +125,6 @@
         });
     }).observe(document.body);
 
-    // load older messages
-    if (loader)
-      new IntersectionObserver(
-        async (entries) => {
-          if (entries[0].isIntersecting) {
-            if (messages.length) {
-              const result = await getMessages({
-                guildId: data.guild.id,
-                channelId: data.channel.id,
-                page: MessagePages + 1,
-              });
-              if (result?.messages?.length) {
-                messages = [...result.messages, ...messages];
-                MessagePages = result.currentPage;
-                if (result.pages === result.currentPage) loader.remove();
-              } else loader.remove();
-            }
-          }
-        },
-        {
-          rootMargin: 2 * window.innerHeight + 'px',
-          root: messageContainer,
-        },
-      ).observe(loader);
-
     document.onkeydown = (e) => {
       if ((e.ctrlKey && e.key !== 'v') || e.altKey) return;
       const target = e.target as HTMLElement;
@@ -156,11 +133,20 @@
     };
   });
 
+  // on page url change or so
   afterNavigate((nav) => {
+    loading = false;
+    setTimeout(() => {
+      messageContainer.scrollTo({
+        top: messageContainer.scrollHeight,
+        behavior: 'instant',
+      });
+    }, 0);
     // if we're just entering the page, we don't need to do anything
     if (nav.type === 'enter') return;
-    messages = data.messages;
-    MessagePages = 1;
+    messages = data.messages?.messages || [];
+    MessagePages = data.messages?.currentPage || 1;
+    MessageMaxPages = data.messages?.pages === data.messages?.currentPage || false;
     // TODO: create room joining for the new channel
     // and leaving the old one (missing in backend)
     // for now it's not a big deal as we just join the whole guild's room
@@ -183,8 +169,8 @@
         }, 100);
         // if user scrolled up 2x their viewport or more, don't scroll down
       } else if (
-        messageContainer.scrollHeight - messageContainer.scrollTop <
-        3 * window.innerHeight
+        messageContainer.scrollHeight - 3 * window.innerHeight <=
+        messageContainer.scrollTop
       ) {
         messageContainer.scrollTo({
           top: messageContainer.scrollHeight,
@@ -192,6 +178,18 @@
         });
       }
     }
+  });
+
+  // tauri notification click handling
+  // #desktop
+  listen('open', async (event) => {
+    // TODO: do message shiz
+    const { messageId, channelId, guildId } = event.payload as any;
+    // if we're already in the channel, we don't need to do anything
+    if (location.pathname !== `/channels/${guildId}/${channelId}`)
+      location.assign(`/channels/${guildId}/${channelId}`);
+    const window = getCurrentWindow();
+    await window.setFocus();
   });
 
   function ChatLength(entries: ResizeObserverEntry[]) {
@@ -209,23 +207,47 @@
     return;
   }
 
-  // tauri notification click handling
-  // #desktop
-  listen('open', async (event) => {
-    // TODO: do message shiz
-    const { messageId, channelId, guildId } = event.payload as any;
-    // if we're already in the channel, we don't need to do anything
-    if (location.pathname !== `/channels/${guildId}/${channelId}`)
-      location.assign(`/channels/${guildId}/${channelId}`);
-    const window = getCurrentWindow();
-    await window.setFocus();
-  });
+  async function onContainerScroll() {
+    if (
+      messageContainer.scrollTop <= messageContainer.clientHeight &&
+      messages.length >= 100 &&
+      !loading &&
+      !MessageMaxPages
+    ) {
+      loading = true;
+      // get next page
+      const result = await getMessages({
+        guildId: data.guild.id,
+        channelId: data.channel.id,
+        page: MessagePages + 1,
+      });
+      if (result?.messages?.length) {
+        messages = [...result.messages, ...messages];
+        MessagePages = result.currentPage;
+        MessageMaxPages = result.pages === result.currentPage;
+        // remove loader if no more pages
+        if (MessageMaxPages) {
+          messageContainer.onscroll = null;
+          loading = false;
+          return;
+        }
+
+        setTimeout(() => {
+          loading = false;
+          onContainerScroll();
+        }, 1000);
+      } else loading = false;
+    }
+  }
 </script>
 
 <main bind:this={app} class="flex flex-col-reverse w-full" style="height: calc(100dvh - 100px)">
-  <section bind:this={messageContainer} class="w-full overflow-y-auto snap-y snap-mandatory">
-    <ul class="snap-end">
-      <span bind:this={loader}></span>
+  <section
+    bind:this={messageContainer}
+    onscroll={onContainerScroll}
+    class="w-full overflow-y-auto snap-y snap-mandatory"
+  >
+    <ul class="snap-normal">
       {#each messages as { id, content, embeds, author, createdAt, mentions }, i (id)}
         <li class="mb-1px {i === messages.length - 1 ? 'pb-5' : ''}">
           <Message

@@ -89,7 +89,7 @@
 
     fetch('https://api.noro.cc/tenor')
       .then((res) => res.json().then((data: CategoryResponse) => categories.set(data.tags)))
-      .catch(console.error);
+      .catch(() => {});
 
     // abort old controller and reset a new one
     const NewController = new AbortController();
