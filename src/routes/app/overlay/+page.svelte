@@ -13,7 +13,8 @@
   let timeout: number;
 
   onMount(() => {
-    currentWindow.emit('ready');
+    currentWindow.emitTo('message_overlay', 'ready');
+
     listen<IMessage>('message', (event) => {
       message.set(event.payload);
       if (!bar) return;

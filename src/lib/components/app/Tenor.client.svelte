@@ -75,6 +75,7 @@
 
   onMount(() => {
     query.subscribe(async (value) => {
+      if ($categories.some(({ name }) => name.replace('#', '') === value)) return;
       if (!value || value.length < 3) return gifs.set([]);
       // timeout for the user to finish typing
       await new Promise((r) => setTimeout(r, 1200));
@@ -115,6 +116,20 @@
           query.set(undefined);
           next.set(undefined);
           tab.style.display = 'none';
+          return;
+        } else if (target.id === 'category') {
+          const category = $categories.find(({ name }) => target.textContent === name);
+          if (!category) return;
+          query.set(category.name.replace('#', ''));
+          fetch('https://api.noro.cc/tenor', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ path: category.path }),
+          })
+            .then((res) => res.json().then((data: SearchResponse) => gifs.set(data.results)))
+            .catch(() => {});
           return;
         }
         // ignore the attach button, which is the caller
@@ -169,7 +184,7 @@
         {/each}
       {:else if !$gifs?.length}
         {#each $categories as category (category.name)}
-          <div class="relative w-full h-128px lg:h-167px cursor-pointer">
+          <div class="relative w-full h-128px lg:h-167px cursor-pointer select-none">
             <img
               src={category.image}
               alt={category.name}
@@ -177,6 +192,7 @@
               loading="lazy"
             />
             <div
+              id="category"
               class="w-full absolute inset-0 flex items-center justify-center bg-black/50 text-white text-xl rounded-md"
             >
               {category.name}
@@ -189,7 +205,7 @@
             id="gif"
             src={gif.media_formats.tinygif.url}
             alt={gif.id}
-            class="w-full rounded-md cursor-pointer"
+            class="w-full rounded-md cursor-pointer select-none"
             loading="lazy"
           />
         {/each}

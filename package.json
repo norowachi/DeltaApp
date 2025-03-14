@@ -1,7 +1,7 @@
 {
   "name": "delta",
-  "version": "0.1.1",
-  "description": "",
+  "version": "0.1.2",
+  "description": "A Cross-Platform SvelteKit app with Tauri for Delta ChatApp",
   "type": "module",
   "scripts": {
     "dev": "vite dev",
@@ -14,7 +14,6 @@
   "license": "MIT",
   "dependencies": {
     "@tauri-apps/api": "^2.3.0",
-    "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-http": "~2.3.0",
     "@tauri-apps/plugin-notification": "~2",
     "@tauri-apps/plugin-os": "~2",

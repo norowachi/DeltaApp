@@ -5,7 +5,7 @@
   let { children } = $props();
   let mounted = $state(false);
 
-  onMount(() => {
+  onMount(async () => {
     mounted = true;
   });
 </script>

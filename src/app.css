@@ -12,8 +12,9 @@
 
 :root .light {
   --background-color: #eeeeee;
+  --background-hover: #cccccc;
   --other-background: #111111;
-  --text-color: black;
+  --text-color: #323232;
 }
 
 body {

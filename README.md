@@ -1,7 +1,9 @@
-# Tauri + SvelteKit + TypeScript
+# Delta App
 
-This template should help get you started developing with Tauri, SvelteKit and TypeScript in Vite.
+# Requirements
 
-## Recommended IDE Setup
+- Install Android Studio and the NDK
+- Setup an android upload keystore and add it to /src-tauri/gen/android/
+- Create an update key pair, change the key in /src-tauri/config/ with your own and create environment variables in your system for the `TAURI_SIGNING_PRIVATE_KEY` and `TAURI_SIGNING_PRIVATE_KEY_PASSWORD` if set
 
-[VS Code](https://code.visualstudio.com/) + [Svelte](https://marketplace.visualstudio.com/items?itemName=svelte.svelte-vscode) + [Tauri](https://marketplace.visualstudio.com/items?itemName=tauri-apps.tauri-vscode) + [rust-analyzer](https://marketplace.visualstudio.com/items?itemName=rust-lang.rust-analyzer).
+then compile and run the app!

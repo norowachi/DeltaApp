@@ -1,5 +1,8 @@
+// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+
 use serde_json::json;
 use tauri_plugin_http::reqwest;
+use tauri_plugin_updater::UpdaterExt;
 
 #[tauri::command]
 pub async fn login(
@@ -33,8 +36,28 @@ pub async fn create_notification_window(app: tauri::AppHandle) {
             .unwrap();
 }
 
-// Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
+#[cfg(any(target_os = "windows", target_os = "linux", target_os = "macos"))]
 #[tauri::command]
-pub fn greet(name: &str) -> String {
-    format!("Hello, {}! You've been greeted from Rust!", name)
+pub fn update(app: tauri::AppHandle) {
+    tauri::async_runtime::spawn(async move {
+        if let Some(update) = app.updater().unwrap().check().await.unwrap() {
+            let mut downloaded: usize = 0;
+
+            // calling the download method
+            update
+                .download_and_install(
+                    |chunk_length, content_length| {
+                        downloaded += chunk_length;
+                        println!("downloaded {downloaded} from {content_length:?}",);
+                    },
+                    || {
+                        println!("download finished");
+                    },
+                )
+                .await
+                .unwrap();
+
+            println!("update installed");
+        }
+    });
 }

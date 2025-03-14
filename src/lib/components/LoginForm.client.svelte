@@ -1,6 +1,5 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/core';
-  import { message } from '@tauri-apps/plugin-dialog';
 
   async function onsubmit(e: SubmitEvent) {
     e.preventDefault();

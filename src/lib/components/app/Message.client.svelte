@@ -39,8 +39,10 @@
         loading="lazy"
       />
       <h3 class="ml-10px">
-        <span class="text-gray-200 text-lg cursor-pointer hover:underline">{author.username}</span>
-        <time class="text-gray-600 dark:text-gray-400 text-xs pointer-events-none">
+        <span class="text-gray-700 dark:text-gray-200 text-lg cursor-pointer hover:underline"
+          >{author.username}</span
+        >
+        <time class="text-gray-400 dark:text-gray-400 text-xs pointer-events-none">
           {date.toDateString()}
           {shortTime}
         </time>

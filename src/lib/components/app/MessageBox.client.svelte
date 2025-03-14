@@ -35,7 +35,7 @@
 </script>
 
 <div
-  class="overflow-hidden w-full inline-flex items-center py-2 px-3 bg-gray-50 dark:bg-#131313 rounded-lg rounded-b-0 bottom-0"
+  class="overflow-hidden w-full inline-flex items-center py-2 px-3 bg-gray-50 dark:bg-#1F1F1F rounded-lg rounded-b-0 bottom-0"
 >
   <button
     type="button"
