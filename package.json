@@ -14,10 +14,12 @@
   "license": "MIT",
   "dependencies": {
     "@tauri-apps/api": "^2.3.0",
+    "@tauri-apps/plugin-dialog": "~2",
     "@tauri-apps/plugin-http": "~2.3.0",
     "@tauri-apps/plugin-notification": "~2",
-    "@tauri-apps/plugin-opener": "^2.2.6",
     "@tauri-apps/plugin-os": "~2",
+    "@tauri-apps/plugin-process": "~2",
+    "@tauri-apps/plugin-updater": "~2.6.0",
     "socket.io-client": "^4.8.1"
   },
   "devDependencies": {
@@ -33,5 +35,13 @@
     "typescript": "~5.8.2",
     "unocss": "66.1.0-beta.3",
     "vite": "^6.2.0"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": [
+      "esbuild"
+    ],
+    "onlyBuiltDependencies": [
+      "esbuild"
+    ]
   }
 }

@@ -1,11 +1,10 @@
 {
   "$schema": "../gen/schemas/desktop-schema.json",
   "identifier": "default",
-  "description": "Capability for the main window",
+  "description": "Default Capabilities",
   "windows": ["main", "message_overlay"],
   "permissions": [
     "core:default",
-    "opener:default",
     {
       "identifier": "http:default",
       "allow": [
@@ -16,10 +15,6 @@
     },
     "keyring:allow-all",
     "notification:default",
-    "core:window:allow-show",
-    "core:window:allow-hide",
-    "core:window:allow-close",
-    "core:window:allow-set-focus",
     "os:default"
   ]
 }

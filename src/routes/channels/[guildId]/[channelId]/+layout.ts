@@ -1,7 +1,7 @@
 export const prerender = false;
 export const ssr = false;
 import { error, redirect } from '@sveltejs/kit';
-import type { IGuild, IMessage, IUser, PrivateUser } from '$lib/interfaces/delta';
+import type { IGuild, IMessage, IUser } from '$lib/interfaces/delta';
 import { getMessages } from '$lib/api/message.js';
 import type { LayoutLoad } from './$types';
 
@@ -15,10 +15,10 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).catch(console.error)
+    }).catch(() => {})
   )
     ?.json()
-    .catch(console.error);
+    .catch(() => {});
   if (!user) return error(401, 'Unauthorized');
 
   const guildId = params.guildId;
@@ -30,10 +30,10 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).catch(console.error)
+    }).catch(() => {})
   )
     ?.json()
-    .catch(console.error)) as IGuild;
+    .catch(() => {})) as IGuild;
 
   // send 404 if the guild is not found
   if (!guild) return error(404, 'Guild not found');
@@ -47,9 +47,7 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
   if (!TargetChannel) return error(404, 'Channel not found');
 
   // Fetch messages
-  let messages: IMessage[] = await getMessages({ guildId, channelId, fetch });
-
-  messages ||= [];
+  let messages = await getMessages({ guildId, channelId, fetch });
 
   // if (!messages?.length) return error(404, "Cloudn't fetch messages");
 

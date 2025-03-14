@@ -1,6 +1,8 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import { writable } from 'svelte/store';
+  import Sun from '$lib/svg/sun.svelte';
+  import Moon from '$lib/svg/moon.svelte';
 
   let menu = writable<HTMLElement>();
   let opened = writable<boolean>(false);
@@ -110,14 +112,15 @@
   <ul class="flex flex-col rounded-md shadow-xl overflow-hidden">
     <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
     <!-- svelte-ignore a11y_click_events_have_key_events -->
-    <li
-      onclick={() => HandleTheme(true)}
-      class="context-menu-item hover:bg-[var(--other-background)]"
-    >
-      <img src="/images/sun.svg" alt="sun" class="hidden dark:flex context-menu-icon mr-2" />
-      <span class="hidden dark:flex text-nowrap">Light Mode</span>
-      <img src="/images/moon.svg" alt="moon" class="flex dark:hidden context-menu-icon mr-2" />
-      <span class="flex dark:hidden text-nowrap">Dark Mode</span>
+    <li onclick={() => HandleTheme(true)} class="custom context-menu-item *:space-x-1">
+      <p class="hidden dark:flex text-nowrap">
+        <Sun />
+        <span>Light Mode</span>
+      </p>
+      <p class="flex dark:hidden text-nowrap">
+        <Moon />
+        <span>Dark Mode</span>
+      </p>
     </li>
   </ul>
 </div>
@@ -148,11 +151,12 @@
 
   :global .context-menu-item {
     @apply relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 data-[state]:py-1.5 data-[state]:pl-8 data-[state]:pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50;
-    &[data-state='checked'] > .context-menu-icon {
-      @apply flex;
-    }
-    .context-menu-icon {
-      @apply absolute left-2 h-3.5 w-3.5 items-center justify-center;
+  }
+
+  ul * {
+    &:hover {
+      --svg-color: black;
+      @apply bg-[#cccccc] text-black;
     }
   }
 </style>

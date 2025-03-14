@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Cookie from '$lib/svg/cookie.svelte';
   import LoginForm from '../lib/components/LoginForm.client.svelte';
   import RegisterForm from '../lib/components/RegisterForm.client.svelte';
 
@@ -12,7 +13,7 @@
 {#if ShowRegister}
   <RegisterForm>
     <button
-      class="mt-2 cursor-pointer underline text-violet-700 hover:text-violet-800"
+      class="mt-2 cursor-pointer underline text-violet-700 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-500"
       onclick={() => (ShowRegister = false)}
       type="button"
     >
@@ -22,7 +23,7 @@
 {:else}
   <LoginForm>
     <button
-      class="mt-2 cursor-pointer underline text-violet-700 hover:text-violet-800"
+      class="mt-2 cursor-pointer underline text-violet-700 dark:text-violet-400 hover:text-violet-800 dark:hover:text-violet-500"
       onclick={() => (ShowRegister = true)}
     >
       Create an account
