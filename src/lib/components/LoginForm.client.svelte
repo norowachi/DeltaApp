@@ -1,5 +1,6 @@
 <script lang="ts">
   import { invoke } from '@tauri-apps/api/core';
+  import { message } from '@tauri-apps/plugin-dialog';
 
   async function onsubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -28,14 +29,15 @@
 
     if (response.token) {
       localStorage.setItem('token', response.token);
-      location.assign('/app');
+      // location.assign('/app');
     }
 
     if (response.message) {
-      return alert(response.message);
+      console.log(response.message);
+      return await message(response.message, { kind: 'info' });
     }
 
-    return alert('There was an error logging in.');
+    return await message(response.message, { kind: 'error' });
   }
 </script>
 
