@@ -29,15 +29,14 @@
 
     if (response.token) {
       localStorage.setItem('token', response.token);
-      // location.assign('/app');
+      location.assign('/app');
     }
 
     if (response.message) {
-      console.log(response.message);
-      return await message(response.message, { kind: 'info' });
+      return alert(response.message);
     }
 
-    return await message(response.message, { kind: 'error' });
+    return alert(response.message);
   }
 </script>
 
