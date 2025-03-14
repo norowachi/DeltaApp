@@ -38,7 +38,7 @@ export async function showMessageOverlay(message: IMessage) {
 
   if (!overlayWindow) {
     try {
-      await invoke('create_notification');
+      await invoke('create_notification_window');
       overlayWindow = await Webview.getByLabel('message_overlay');
       if (!overlayWindow) return false;
     } catch {

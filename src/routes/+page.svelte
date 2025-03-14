@@ -30,9 +30,3 @@
     </button>
   </LoginForm>
 {/if}
-<a
-  id="open_preferences_center"
-  class="fixed bottom-3 right-3 cursor-pointer rounded-full z-999999 transition-all duration-500 ease hover:transform-rotate-360"
->
-  <Cookie />
-</a>
