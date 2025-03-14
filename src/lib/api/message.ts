@@ -68,12 +68,12 @@ export async function getMessages({
       },
       cache: 'no-store',
     },
-  ).catch(console.error);
+  ).catch(() => {});
 
   if (!result || !result.ok)
     return error(result?.status || 500, result?.statusText || 'Internal Server Error');
 
-  const data = await result.json().catch(console.error);
+  const data = await result.json().catch(() => {});
 
   if (!data) return error(500, 'Internal Server Error');
 
