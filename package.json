@@ -1,6 +1,5 @@
 {
   "name": "delta",
-  "version": "0.1.2",
   "description": "A Cross-Platform SvelteKit app with Tauri for Delta ChatApp",
   "type": "module",
   "scripts": {
