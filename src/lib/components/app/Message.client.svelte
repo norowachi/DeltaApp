@@ -59,7 +59,7 @@
 
   {#if content}
     <div class="text-wrap break-words px-2 whitespace-pre-line">
-      {#each formatContent(content) as chunk, i (i)}
+      {#each formatContent(content.trim()) as chunk, i (i)}
         {#if mentions && Object.values(mentions).includes(chunk.slice(2, -1))}
           <span
             class="bg-purple-500 hover:bg-purple-700 text-dark rounded-md cursor-pointer transition-colors duration-300 px-4px py-2px"
@@ -67,7 +67,7 @@
             {chunk.replace(/<|>/g, '')}
           </span>
         {:else}
-          {chunk.trimEnd()}
+          {chunk}
         {/if}
       {/each}
     </div>
