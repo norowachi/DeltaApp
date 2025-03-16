@@ -54,7 +54,7 @@
   </button>
   <div
     id="gifs-tab"
-    class="absolute h-lg bottom-60px overflow-y-auto snap-y snap-proximity"
+    class="absolute h-lg max-h-[calc(100dvh-60px)] bottom-60px overflow-y-auto snap-y snap-proximity"
     style="display: none;"
   >
     <Tenor {guildId} {channelId} />
