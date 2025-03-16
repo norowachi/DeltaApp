@@ -100,11 +100,3 @@ export interface IChannel {
   members: string[];
   type: ChannelTypes;
 }
-
-// Define the TokenPayload interface
-export interface TokenPayload {
-  userId: string;
-  handle: string;
-  password: string;
-  exp: number;
-}
