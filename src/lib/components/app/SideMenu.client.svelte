@@ -62,7 +62,7 @@
   <div
     bind:this={$menu}
     data-open={$menu?.dataset.open || 'false'}
-    class="fixed top-0 right-0 h-full w-64 bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pl-0.5 b-l-1 b-black dark:b-white select-none"
+    class="fixed top-0 right-0 h-full w-64 max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pl-0.5 b-l-1 b-black dark:b-white select-none"
   >
     <div class="pl-4 pr-2 flex justify-between items-center">
       <h2 class="p-2 text-lg">{guild.name}</h2>
