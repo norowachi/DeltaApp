@@ -33,7 +33,7 @@
   async function updateAndDownload() {
     updateAvailable = false;
     alert('Downloading update...');
-    await invoke('update');
+    await invoke('update_application');
     await relaunch();
   }
 </script>

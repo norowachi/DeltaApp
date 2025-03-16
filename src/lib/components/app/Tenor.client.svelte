@@ -75,7 +75,20 @@
 
   onMount(() => {
     query.subscribe(async (value) => {
-      if ($categories.some(({ name }) => name.replace('#', '') === value)) return;
+      const category = $categories.find(({ name }) => name.replace('#', '') === value);
+      if (category) {
+        fetch('https://api.noro.cc/tenor', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ path: category.path }),
+        })
+          .then((res) => res.json().then((data: SearchResponse) => gifs.set(data.results)))
+          .catch(() => {});
+        return;
+      }
+
       if (!value || value.length < 3) return gifs.set([]);
       // timeout for the user to finish typing
       await new Promise((r) => setTimeout(r, 1200));
@@ -121,15 +134,6 @@
           const category = $categories.find(({ name }) => target.textContent === name);
           if (!category) return;
           query.set(category.name.replace('#', ''));
-          fetch('https://api.noro.cc/tenor', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({ path: category.path }),
-          })
-            .then((res) => res.json().then((data: SearchResponse) => gifs.set(data.results)))
-            .catch(() => {});
           return;
         }
         // ignore the attach button, which is the caller
@@ -177,14 +181,16 @@
     bind:value={$query}
   />
   <div class="bg-gray-7 overflow-y-scroll rounded-lg rounded-t-0 rounded-b-0 h-100dvh">
-    <div class="w-xs md:w-md lg:w-lg grid grid-auto-rows-auto cols-2 p-1 gap-1 lg:p-2 lg:gap-2">
+    <div
+      class="w-xs md:w-md lg:w-lg grid grid-auto-rows-auto cols-2 p-1 gap-1 lg:p-2 lg:gap-2 select-none"
+    >
       {#if $query && !$gifs?.length}
         {#each Array.from({ length: 10 }), i (i)}
           <div class="h-128px lg:h-167px bg-gray-8 rounded-md animate-pulse"></div>
         {/each}
       {:else if !$gifs?.length}
         {#each $categories as category (category.name)}
-          <div class="relative w-full h-128px lg:h-167px cursor-pointer select-none">
+          <div class="relative w-full h-128px lg:h-167px cursor-pointer">
             <img
               src={category.image}
               alt={category.name}
@@ -205,11 +211,11 @@
             id="gif"
             src={gif.media_formats.tinygif.url}
             alt={gif.id}
-            class="w-full rounded-md cursor-pointer select-none"
+            class="w-full rounded-md cursor-pointer"
             loading="lazy"
           />
         {/each}
-        <span bind:this={loader} id="gifs-end"></span>
+        <span bind:this={loader}></span>
       {/if}
     </div>
   </div>

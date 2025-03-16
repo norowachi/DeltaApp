@@ -2,6 +2,7 @@
 
 use serde_json::json;
 use tauri_plugin_http::reqwest;
+#[cfg(desktop)]
 use tauri_plugin_updater::UpdaterExt;
 
 #[tauri::command]
@@ -26,7 +27,29 @@ pub async fn login(
     return res.json().await.unwrap();
 }
 
-#[cfg(not(any(target_os = "android", target_os = "ios")))]
+#[tauri::command]
+pub async fn register(
+    username: Option<String>,
+    handle: Option<String>,
+    password: String,
+) -> serde_json::Value {
+    let res = reqwest::Client::new()
+        .post("https://api.noro.cc/auth/register")
+        .header("Content-Type", "application/json")
+        .json(&json!(
+            {
+                "username": Some(username),
+                "handle": Some(handle),
+                "password": password
+            }
+        ))
+        .send()
+        .await
+        .unwrap();
+    return res.json().await.unwrap();
+}
+
+#[cfg(desktop)]
 #[tauri::command]
 pub async fn create_notification_window(app: tauri::AppHandle) {
     let _webview_window =
@@ -36,9 +59,9 @@ pub async fn create_notification_window(app: tauri::AppHandle) {
             .unwrap();
 }
 
-#[cfg(any(target_os = "windows", target_os = "linux", target_os = "macos"))]
+#[cfg(desktop)]
 #[tauri::command]
-pub fn update(app: tauri::AppHandle) {
+pub fn update_application(app: tauri::AppHandle) {
     tauri::async_runtime::spawn(async move {
         if let Some(update) = app.updater().unwrap().check().await.unwrap() {
             let mut downloaded: usize = 0;

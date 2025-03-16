@@ -1,4 +1,4 @@
-#[cfg(not(any(target_os = "android", target_os = "ios")))]
+#[cfg(desktop)]
 use tauri::Manager;
 
 mod commands;
@@ -7,23 +7,24 @@ mod commands;
 pub fn run() {
     #[allow(unused_mut)]
     let mut builder = tauri::Builder::default()
-        .plugin(tauri_plugin_process::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_os::init())
         .plugin(tauri_plugin_notification::init())
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_keyring::init())
         .invoke_handler(tauri::generate_handler![
+            commands::register,
             commands::login,
-            #[cfg(not(any(target_os = "android", target_os = "ios")))]
+            #[cfg(desktop)]
             commands::create_notification_window,
-            #[cfg(any(target_os = "windows", target_os = "linux", target_os = "macos"))]
-            commands::update
+            #[cfg(desktop)]
+            commands::update_application
         ]);
 
-    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    #[cfg(desktop)]
     {
         builder = builder
+            .plugin(tauri_plugin_process::init())
+            .plugin(tauri_plugin_updater::Builder::new().build())
             // add single instance plugin to focus the main window when the app is already running
             .plugin(tauri_plugin_single_instance::init(|app, _, _| {
                 let _ = app
