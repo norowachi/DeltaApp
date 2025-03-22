@@ -5,7 +5,7 @@
   import { writable } from 'svelte/store';
   import { relaunch } from '@tauri-apps/plugin-process';
   import { check } from '@tauri-apps/plugin-updater';
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
 
   const {
     channel,
@@ -24,11 +24,57 @@
     if (updateAvailable === undefined) updateAvailable = (await check())?.available || false;
   });
 
-  // on click, if its not in the menu, close the menu
-  document.addEventListener('click', (e) => {
+  function CloseMenu(e: Event) {
     if (!$menu || (e.target as HTMLElement).ariaLabel === 'menu-button') return;
     if (!$menu.contains(e.target as Node)) $menu.dataset.open = 'false';
+  }
+
+  document.addEventListener('click', CloseMenu);
+  document.addEventListener('auxclick', CloseMenu);
+  // swipers
+  // TODO: Add more swipe logic
+  document.addEventListener('touchstart', handlePointerDown);
+  document.addEventListener('touchmove', handlePointerMove);
+  document.addEventListener('touchend', handlePointerUp);
+
+  onDestroy(() => {
+    document.removeEventListener('click', CloseMenu);
+    document.removeEventListener('auxclick', CloseMenu);
+    document.removeEventListener('touchstart', handlePointerDown);
+    document.removeEventListener('touchmove', handlePointerMove);
+    document.removeEventListener('touchend', handlePointerUp);
   });
+
+  let start = [0, 0];
+  let current = [0, 0];
+  let isSwiping = false;
+
+  function handlePointerDown(event: TouchEvent) {
+    start = [event.touches[0].screenX, event.touches[0].screenY];
+    isSwiping = true;
+  }
+
+  function handlePointerMove(event: TouchEvent) {
+    if (!isSwiping) return;
+
+    current = [event.touches[0].screenX, event.touches[0].screenY];
+    if (Math.abs(current[1] - start[1]) >= 30) return;
+    const diff = current[0] - start[0];
+    const abs = Math.abs(diff);
+    if (abs < 30) return;
+
+    if (diff < 0) {
+      $menu.dataset.open = 'true';
+    } else {
+      if ($menu.dataset.open === 'false') return;
+      $menu.dataset.open = 'false';
+    }
+    start = current;
+  }
+
+  function handlePointerUp() {
+    isSwiping = false;
+  }
 
   async function updateAndDownload() {
     updateAvailable = false;
@@ -112,6 +158,6 @@
   }
 
   :global button[title='Update'] svg {
-    --svg-color: rgb(71, 152, 71);
+    color: rgb(71, 152, 71);
   }
 </style>

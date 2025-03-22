@@ -1,18 +1,19 @@
 <script lang="ts">
   import Tenor from './Tenor.client.svelte';
   import { sendMessage } from '$lib/api/message';
+  import { draft } from '$lib/store';
 
   let { guildId, channelId } = $props();
 
   async function OnClickSend() {
     const chat = document.getElementById('chat') as HTMLTextAreaElement;
     if (!chat) return;
-    const message = chat.value.trim();
+    const message = $draft.trim();
     if (!message) return;
-    chat.value = '';
+    draft.set('');
     chat.style.height = 'auto';
 
-    // TODO: invoke
+    // TODO: invoke maybe
     await sendMessage({
       content: message,
       guildId,
@@ -35,7 +36,7 @@
 </script>
 
 <div
-  class="overflow-hidden w-full inline-flex items-center py-2 px-3 bg-gray-50 dark:bg-#1F1F1F rounded-lg rounded-b-0 bottom-0"
+  class="overflow-hidden w-full inline-flex items-center py-2 px-3 bg-gray-50 dark:bg-#1F1F1F rounded-0 bottom-0"
 >
   <button
     type="button"
@@ -83,6 +84,7 @@
     style="height: auto;"
     minlength="1"
     maxlength="2000"
+    value={$draft}
     oninput={(e) => {
       e.currentTarget.style.height = 'auto';
       e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';

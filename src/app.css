@@ -4,7 +4,6 @@
   --background-color: #111111;
   --other-background: #eeeeee;
   --background-hover: #808080;
-  --svg-color: white;
   --text-color: white;
   --link-color: rgb(47, 47, 255);
   --link-hover: rgb(25, 25, 225);
@@ -30,10 +29,6 @@ a {
   &:hover {
     color: var(--link-hover);
   }
-}
-
-.custom svg {
-  stroke: var(--svg-color);
 }
 
 @keyframes enter {
