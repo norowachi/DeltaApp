@@ -46,7 +46,7 @@
       />
       <h3 class="ml-10px">
         <button
-          onclick={() => draft.update((d) => `${d} <@${author.id}>`)}
+          onclick={() => draft.update((d) => (d ? d + ' ' : '') + `<@${author.username}>`)}
           class="text-gray-700 dark:text-gray-200 text-lg cursor-pointer hover:underline"
         >
           {author.username}
