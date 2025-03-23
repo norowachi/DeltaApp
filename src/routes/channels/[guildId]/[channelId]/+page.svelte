@@ -114,7 +114,7 @@
     new ResizeObserver(() => {
       if (
         messageContainer && // if user scrolled up 2x their viewport or more, don't scroll down
-        messageContainer.scrollHeight - messageContainer.scrollTop < 3 * window.innerHeight
+        messageContainer.scrollHeight - 3 * window.innerHeight <= messageContainer.scrollTop
       )
         messageContainer.scrollTo({
           top: messageContainer.scrollHeight,
@@ -133,6 +133,7 @@
 
   // on page url change or so
   afterNavigate((nav) => {
+    if (nav.to?.url?.pathname === nav.from?.url?.pathname) return;
     loading = false;
     setTimeout(() => {
       messageContainer.scrollTo({
@@ -159,7 +160,7 @@
   // Auto-scroll on new messages
   $effect(() => {
     $messages;
-    if (messageContainer) {
+    if ($messages && messageContainer) {
       if (itemId) {
         // get around a message if its not in the store
         const msg = $messages.find(({ id }) => itemId === id);
@@ -179,24 +180,19 @@
         const element = document.getElementById(itemId!);
         if (element)
           setTimeout(() => {
-            element.scrollIntoView({ behavior: msg ? 'instant' : 'smooth', block: 'center' });
+            element.scrollIntoView({
+              behavior: msg ? 'smooth' : 'instant',
+              block: 'center',
+              inline: 'center',
+            });
             element.style.animation = 'color-pulse 2s linear';
             // remove fragments
             replaceState(window.location.pathname, page.state);
             itemId = null;
           }, 100);
-      } else if (
-        messageContainer.scrollHeight - 3 * window.innerHeight <=
-        messageContainer.scrollTop
-      ) {
-        // if user scrolled up 2x their viewport or more, don't scroll down
-        messageContainer.scrollTo({
-          top: messageContainer.scrollHeight,
-          behavior: 'instant',
-        });
+        return;
       } else if (tempAround) {
         // container > ul > last element, scroll to it
-        console.log(messageContainer.firstElementChild?.lastElementChild);
         messageContainer.firstElementChild?.lastElementChild?.scrollIntoView({
           inline: 'end',
           block: 'end',
@@ -205,7 +201,16 @@
         MessageMaxPages = false;
         tempAround = false;
         showScrollButton = false;
-      }
+        return;
+      } else if (
+        messageContainer.scrollHeight - 3 * window.innerHeight <=
+        messageContainer.scrollTop
+      )
+        // if user scrolled up 2x their viewport or more, don't scroll down
+        messageContainer.scrollTo({
+          top: messageContainer.scrollHeight,
+          behavior: 'instant',
+        });
     }
   });
 

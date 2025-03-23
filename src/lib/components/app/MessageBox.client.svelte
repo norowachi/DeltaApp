@@ -8,7 +8,7 @@
   async function OnClickSend() {
     const chat = document.getElementById('chat') as HTMLTextAreaElement;
     if (!chat) return;
-    const message = $draft.trim();
+    const message = $draft?.trim();
     if (!message) return;
     draft.set('');
     chat.style.height = 'auto';
@@ -84,7 +84,7 @@
     style="height: auto;"
     minlength="1"
     maxlength="2000"
-    value={$draft}
+    bind:value={$draft}
     oninput={(e) => {
       e.currentTarget.style.height = 'auto';
       e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';

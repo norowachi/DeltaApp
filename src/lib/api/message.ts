@@ -64,6 +64,8 @@ export async function getMessages({
   const token = localStorage.getItem('token');
   if (!token) return error(401, 'Unauthorized');
 
+  if (!(page || around || before || after)) page = 1;
+
   const result = await fetch(
     `https://api.noro.cc/v1/channels/${guildId || '@me'}/${channelId}/messages?${page ? `page=${page}&` : ''}${around ? `around=${around}&` : ''}${before ? `before=${before}&` : ''}${after ? `after=${after}&` : ''}`,
     {
