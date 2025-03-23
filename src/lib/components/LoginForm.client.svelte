@@ -41,11 +41,11 @@
 
 <form {onsubmit} class="w-full max-w-md mx-auto flex flex-col justify-center items-center">
   <ol class="flex flex-col justify-center">
-    <il class="ml--12px pl-2 rounded-sm border-l-4 border-purple-600 text-lg mb-2">
+    <li class="ml--12px pl-2 rounded-sm border-l-4 border-purple-600 text-lg mb-2">
       Login
       <span class="text-red-600">*</span>
-    </il>
-    <il>
+    </li>
+    <li>
       <input
         type="text"
         id="login"
@@ -58,12 +58,12 @@
         class="p-2"
         required
       />
-    </il>
-    <il class="ml--12px pl-2 rounded-sm border-l-4 border-purple-600 text-lg my-2">
+    </li>
+    <li class="ml--12px pl-2 rounded-sm border-l-4 border-purple-600 text-lg my-2">
       Password
       <span class="text-red-600">*</span>
-    </il>
-    <il>
+    </li>
+    <li>
       <input
         type="password"
         id="password"
@@ -74,7 +74,7 @@
         class="p-2"
         required
       />
-    </il>
+    </li>
   </ol>
   <div class="my-4 text-center">
     <input
