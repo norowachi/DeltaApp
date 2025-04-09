@@ -21,7 +21,9 @@
   let menu = writable<HTMLElement>();
 
   onMount(async () => {
-    if (updateAvailable === undefined) updateAvailable = (await check())?.available || false;
+    // TODO: check if update is REQUIRED and if so just download/install it
+    if (updateAvailable === undefined)
+      updateAvailable = (await check().catch(() => {}))?.available || false;
   });
 
   function CloseMenu(e: Event) {
@@ -47,33 +49,75 @@
 
   let start = [0, 0];
   let current = [0, 0];
+  let firstLeft = 0;
   let isSwiping = false;
 
   function handlePointerDown(event: TouchEvent) {
-    start = [event.touches[0].screenX, event.touches[0].screenY];
+    start = [event.changedTouches[0].clientX, event.changedTouches[0].clientY];
+    firstLeft = $menu.getBoundingClientRect().left;
     isSwiping = true;
   }
 
   function handlePointerMove(event: TouchEvent) {
     if (!isSwiping) return;
+    current = [event.changedTouches[0].clientX, event.changedTouches[0].clientY];
+    // if the swipe is in y-axis, ignore
+    if (Math.abs(start[1] - current[1]) > 30) return;
+    let newX = current[0] + (firstLeft || -start[0]);
+    console.log('newX', newX, current[0], start[0], firstLeft);
 
-    current = [event.touches[0].screenX, event.touches[0].screenY];
-    if (Math.abs(current[1] - start[1]) >= 30) return;
-    const diff = current[0] - start[0];
-    const abs = Math.abs(diff);
-    if (abs < 30) return;
-
-    if (diff < 0) {
-      $menu.dataset.open = 'true';
-    } else {
-      if ($menu.dataset.open === 'false') return;
-      $menu.dataset.open = 'false';
+    if (newX <= 0) {
+      // if the start point is too far, subtract the difference
+      if (start[0] > $menu.clientWidth) {
+        console.log('decreasing');
+        newX = newX + (start[0] - $menu.clientWidth);
+      }
+      //
+      if (current[0] <= $menu.clientWidth) {
+        $menu.style.transform = 'translateX(' + newX + 'px)';
+      }
     }
-    start = current;
   }
 
-  function handlePointerUp() {
+  function handlePointerUp(event: TouchEvent) {
     isSwiping = false;
+    const isOpened = $menu.dataset.open === 'true';
+    const threhold = (2.5 * $menu.clientWidth) / 10;
+    const end = event.changedTouches[0].clientX;
+    const diff = end - start[0];
+    const bounding = $menu.getBoundingClientRect().right;
+
+    const temp = () => {
+      // not opened & from left to right
+      if (!isOpened && diff > 0) {
+        // if its dragged beyond the middle of the screen
+        if (bounding > $menu.clientWidth / 2 || diff <= threhold) {
+          return 1;
+        } else {
+          return 0;
+        }
+        // not opened & right to left
+      } else if (!isOpened && diff < 0) {
+        return 0;
+        // opened & right to left
+      } else if (isOpened && diff < 0) {
+        if (bounding > $menu.clientWidth / 2 || diff <= threhold) {
+          return 0;
+        } else {
+          return 1;
+        }
+      }
+    };
+
+    if (temp() === 1) {
+      // open
+      $menu.dataset.open = 'true';
+    } else if (temp() === 0) {
+      // close
+      $menu.dataset.open = 'false';
+    }
+
+    $menu.style.transform = '';
   }
 
   async function updateAndDownload() {
@@ -87,11 +131,11 @@
 <section class="relative w-full bg-white dark:bg-#1F1F1F max-h-40px m-0">
   <div>
     <!-- TODO: change this ugly format -->
-    <span class="text-lg float-left py-1.5 px-2">#{channel.name} @ {guild.name}</span>
+    <span class="text-lg float-right py-1.5 px-2">{guild.name} #{channel.name}</span>
     <button
       aria-label="menu-button"
       title="Toggle Menu"
-      class="mr-2 p-2 float-right"
+      class="ml-2 p-2 float-left"
       onclick={() => {
         if ($menu) $menu.dataset.open = $menu.dataset.open === 'true' ? 'false' : 'true';
       }}
@@ -99,7 +143,7 @@
       ☰
     </button>
     {#if updateAvailable}
-      <button title="Update" class="custom p-2 float-right" onclick={updateAndDownload}>
+      <button title="Update" class="custom p-2 float-left" onclick={updateAndDownload}>
         <Download />
       </button>
     {/if}
@@ -108,10 +152,9 @@
   <div
     bind:this={$menu}
     data-open={$menu?.dataset.open || 'false'}
-    class="fixed top-0 right-0 h-full w-64 max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pl-0.5 b-l-1 b-black dark:b-white select-none"
+    class="fixed top-0 right-0 h-full w-full max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pr-0.5 b-r-1 b-black dark:b-white select-none"
   >
-    <div class="pl-4 pr-2 flex justify-between items-center">
-      <h2 class="p-2 text-lg">{guild.name}</h2>
+    <div class="pr-4 pl-2 flex justify-between items-center">
       <button
         title="Close Menu"
         class="p-2"
@@ -121,12 +164,13 @@
       >
         ✖
       </button>
+      <h2 class="p-2 text-lg">{guild.name}</h2>
     </div>
     <nav class="*:w-full text-start space-y-1">
       {#each channels as { id, name } (id)}
         <a
           href={`/channels/${guild.id}/${id}`}
-          class="block px-2 py-1 text-cyan hover:bg-[var(--background-hover)] rounded-md {id ===
+          class="block px-2 py-1 text-cyan text-right hover:bg-[var(--background-hover)] rounded-md {id ===
             channel.id && 'active'}"
         >
           {name}
@@ -142,7 +186,7 @@
   }
 
   [data-open='false'] {
-    transform: translateX(100%);
+    transform: translateX(-100%);
   }
 
   a.active {
