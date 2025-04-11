@@ -1,7 +1,7 @@
 <script lang="ts">
   import { formatContent } from '$lib/api/message';
   import type { IMessage } from '$lib/interfaces/delta';
-  import { draft } from '$lib/store';
+  import { chatBox, draft } from '$lib/store';
   import { error } from '@sveltejs/kit';
 
   let {
@@ -46,7 +46,10 @@
       />
       <h3 class="ml-10px">
         <button
-          onclick={() => draft.update((d) => (d ? d + ' ' : '') + `<@${author.username}>`)}
+          onclick={() => {
+            $chatBox?.focus();
+            draft.update((d) => (d ? d + '' : '') + `<@${author.username}>`);
+          }}
           class="text-gray-700 dark:text-gray-200 text-lg cursor-pointer hover:underline"
         >
           {author.username}

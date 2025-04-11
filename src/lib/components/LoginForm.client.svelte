@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { invoke } from '@tauri-apps/api/core';
+  import functions from '$lib/api/tauri';
 
   async function onsubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -8,8 +8,8 @@
 
     const login = formData.get('login')?.toString();
     const password = formData.get('password')?.toString();
-    let username = null;
-    let handle = null;
+    let username = undefined;
+    let handle = undefined;
 
     if (login?.toString().includes('@')) {
       handle = login;
@@ -17,14 +17,7 @@
       username = login;
     }
 
-    const response: {
-      message: string;
-      token: string;
-    } = await invoke('login', {
-      username,
-      handle,
-      password,
-    });
+    const response = await functions.login({ username, handle, password });
 
     if (response.token) {
       localStorage.setItem('token', response.token);

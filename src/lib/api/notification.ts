@@ -14,6 +14,8 @@ export async function sendTauriNotification(
     extra: { guildId: string | null; channelId: string; type: 'mention' };
   },
 ) {
+  if (!('__TAURI__' in window)) return;
+
   let permissionGranted = await isPermissionGranted();
 
   if (!permissionGranted) {
@@ -31,6 +33,8 @@ export async function sendTauriNotification(
 let lastNotification: number;
 
 export async function showMessageOverlay(message: IMessage) {
+  if (!('__TAURI__' in window)) return false;
+
   // skip #mobile
   if (['android', 'ios'].includes(platform())) return false;
   // #desktop
@@ -48,7 +52,6 @@ export async function showMessageOverlay(message: IMessage) {
 
   overlayWindow.show();
 
-  overlayWindow.emitTo('message_overlay', 'message', message);
   overlayWindow.once('ready', () => {
     overlayWindow.emitTo('message_overlay', 'message', message);
   });

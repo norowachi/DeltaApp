@@ -9,7 +9,7 @@
   import { afterNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import { getMessages } from '$lib/api/message';
-  import { appContainer, messages } from '$lib/store';
+  import { appContainer, chatBox, messages } from '$lib/store';
   import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
   import { listen } from '@tauri-apps/api/event';
   import { getCurrentWindow } from '@tauri-apps/api/window';
@@ -107,9 +107,23 @@
       });
     }
 
+    // TODO: check if this works/doesnt error on normal browsers
+    if ('__TAURI__' in window) {
+      // tauri notification click handling
+      // #desktop
+      listen('open', async (event) => {
+        // TODO: do message shiz
+        const { messageId, channelId, guildId } = event.payload as any;
+        // if we're already in the channel, we don't need to do anything
+        if (location.pathname !== `/channels/${guildId}/${channelId}`)
+          location.assign(`/channels/${guildId}/${channelId}`);
+        const window = getCurrentWindow();
+        await window.setFocus();
+      });
+    }
+
     // observe chatbox for resizing
-    const chat = document.getElementById('chat')!;
-    new ResizeObserver(ChatLength).observe(chat);
+    new ResizeObserver(ChatLength).observe($chatBox);
     // body resize observer
     new ResizeObserver(() => {
       if (
@@ -127,7 +141,7 @@
       if ((e.ctrlKey && e.key !== 'v') || e.altKey) return;
       const target = e.target as HTMLElement;
       if ('value' in target) return;
-      chat.focus();
+      $chatBox.focus();
     };
   });
 
@@ -212,18 +226,6 @@
           behavior: 'instant',
         });
     }
-  });
-
-  // tauri notification click handling
-  // #desktop
-  listen('open', async (event) => {
-    // TODO: do message shiz
-    const { messageId, channelId, guildId } = event.payload as any;
-    // if we're already in the channel, we don't need to do anything
-    if (location.pathname !== `/channels/${guildId}/${channelId}`)
-      location.assign(`/channels/${guildId}/${channelId}`);
-    const window = getCurrentWindow();
-    await window.setFocus();
   });
 
   function ChatLength(entries: ResizeObserverEntry[]) {

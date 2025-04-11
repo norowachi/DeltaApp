@@ -1,13 +1,13 @@
 import type { IMessage } from '$lib/interfaces/delta';
 import { error } from '@sveltejs/kit';
-import { fetch as TauriFetch } from '@tauri-apps/plugin-http';
+import functions from './tauri';
 
 export async function sendMessage({
   content,
   embeds,
   guildId,
   channelId,
-  fetch = TauriFetch,
+  fetch = functions.fetch,
 }: Partial<Pick<IMessage, 'content' | 'embeds'>> &
   Pick<IMessage, 'guildId' | 'channelId'> & {
     fetch?: typeof window.fetch;
@@ -50,13 +50,12 @@ export async function getMessages({
   around,
   before,
   after,
-  fetch = window.fetch,
+  fetch = functions.fetch,
 }: Pick<IMessage, 'guildId' | 'channelId'> & {
   page?: number;
   around?: string;
   before?: string;
   after?: string;
-
   fetch?: typeof window.fetch;
 }): Promise<{ currentPage: number; pages: number; messages: IMessage[] }> {
   if (!guildId || !channelId) return error(400, 'Invalid guild or channel ID');

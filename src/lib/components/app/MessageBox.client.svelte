@@ -1,17 +1,16 @@
 <script lang="ts">
   import Tenor from './Tenor.client.svelte';
   import { sendMessage } from '$lib/api/message';
-  import { draft } from '$lib/store';
+  import { chatBox, draft } from '$lib/store';
 
   let { guildId, channelId } = $props();
 
   async function OnClickSend() {
-    const chat = document.getElementById('chat') as HTMLTextAreaElement;
-    if (!chat) return;
+    if (!$chatBox) return;
     const message = $draft?.trim();
     if (!message) return;
     draft.set('');
-    chat.style.height = 'auto';
+    $chatBox.style.height = 'auto';
 
     // TODO: invoke maybe
     await sendMessage({
@@ -75,7 +74,7 @@
     </svg>
   </button>
   <textarea
-    id="chat"
+    bind:this={$chatBox}
     enterkeyhint="send"
     rows="1"
     class="block mx-4 p-2.5 max-h-300px w-full resize-none text-gray-900 bg-white rounded-lg border-gray-300 dark:text-gray-100 dark:bg-#606060 outline-none ring-red focus:ring-2"
@@ -104,7 +103,7 @@
     onclick={(e) => {
       e.preventDefault();
       OnClickSend();
-      document.getElementById('chat')?.focus();
+      $chatBox?.focus();
     }}
     class="inline-flex justify-center p-2 text-blue-500 cursor-pointer"
     aria-label="Send"

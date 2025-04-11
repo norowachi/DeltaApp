@@ -1,5 +1,6 @@
 <script lang="ts">
   import { sendMessage } from '$lib/api/message';
+  import functions from '$lib/api/tauri';
   import type { IEmbed } from '$lib/interfaces/delta';
   import type {
     CATEGORY_OBJECT,
@@ -9,7 +10,6 @@
   } from '$lib/interfaces/tenor';
   import { onDestroy, onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import { fetch } from '@tauri-apps/plugin-http';
 
   let { guildId, channelId } = $props();
 
@@ -27,7 +27,7 @@
       next: input_next,
     };
 
-    const res = await fetch('https://api.noro.cc/tenor', {
+    const res = await functions.fetch('https://api.noro.cc/tenor', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
