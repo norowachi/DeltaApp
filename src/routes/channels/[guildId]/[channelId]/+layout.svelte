@@ -1,7 +1,6 @@
 <script lang="ts">
   import SideMenu from '$lib/components/app/SideMenu.client.svelte';
   import ContextMenu from '$lib/components/ContextMenu.client.svelte';
-  import '../../../../app.css';
   import type { LayoutProps } from './$types';
 
   let { children, data }: LayoutProps = $props();
