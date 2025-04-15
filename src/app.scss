@@ -4,6 +4,7 @@
   --background-color: #111111;
   --other-background: #eeeeee;
   --background-hover: #808080;
+  --higher-color: #323232;
   --text-color: white;
   --link-color: rgb(47, 47, 255);
   --link-hover: rgb(25, 25, 225);
@@ -13,6 +14,7 @@
   --background-color: #eeeeee;
   --background-hover: #cccccc;
   --other-background: #111111;
+  --higher-color: #ffffff;
   --text-color: #323232;
 }
 
@@ -29,6 +31,22 @@ a {
   &:hover {
     color: var(--link-hover);
   }
+}
+
+::-webkit-scrollbar {
+  width: 3px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  &:hover {
+    background: color-mix(in oklab, var(--background-color) 90%, var(--other-background) 10%);
+  }
+}
+
+::-webkit-scrollbar-thumb {
+  background: color-mix(in oklab, var(--other-background) 70%, var(--higher-color) 30%);
+  border-radius: 1rem;
 }
 
 @keyframes enter {

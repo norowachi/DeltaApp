@@ -9,14 +9,13 @@
   import { afterNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import { getMessages } from '$lib/api/message';
-  import { appContainer, chatBox, messages } from '$lib/store';
+  import { appContainer, chatBox, messageContainer, messages } from '$lib/store';
   import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
   import { listen } from '@tauri-apps/api/event';
   import { getCurrentWindow } from '@tauri-apps/api/window';
 
   let { data }: PageProps = $props();
 
-  let messageContainer: HTMLElement;
   let loading = $state<boolean>(false);
   /**
    * messages current page
@@ -123,15 +122,15 @@
     }
 
     // observe chatbox for resizing
-    new ResizeObserver(ChatLength).observe($chatBox);
+    new ResizeObserver(ChatLength).observe($chatBox!);
     // body resize observer
     new ResizeObserver(() => {
       if (
-        messageContainer && // if user scrolled up 2x their viewport or more, don't scroll down
-        messageContainer.scrollHeight - 3 * window.innerHeight <= messageContainer.scrollTop
+        $messageContainer && // if user scrolled up 2x their viewport or more, don't scroll down
+        $messageContainer.scrollHeight - 3 * window.innerHeight <= $messageContainer.scrollTop
       )
-        messageContainer.scrollTo({
-          top: messageContainer.scrollHeight,
+        $messageContainer.scrollTo({
+          top: $messageContainer.scrollHeight,
           behavior: 'instant',
         });
     }).observe(document.body);
@@ -141,7 +140,7 @@
       if ((e.ctrlKey && e.key !== 'v') || e.altKey) return;
       const target = e.target as HTMLElement;
       if ('value' in target) return;
-      $chatBox.focus();
+      $chatBox?.focus();
     };
   });
 
@@ -150,8 +149,8 @@
     if (nav.to?.url?.pathname === nav.from?.url?.pathname) return;
     loading = false;
     setTimeout(() => {
-      messageContainer.scrollTo({
-        top: messageContainer.scrollHeight,
+      $messageContainer.scrollTo({
+        top: $messageContainer.scrollHeight,
         behavior: 'instant',
       });
     }, 0);
@@ -173,8 +172,9 @@
 
   // Auto-scroll on new messages
   $effect(() => {
-    $messages;
-    if ($messages && messageContainer) {
+    console.log($messages.length);
+    $messages && $messageContainer;
+    if ($messages && $messageContainer) {
       if (itemId) {
         // get around a message if its not in the store
         const msg = $messages.find(({ id }) => itemId === id);
@@ -207,7 +207,7 @@
         return;
       } else if (tempAround) {
         // container > ul > last element, scroll to it
-        messageContainer.firstElementChild?.lastElementChild?.scrollIntoView({
+        $messageContainer.firstElementChild?.lastElementChild?.scrollIntoView({
           inline: 'end',
           block: 'end',
           behavior: 'instant',
@@ -217,12 +217,12 @@
         showScrollButton = false;
         return;
       } else if (
-        messageContainer.scrollHeight - 3 * window.innerHeight <=
-        messageContainer.scrollTop
+        $messageContainer.scrollHeight - 3 * window.innerHeight <=
+        $messageContainer.scrollTop
       )
         // if user scrolled up 2x their viewport or more, don't scroll down
-        messageContainer.scrollTo({
-          top: messageContainer.scrollHeight,
+        $messageContainer.scrollTo({
+          top: $messageContainer.scrollHeight,
           behavior: 'instant',
         });
     }
@@ -234,9 +234,9 @@
 
     $appContainer.style.height = 'calc(100dvh - 56px - ' + target.clientHeight + 'px)';
 
-    if (messageContainer) {
-      messageContainer.scrollTo({
-        top: messageContainer.scrollHeight,
+    if ($messageContainer) {
+      $messageContainer.scrollTo({
+        top: $messageContainer.scrollHeight,
         behavior: 'instant',
       });
     }
@@ -245,34 +245,41 @@
 
   async function onContainerScroll() {
     // if user scrolled up 2x their viewport or more
-    if (messageContainer.scrollHeight - 3 * window.innerHeight > messageContainer.scrollTop) {
+    if ($messageContainer.scrollHeight - 3 * window.innerHeight > $messageContainer.scrollTop) {
       showScrollButton = true;
     } else if (!tempAround) {
       showScrollButton = false;
     }
 
     if (
-      messageContainer.scrollTop <= messageContainer.clientHeight &&
+      $messageContainer.scrollTop <= $messageContainer.clientHeight &&
       !loading &&
       $messages.length < data.channel.messages &&
       !MessageMaxPages
     ) {
       loading = true;
+      const before = $messages[0].id;
       // get next page
       const result = await getMessages({
         guildId: data.guild.id,
         channelId: data.channel.id,
-        page: MessagePages + 1,
+        before,
       });
       if (result?.messages?.length) {
         messages.update((old) => [...result.messages, ...old]);
+        console.log(
+          $messages.length,
+          result.messages.length,
+          data.channel.messages,
+          result.messages,
+        );
         MessagePages = result.currentPage;
         MessageMaxPages = result.pages === result.currentPage;
         // remove loader if no more pages
         if (MessageMaxPages) {
-          messageContainer.onscroll = null;
+          $messageContainer.onscroll = null;
         } else {
-          messageContainer.scrollBy({
+          $messageContainer.scrollBy({
             top: 75,
           });
         }
@@ -288,7 +295,7 @@
   style="height: calc(100dvh - 100px)"
 >
   <section
-    bind:this={messageContainer}
+    bind:this={$messageContainer}
     onscroll={onContainerScroll}
     class="w-full overflow-y-auto snap-y snap-mandatory"
   >
@@ -336,8 +343,8 @@
       class="fixed inline-flex justify-end bottom-60px w-full bg-gray-9 hover:bg-gray-8 text-white transition-all duration-300 ease-in px-5"
       onclick={async () => {
         if (!tempAround) {
-          messageContainer.scrollTo({
-            top: messageContainer.scrollHeight,
+          $messageContainer.scrollTo({
+            top: $messageContainer.scrollHeight,
             behavior: 'smooth',
           });
         } else {
