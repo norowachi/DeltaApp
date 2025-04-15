@@ -172,7 +172,6 @@
 
   // Auto-scroll on new messages
   $effect(() => {
-    console.log($messages.length);
     $messages && $messageContainer;
     if ($messages && $messageContainer) {
       if (itemId) {
@@ -267,12 +266,6 @@
       });
       if (result?.messages?.length) {
         messages.update((old) => [...result.messages, ...old]);
-        console.log(
-          $messages.length,
-          result.messages.length,
-          data.channel.messages,
-          result.messages,
-        );
         MessagePages = result.currentPage;
         MessageMaxPages = result.pages === result.currentPage;
         // remove loader if no more pages
