@@ -1,4 +1,6 @@
 <script lang="ts">
+  import functions from '$lib/api/tauri';
+
   function confirmPassword() {
     const passwordInput = document.getElementById('password') as HTMLInputElement;
     const confirmPasswordInput = document.getElementById('confirm-password') as HTMLInputElement;
@@ -14,17 +16,18 @@
 
     const formData = new FormData(e.currentTarget as HTMLFormElement);
 
-    // TODO: invoke
-    const response = await fetch('/api/register', {
-      method: 'POST',
-      body: formData,
+    const response = await functions.register({
+      username: formData.get('username') as string,
+      //handle: formData.get('handle/email') as string,
+      password: formData.get('password') as string,
     });
 
-    const data = await response.json();
+    if (response.token) {
+      localStorage.setItem('token', response.token);
+      location.assign('/app');
+    }
 
-    if (data.redirect) location.assign(data.redirect);
-
-    return alert(data.message);
+    return response.message && alert(response.message);
   }
 </script>
 

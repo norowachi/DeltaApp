@@ -24,11 +24,7 @@
       location.assign('/app');
     }
 
-    if (response.message) {
-      return alert(response.message);
-    }
-
-    return alert(response.message);
+    return response.message && alert(response.message);
   }
 </script>
 

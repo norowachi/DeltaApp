@@ -12,8 +12,8 @@ pub fn run() {
         .plugin(tauri_plugin_http::init())
         .plugin(tauri_plugin_keyring::init())
         .invoke_handler(tauri::generate_handler![
-            commands::register,
             commands::login,
+            commands::register,
             #[cfg(desktop)]
             commands::create_notification_window,
             #[cfg(desktop)]

@@ -333,7 +333,7 @@
   <!-- button to scroll to bottom -->
   {#if showScrollButton}
     <button
-      class="fixed inline-flex justify-end bottom-60px w-full bg-gray-9 hover:bg-gray-8 text-white transition-all duration-300 ease-in px-5"
+      class="fixed inline-flex justify-end bottom-60px w-full bg-gray-2 dark:bg-gray-9 hover:bg-gray-3 dark:hover:bg-gray-8 text-black dark:text-white transition-all duration-300 ease-in px-5"
       onclick={async () => {
         if (!tempAround) {
           $messageContainer.scrollTo({
