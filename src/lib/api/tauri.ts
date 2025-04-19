@@ -1,4 +1,4 @@
-import { invoke } from '@tauri-apps/api/core';
+import { invoke, isTauri } from '@tauri-apps/api/core';
 import native from './native';
 import { fetch as tauriFetch } from '@tauri-apps/plugin-http';
 import { relaunch } from '@tauri-apps/plugin-process';
@@ -41,7 +41,7 @@ async function update(): ReturnType<typeof native.update> {
 }
 
 const functions: typeof native =
-  typeof window !== 'undefined' && '__TAURI__' in window
+  typeof window !== 'undefined' && isTauri()
     ? {
         login,
         register,
