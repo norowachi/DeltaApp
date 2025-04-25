@@ -6,15 +6,15 @@ import {
 } from '@tauri-apps/plugin-notification';
 import { invoke, isTauri } from '@tauri-apps/api/core';
 import { platform } from '@tauri-apps/plugin-os';
-import { Webview } from '@tauri-apps/api/webview';
 import type { IMessage } from '$lib/interfaces/delta';
+import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 
 export async function sendTauriNotification(
   options: Options & {
     extra: { guildId: string | null; channelId: string; type: 'mention' };
   },
 ) {
-  if (!('__TAURI__' in window)) return;
+  if (!isTauri()) return;
 
   let permissionGranted = await isPermissionGranted();
 
@@ -38,23 +38,26 @@ export async function showMessageOverlay(message: IMessage) {
   // skip #mobile
   if (['android', 'ios'].includes(platform())) return false;
   // #desktop
-  let overlayWindow = await Webview.getByLabel('message_overlay');
+  let overlayWindow = await WebviewWindow.getByLabel('message_overlay');
 
   if (!overlayWindow) {
     try {
       await invoke('create_notification_window');
-      overlayWindow = await Webview.getByLabel('message_overlay');
+      overlayWindow = await WebviewWindow.getByLabel('message_overlay');
+      console.log('overlayWindow', overlayWindow);
       if (!overlayWindow) return false;
+      overlayWindow.once('ready', () => {
+        console.log('ready');
+        overlayWindow!.emitTo('message_overlay', 'message', message);
+      });
     } catch {
       return false;
     }
   }
 
-  overlayWindow.show();
+  await overlayWindow.show();
 
-  overlayWindow.once('ready', () => {
-    overlayWindow.emitTo('message_overlay', 'message', message);
-  });
+  overlayWindow.emitTo('message_overlay', 'message', message);
 
   if (lastNotification) clearTimeout(lastNotification);
   lastNotification = setTimeout(() => {

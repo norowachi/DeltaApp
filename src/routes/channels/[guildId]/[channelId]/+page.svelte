@@ -9,7 +9,7 @@
   import { afterNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import { getMessages } from '$lib/api/message';
-  import { appContainer, chatBox, messageContainer, messages } from '$lib/store';
+  import { appContainer, chatBox, messageContainer, messageLinking, messages } from '$lib/store';
   import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
   import { listen } from '@tauri-apps/api/event';
   import { getCurrentWindow } from '@tauri-apps/api/window';
@@ -21,14 +21,14 @@
   let MessageMaxPages = $state<boolean>(false);
   const socket = writable<Socket>();
 
-  let itemId: string | null = page.url.hash?.replace('#', '');
-
   let showScrollButton = $state<boolean>(false);
   let tempAround = $state<boolean>(false);
 
   onMount(async () => {
+    const hash = page.url.hash?.replace('#', '');
+    messageLinking.set(hash);
     // load messages
-    if (!$messages.length && !itemId && data.messages) {
+    if (!$messages.length && data.messages && !hash) {
       messages.set(data.messages.messages);
       MessageMaxPages = data.messages.pages === data.messages.currentPage;
     }
@@ -109,11 +109,11 @@
       listen('open', async (event) => {
         // TODO: do message shiz
         const { messageId, channelId, guildId } = event.payload as any;
-        // if we're already in the channel, we don't need to do anything
         if (location.pathname !== `/channels/${guildId}/${channelId}`)
-          location.assign(`/channels/${guildId}/${channelId}`);
-        const window = getCurrentWindow();
-        await window.setFocus();
+          location.assign(`/channels/${guildId}/${channelId}/${messageId}`);
+        else messageLinking.set(messageId);
+
+        await getCurrentWindow().setFocus();
       });
     }
 
@@ -124,11 +124,12 @@
       if (
         $messageContainer && // if user scrolled up 2x their viewport or more, don't scroll down
         $messageContainer.scrollHeight - 3 * window.innerHeight <= $messageContainer.scrollTop
-      )
+      ) {
         $messageContainer.scrollTo({
           top: $messageContainer.scrollHeight,
           behavior: 'instant',
         });
+      }
     }).observe(document.body);
 
     // on keydown focus chatbox
@@ -161,32 +162,44 @@
 
   // on disconnect, i think
   onDestroy(() => {
-    console.log('[WS] Disconnecting from the server - or at least should');
-    // $socket?.disconnect();
+    console.log('[WS] Disconnecting from the server');
+    $socket?.disconnect();
   });
 
-  // Auto-scroll on new messages
-  $effect(() => {
-    $messages && $messageContainer;
-    if ($messages && $messageContainer) {
-      if (itemId) {
-        // get around a message if its not in the store
-        const msg = $messages.find(({ id }) => itemId === id);
-        if (!msg) {
-          MessageMaxPages = true;
-          tempAround = true;
-          showScrollButton = true;
-          // load around a message
-          getMessages({
-            guildId: data.guild.id,
-            channelId: data.channel.id,
-            around: itemId,
-          }).then((res) => (res ? messages.set([...res.messages]) : void 0));
-        }
+  messageLinking.subscribe(async (messageId) => {
+    if (!messageId) return;
+    // get around a message if its not in the store
+    const msg = $messages.find(({ id }) => messageId === id);
+    if (!msg || tempAround) {
+      // load around a message
+      const fetchedMessages = await getMessages({
+        guildId: data.guild.id,
+        channelId: data.channel.id,
+        around: messageId,
+      });
+      if (!fetchedMessages || fetchedMessages.messages.length <= 0) return;
+      else messages.set(fetchedMessages.messages);
 
-        // if item exists scroll to it
-        const element = document.getElementById(itemId!);
-        if (element)
+      // checks if the fetched message is the last, and if its not then it sets those values to true, as we reached the bottom anyway
+      if (
+        $messages[$messages.length - 1].id !==
+        data.messages.messages[data.messages.messages.length - 1].id
+      ) {
+        MessageMaxPages = true;
+        tempAround = true;
+        showScrollButton = true;
+      }
+    }
+
+    // get element
+    const element = document.getElementById(messageId);
+    // if element doesnt exist yet or so create an observer
+    if (!element) {
+      const observer = new MutationObserver(() => {
+        const element = document.getElementById(messageId);
+        if (element) {
+          observer.disconnect();
+          messageLinking.set('');
           setTimeout(() => {
             element.scrollIntoView({
               behavior: msg ? 'smooth' : 'instant',
@@ -195,11 +208,36 @@
             });
             element.style.animation = 'color-pulse 2s linear';
             // remove fragments
-            replaceState(window.location.pathname, page.state);
-            itemId = null;
+            replaceState(location.pathname, page.state);
           }, 100);
-        return;
-      } else if (tempAround) {
+        }
+      });
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      });
+    } // else just scroll to it
+    else {
+      messageLinking.set('');
+      setTimeout(() => {
+        element.scrollIntoView({
+          behavior: msg ? 'smooth' : 'instant',
+          block: 'center',
+          inline: 'center',
+        });
+        element.style.animation = 'color-pulse 2s linear';
+        // remove fragments
+        replaceState(location.pathname, page.state);
+      }, 100);
+    }
+  });
+
+  // Auto-scroll on new messages
+  $effect(() => {
+    $messages && $messageContainer;
+    if ($messages && $messageContainer) {
+      if (tempAround && !page.url.hash?.replace('#', '')) {
         // container > ul > last element, scroll to it
         $messageContainer.firstElementChild?.lastElementChild?.scrollIntoView({
           inline: 'end',
@@ -213,12 +251,13 @@
       } else if (
         $messageContainer.scrollHeight - 3 * window.innerHeight <=
         $messageContainer.scrollTop
-      )
+      ) {
         // if user scrolled up 2x their viewport or more, don't scroll down
         $messageContainer.scrollTo({
           top: $messageContainer.scrollHeight,
           behavior: 'instant',
         });
+      }
     }
   });
 

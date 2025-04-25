@@ -57,21 +57,21 @@
   let shortTime = date.toLocaleTimeString(undefined, { timeStyle: 'short' });
 </script>
 
-<button class="w-full h-full *:bg-transparent!" {onclick}>
+<button class="w-full h-full" {onclick}>
   {#if $message}
-    <div class="w-full inline-flex items-center mx-auto pt-1">
+    <div class="w-full inline-flex items-center justify-start mx-auto pt-1">
       <img
         src={$message.author.avatar || 'https://api.noro.cc/images/delta-0.png'}
         alt={$message.author.username}
         height="40"
         width="40"
         class="rounded-full select-none max-w-40px max-h-40px"
-        loading="lazy"
+        loading="eager"
       />
       <h3 class="ml-10px">
-        <span class="text-gray-200 text-lg cursor-pointer hover:underline"
-          >{$message.author.username}</span
-        >
+        <span class="text-gray-200 text-lg cursor-pointer hover:underline">
+          {$message.author.username}
+        </span>
         <time class="text-gray-600 dark:text-gray-400 text-xs pointer-events-none">
           {date.toDateString()}
           {shortTime}

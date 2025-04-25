@@ -9,3 +9,7 @@ export const chatBox = writable<HTMLElement | undefined>();
 export const draft = writable<string | undefined>();
 // TODO: message skeleton for when switching channels with sidemenu or when loading and so on
 export const showSkeleton = writable<boolean>(false);
+/**
+ * used for navigating to a certain message
+ */
+export const messageLinking = writable<string>();
