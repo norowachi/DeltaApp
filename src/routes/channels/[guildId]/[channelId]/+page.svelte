@@ -13,14 +13,11 @@
   import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
   import { listen } from '@tauri-apps/api/event';
   import { getCurrentWindow } from '@tauri-apps/api/window';
+  import { isTauri } from '@tauri-apps/api/core';
 
   let { data }: PageProps = $props();
 
   let loading = $state<boolean>(false);
-  /**
-   * messages current page
-   */
-  let MessagePages = $state<number>(1);
   let MessageMaxPages = $state<boolean>(false);
   const socket = writable<Socket>();
 
@@ -33,7 +30,6 @@
     // load messages
     if (!$messages.length && !itemId && data.messages) {
       messages.set(data.messages.messages);
-      MessagePages = data.messages.currentPage;
       MessageMaxPages = data.messages.pages === data.messages.currentPage;
     }
 
@@ -107,7 +103,7 @@
     }
 
     // TODO: check if this works/doesnt error on normal browsers
-    if ('__TAURI__' in window) {
+    if (isTauri()) {
       // tauri notification click handling
       // #desktop
       listen('open', async (event) => {
@@ -157,7 +153,6 @@
     // if we're just entering the page, we don't need to do anything
     if (nav.type === 'enter') return;
     messages.set(data.messages?.messages || []);
-    MessagePages = data.messages?.currentPage || 1;
     MessageMaxPages = data.messages?.pages === data.messages?.currentPage || false;
     // TODO: create room joining for the new channel
     // and leaving the old one (missing in backend)
@@ -266,7 +261,6 @@
       });
       if (result?.messages?.length) {
         messages.update((old) => [...result.messages, ...old]);
-        MessagePages = result.currentPage;
         MessageMaxPages = result.pages === result.currentPage;
         // remove loader if no more pages
         if (MessageMaxPages) {
@@ -345,7 +339,6 @@
           const result = await getMessages({ guildId: data.guild.id, channelId: data.channel.id });
           if (!result) return location.reload();
           messages.set(result.messages);
-          MessagePages = result.currentPage;
           MessageMaxPages = result.pages === result.currentPage;
         }
       }}

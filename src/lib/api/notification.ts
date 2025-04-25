@@ -4,7 +4,7 @@ import {
   sendNotification,
   type Options,
 } from '@tauri-apps/plugin-notification';
-import { invoke } from '@tauri-apps/api/core';
+import { invoke, isTauri } from '@tauri-apps/api/core';
 import { platform } from '@tauri-apps/plugin-os';
 import { Webview } from '@tauri-apps/api/webview';
 import type { IMessage } from '$lib/interfaces/delta';
@@ -33,7 +33,7 @@ export async function sendTauriNotification(
 let lastNotification: number;
 
 export async function showMessageOverlay(message: IMessage) {
-  if (!('__TAURI__' in window)) return false;
+  if (!isTauri()) return false;
 
   // skip #mobile
   if (['android', 'ios'].includes(platform())) return false;

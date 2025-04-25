@@ -7,6 +7,7 @@
   import { writable } from 'svelte/store';
   import { formatContent } from '$lib/api/message';
   import { goto } from '$app/navigation';
+  import { isTauri } from '@tauri-apps/api/core';
 
   const currentWindow = getCurrentWebviewWindow();
   const message = writable<IMessage>();
@@ -14,7 +15,7 @@
   let timeout: number;
 
   onMount(() => {
-    if (!('__TAURI__' in window)) return goto('/');
+    if (!isTauri()) return goto('/');
 
     currentWindow.emitTo('message_overlay', 'ready');
 
