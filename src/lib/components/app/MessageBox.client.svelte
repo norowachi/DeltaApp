@@ -5,14 +5,17 @@
 
   let { guildId, channelId } = $props();
 
+  draft.subscribe((value) => {
+    if (value?.trim().length === 0) draft.set('');
+  });
+
+  // send message
   async function OnClickSend() {
     if (!$chatBox) return;
     const message = $draft?.trim();
     if (!message) return;
     draft.set('');
-    $chatBox.style.height = 'auto';
 
-    // TODO: invoke maybe
     await sendMessage({
       content: message,
       guildId,
@@ -22,6 +25,7 @@
     return;
   }
 
+  // handle GIF tab click
   async function OnClickGifsTab() {
     const tab = document.getElementById('gifs-tab');
     if (!tab) return;
@@ -31,6 +35,34 @@
       await new Promise((r) => setTimeout(r, 1));
       tab?.querySelector('input')?.focus();
     } else tab.style.display = 'none';
+  }
+
+  // rules list
+  const rules = [
+    // { regex: /#/g, className: 'hashtag' },
+    { regex: /@[^\s@]+/g, className: 'mention' },
+  ];
+
+  // escape HTML ig
+  function escapeHtml(str: string) {
+    const div = document.createElement('div');
+    div.innerText = str;
+    return div.innerHTML;
+  }
+
+  // Highlight text based on rules
+  function highlight(text: any) {
+    let escaped = escapeHtml(text);
+
+    rules
+      .filter(({ regex }) => regex.test(escaped))
+      .forEach((rule) => {
+        escaped = escaped.replace(rule.regex, (match) => {
+          return `<span class="${rule.className}" spellcheck="false">${match}</span>`;
+        });
+      });
+
+    return escaped;
   }
 </script>
 
@@ -73,21 +105,30 @@
       ></path>
     </svg>
   </button>
-  <textarea
+  <div
+    role="textbox"
+    contenteditable="true"
+    tabindex="0"
     bind:this={$chatBox}
     enterkeyhint="send"
-    rows="1"
-    class="block mx-4 p-2.5 max-h-300px w-full resize-none text-gray-900 bg-white rounded-lg border-gray-300 dark:text-gray-100 dark:bg-#606060 outline-none ring-red focus:ring-2"
+    class="block mx-4 whitespace-pre-wrap p-2.5 max-h-300px w-full overflow-y-scroll resize-none text-gray-900 bg-white rounded-lg border-gray-300 dark:text-gray-100 dark:bg-#606060 outline-none ring-red focus:ring-2"
     placeholder="Your Message..."
-    spellcheck="false"
+    data-empty={!$draft}
+    spellcheck="true"
     style="height: auto;"
-    minlength="1"
-    maxlength="2000"
-    bind:value={$draft}
+    bind:innerText={$draft}
     oninput={(e) => {
-      e.currentTarget.style.height = 'auto';
-      e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
-      return;
+      // TODO : Show a select menu above the chatbox for mentions
+      e.currentTarget.innerHTML = highlight($draft);
+
+      const sel = window.getSelection();
+      if (sel) {
+        const range = document.createRange();
+        range.selectNodeContents(e.currentTarget);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+      }
     }}
     onkeydown={(e) => {
       if (!e.repeat && !e.shiftKey && e.key === 'Enter') {
@@ -96,7 +137,7 @@
       }
       return;
     }}
-  ></textarea>
+  ></div>
   <button
     type="button"
     title="Send"
@@ -120,3 +161,18 @@
     </svg>
   </button>
 </div>
+
+<style type="postcss">
+  div[contenteditable='true'][data-empty='true']:before {
+    position: absolute;
+    content: attr(placeholder);
+    color: #aaa;
+    pointer-events: none;
+  }
+
+  :global .mention {
+    text-shadow: 1px -1px 0 rgba(255, 56, 255, 0.5);
+    color: rgb(255, 60, 197);
+    white-space: nowrap;
+  }
+</style>
