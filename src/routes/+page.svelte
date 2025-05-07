@@ -7,6 +7,7 @@
 </script>
 
 <h1 class="text-5xl text-center my-4">
+  Welcome to
   {#if page.url.hostname === 's.ily.cat'}
 		<a href="https://s.ily.cat" class="gradient">s.ily.cat</a>
 	{:else}
