@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Cookie from '$lib/svg/cookie.svelte';
+  import { page } from '$app/state';
   import LoginForm from '../lib/components/LoginForm.client.svelte';
   import RegisterForm from '../lib/components/RegisterForm.client.svelte';
 
