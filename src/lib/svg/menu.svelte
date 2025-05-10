@@ -8,8 +8,9 @@
   stroke-width="2"
   stroke-linecap="round"
   stroke-linejoin="round"
+  class="pointer-events-none"
 >
+  <path d="M4 6h16" />
   <path d="M4 12h16" />
   <path d="M4 18h16" />
-  <path d="M4 6h16" />
 </svg>

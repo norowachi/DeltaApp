@@ -4,6 +4,8 @@
   import { onDestroy, onMount } from 'svelte';
   import { messageContainer, sidemenu } from '$lib/store';
   import functions from '$lib/api/tauri';
+  import Menu from '$lib/svg/menu.svelte';
+  import Close from '$lib/svg/close.svelte';
 
   const {
     channel,
@@ -21,9 +23,8 @@
     document.addEventListener('click', CloseMenu);
     document.addEventListener('auxclick', CloseMenu);
     // swipers and related logic
-    $messageContainer?.addEventListener('scroll', handleScroll);
     document.addEventListener('touchstart', handlePointerDown);
-    document.addEventListener('touchmove', handlePointerMove);
+    document.addEventListener('touchmove', handlePointerMove, { passive: false });
     document.addEventListener('touchend', handlePointerUp);
 
     // TODO: check if update is REQUIRED and if so just download/install it
@@ -31,14 +32,19 @@
   });
 
   function CloseMenu(e: Event) {
-    if (!$sidemenu || (e.target as HTMLElement).ariaLabel === 'menu-button') return;
+    const target = e.target as HTMLElement;
+    if (
+      !$sidemenu ||
+      target.ariaLabel === 'menu-button' ||
+      ($sidemenu.contains(target) && target.tagName !== 'A')
+    )
+      return;
     $sidemenu.dataset.open = 'false';
   }
 
   onDestroy(() => {
     document.removeEventListener('click', CloseMenu);
     document.removeEventListener('auxclick', CloseMenu);
-    $messageContainer?.removeEventListener('scroll', handleScroll);
     document.removeEventListener('touchstart', handlePointerDown);
     document.removeEventListener('touchmove', handlePointerMove);
     document.removeEventListener('touchend', handlePointerUp);
@@ -49,25 +55,27 @@
   let current = [0, 0];
   let firstLeft = 0;
   let isSwiping = false;
-  let isScrolling = false;
-
-  function handleScroll() {
-    isScrolling = true;
-    console.log('scrolling');
-  }
 
   function handlePointerDown(event: TouchEvent) {
     if (!$sidemenu) return;
     start = [event.changedTouches[0].clientX, event.changedTouches[0].clientY, Date.now()];
     firstLeft = $sidemenu.getBoundingClientRect().left;
-    if (!isScrolling) isSwiping = true;
+    isSwiping = true;
   }
 
   function handlePointerMove(event: TouchEvent) {
     if (!isSwiping || !$sidemenu) return;
     current = [event.changedTouches[0].clientX, event.changedTouches[0].clientY];
-    // if the swipe is in y-axis, ignore
-    // if (Math.abs(start[1] - current[1]) >= 30) return;
+
+    const deltaX = Math.abs(current[0]) - Math.abs(start[0]);
+    const deltaY = Math.abs(current[1]) - Math.abs(start[1]);
+
+    console.log('deltaX', deltaX, 'deltaY', deltaY);
+    // If vertical movement is greater, ignore the move
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      $sidemenu.style.transform = '';
+      return (isSwiping = false);
+    }
 
     let newX = firstLeft + current[0] - start[0];
 
@@ -90,7 +98,7 @@
     const end = event.changedTouches[0].clientX;
     const diff = end - start[0];
     const bounding = Math.abs($sidemenu.getBoundingClientRect().right);
-    const timelimit = 750;
+    const timelimit = 300;
 
     $sidemenu.style.transform = '';
 
@@ -132,7 +140,7 @@
           $sidemenu.dataset.open = $sidemenu.dataset.open === 'true' ? 'false' : 'true';
       }}
     >
-      ☰
+      <Menu />
     </button>
     {#if updateAvailable}
       <button title="Update" class="custom p-2 float-left" onclick={updateAndDownload}>
@@ -154,7 +162,7 @@
           if ($sidemenu) $sidemenu.dataset.open = 'false';
         }}
       >
-        ✖
+        <Close />
       </button>
       <h2 class="mx-auto text-lg text-center">{guild.name}</h2>
     </div>
