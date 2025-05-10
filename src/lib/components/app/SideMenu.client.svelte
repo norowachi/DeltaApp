@@ -67,17 +67,16 @@
     if (!isSwiping || !$sidemenu) return;
     current = [event.changedTouches[0].clientX, event.changedTouches[0].clientY];
 
-    const deltaX = Math.abs(current[0]) - Math.abs(start[0]);
-    const deltaY = Math.abs(current[1]) - Math.abs(start[1]);
+    const deltaX = current[0] - start[0];
+    const deltaY = current[1] - start[1];
 
-    console.log('deltaX', deltaX, 'deltaY', deltaY);
     // If vertical movement is greater, ignore the move
     if (Math.abs(deltaY) > Math.abs(deltaX)) {
       $sidemenu.style.transform = '';
       return (isSwiping = false);
     }
 
-    let newX = firstLeft + current[0] - start[0];
+    let newX = firstLeft + deltaX;
 
     // if swipe is beyond the item width, return to default
     if (Math.abs(newX) >= $sidemenu.clientWidth || newX >= 0)
