@@ -163,6 +163,7 @@
           return;
         },
         {
+          root: document.querySelector('#gifs-tab'),
           rootMargin: '220px',
         },
       ).observe(loader);
@@ -212,7 +213,6 @@
             src={gif.media_formats.tinygif.url}
             alt={gif.id}
             class="w-full rounded-md cursor-pointer"
-            loading="lazy"
           />
         {/each}
         <span bind:this={loader}></span>

@@ -3,7 +3,7 @@
   import { writable } from 'svelte/store';
   import Sun from '$lib/svg/sun.svelte';
   import Moon from '$lib/svg/moon.svelte';
-  import { appContainer, messages } from '$lib/store';
+  import { appContainer, messages, theme } from '$lib/store';
   import type { IMessage } from '$lib/interfaces/delta';
 
   let menu = writable<HTMLElement>();
@@ -40,6 +40,7 @@
       'light',
       newOption === 'light' || (!toggle && oldOption === 'light'),
     );
+    theme.set(newOption || oldOption);
   }
 
   menu.subscribe(
@@ -62,9 +63,6 @@
         },
         { signal: NewController.signal },
       );
-      document.addEventListener('auxclick', () => opened.set(false), {
-        signal: NewController.signal,
-      });
       // open the context menu
       messageContainer.addEventListener('contextmenu', contextMenu, {
         signal: NewController.signal,

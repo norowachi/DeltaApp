@@ -119,16 +119,16 @@
     bind:innerText={$draft}
     oninput={(e) => {
       // TODO : Show a select menu above the chatbox for mentions
-      e.currentTarget.innerHTML = highlight($draft);
+      // e.currentTarget.innerHTML = highlight($draft);
 
-      const sel = window.getSelection();
-      if (sel) {
-        const range = document.createRange();
-        range.selectNodeContents(e.currentTarget);
-        range.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(range);
-      }
+      // const sel = window.getSelection();
+      // if (sel) {
+      //   const range = document.createRange();
+      //   range.selectNodeContents(e.currentTarget);
+      //   range.collapse(false);
+      //   sel.removeAllRanges();
+      //   sel.addRange(range);
+      // }
     }}
     onkeydown={(e) => {
       if (!e.repeat && !e.shiftKey && e.key === 'Enter') {

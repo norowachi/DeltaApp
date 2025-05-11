@@ -19,7 +19,7 @@ export async function sendMessage({
   if (!token) return error(401, 'Unauthorized');
 
   const result = await fetch(
-    `https://api.noro.cc/v1/channels/${guildId || '@me'}/${channelId}/messages`,
+    `https://api.noro.cc/channels/${guildId || '@me'}/${channelId}/messages`,
     {
       method: 'POST',
       headers: {
@@ -65,7 +65,7 @@ export async function getMessages({
 
   if (!(page || around || before || after)) page = 1;
   const result = await fetch(
-    `https://api.noro.cc/v1/channels/${guildId || '@me'}/${channelId}/messages?${page ? `page=${page}&` : ''}${around ? `around=${around}&` : ''}${before ? `before=${before}&` : ''}${after ? `after=${after}&` : ''}`,
+    `https://api.noro.cc/channels/${guildId || '@me'}/${channelId}/messages?${page ? `page=${page}&` : ''}${around ? `around=${around}&` : ''}${before ? `before=${before}&` : ''}${after ? `after=${after}&` : ''}`,
     {
       method: 'GET',
       headers: {
@@ -88,7 +88,7 @@ export async function getMessages({
 export function formatContent(content?: string) {
   if (!content) return [];
 
-  const regex = /<@\w+>/g;
+  const regex = /<@\w+>|```([^`]*)```/g;
   const array: (string | undefined)[] = [];
 
   const match = [...(content.match(regex) || [content]), undefined];

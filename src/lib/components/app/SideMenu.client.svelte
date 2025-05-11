@@ -2,7 +2,7 @@
   import type { IChannel, IGuild } from '$lib/interfaces/delta';
   import Download from '$lib/svg/download.svelte';
   import { onDestroy, onMount } from 'svelte';
-  import { messageContainer, sidemenu } from '$lib/store';
+  import { currentUser, sidemenu } from '$lib/store';
   import functions from '$lib/api/tauri';
   import Menu from '$lib/svg/menu.svelte';
   import Close from '$lib/svg/close.svelte';
@@ -153,6 +153,7 @@
     data-open={$sidemenu?.dataset.open || 'false'}
     class="fixed top-0 left-0 h-full w-64 max-[440px]:w-full max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pr-0.5 b-r-1 b-black dark:b-white select-none ease"
   >
+    <!-- h 44px -->
     <div class="w-full p-2 inline-flex">
       <button
         title="Close Menu"
@@ -165,19 +166,29 @@
       </button>
       <h2 class="mx-auto text-lg text-center">{guild.name}</h2>
     </div>
-    <nav class="*:w-full h-[calc(100dvh-50px)] text-start space-y-1 overflow-y-scroll">
+    <nav class="*:w-full h-[calc(100dvh-95px)] text-start space-y-1 overflow-y-scroll">
       {#if channels}
-        {#each channels as { id, name } (id)}
-          <a
-            href={`/channels/${guild.id}/${id}`}
-            class="block px-2 py-1 text-cyan text-right hover:bg-[var(--background-hover)] rounded-md {id ===
-              channel.id && 'active'}"
-          >
-            {name}
-          </a>
-        {/each}
+        <!-- {#each Array.from({ length: 20 }), i (i)} -->
+          {#each channels as { id, name } (id)}
+            <a
+              href={`/channels/${guild.id}/${id}`}
+              class="block px-2 py-1 text-cyan text-right hover:bg-[var(--background-hover)] rounded-md {id ===
+                channel.id && 'active'}"
+            >
+              {name}
+            </a>
+          {/each}
+        <!-- {/each} -->
       {/if}
     </nav>
+    <div id="user-settings" class="fixed w-full h-50px bg-[var(--background-hover)] bottom-0">
+      <img
+        class="w-8 h-8 rounded-full float-left m-1"
+        src={$currentUser.avatar}
+        alt="User Avatar"
+      />
+      <span>{$currentUser.username}</span>
+    </div>
   </div>
 </section>
 

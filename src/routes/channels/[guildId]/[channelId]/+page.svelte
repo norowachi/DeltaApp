@@ -1,16 +1,12 @@
 <script lang="ts">
   import Message from '$lib/components/app/Message.client.svelte';
-  import { onDestroy, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import type { PageProps } from './$types';
-  import io, { type Socket } from 'socket.io-client';
-  import { writable } from 'svelte/store';
-  import { WebSocketOP, type IMessage } from '$lib/interfaces/delta';
   import MessageBox from '$lib/components/app/MessageBox.client.svelte';
   import { afterNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import { getMessages } from '$lib/api/message';
   import { appContainer, chatBox, messageContainer, messageLinking, messages } from '$lib/store';
-  import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
   import { listen } from '@tauri-apps/api/event';
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import { isTauri } from '@tauri-apps/api/core';
@@ -19,7 +15,6 @@
 
   let loading = $state<boolean>(false);
   let MessageMaxPages = $state<boolean>(false);
-  const socket = writable<Socket>();
 
   let showScrollButton = $state<boolean>(false);
   let tempAround = $state<boolean>(false);
@@ -33,76 +28,6 @@
       MessageMaxPages = data.messages.pages === data.messages.currentPage;
     }
 
-    // connect to the websocket if not connected
-    if (!$socket || !$socket.connected)
-      socket.set(
-        io('wss://api.noro.cc', {
-          auth: {
-            token: data.token,
-          },
-        }),
-      );
-
-    // register events if not registered
-    if ($socket && !$socket.hasListeners('message')) {
-      // on connection
-      $socket.on('connect', () => {
-        console.log('[WS] Connected to the server');
-        $socket.emit(
-          'join',
-          data.channels.map((c) => c.id),
-        );
-      });
-
-      // heartbeat/ping
-      $socket.on('ping', (callback) => {
-        // ack ping
-        if ($socket.disconnected) callback(null);
-        else callback($socket.id);
-      });
-
-      // on new messages add to the $messages store
-      $socket.on('message', (message) => {
-        if (message.op === WebSocketOP.MESSAGE_CREATE) {
-          const md: IMessage = message.d;
-          if (md.channelId !== data.channel.id) return;
-          // TODO: add a way to make messages show with gray text or so if they're still not sent
-          messages.update((oldmsgs) => {
-            const dupMsg = oldmsgs?.find((msg) => msg.id === md.id);
-            return dupMsg
-              ? $messages
-              : [...($messages || []), md]?.sort(
-                  (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-                );
-          });
-        }
-      });
-
-      $socket.on('mention', async (message: IMessage) => {
-        const { author, content, guildId, channelId } = message;
-        // send a notification if the overlay errored out
-        const result = await showMessageOverlay(message);
-        if (!result) {
-          const largeContent = content.replace(/<@\w+>/g, (match) => match.slice(1, -1)).trim();
-          const guild = data.user.guilds.find((g) => g.id === guildId);
-          await sendTauriNotification({
-            title: author.username,
-            body: largeContent.substring(0, 40),
-            largeBody: largeContent,
-            summary: guild
-              ? `${guild.name} (#${guild.channels.find((c) => c.id === channelId)?.name})`
-              : author.username,
-            extra: {
-              guildId,
-              channelId,
-              type: 'mention',
-            },
-          });
-        }
-      });
-    }
-
-    // TODO: check if this works/doesnt error on normal browsers
     if (isTauri()) {
       // tauri notification click handling
       // #desktop
@@ -158,12 +83,6 @@
     // TODO: create room joining for the new channel
     // and leaving the old one (missing in backend)
     // for now it's not a big deal as we just join the whole guild's room
-  });
-
-  // on disconnect, i think
-  onDestroy(() => {
-    console.log('[WS] Disconnecting from the server');
-    $socket?.disconnect();
   });
 
   messageLinking.subscribe(async (messageId) => {

@@ -4,6 +4,7 @@ import { error, redirect } from '@sveltejs/kit';
 import type { IGuild, IUser } from '$lib/interfaces/delta';
 import { getMessages } from '$lib/api/message.js';
 import type { LayoutLoad } from './$types';
+import { currentUser } from '$lib/store';
 
 export const load: LayoutLoad = async ({ params, fetch }) => {
   const token = localStorage.getItem('token');
@@ -11,7 +12,7 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
   if (!token) return redirect(303, '/');
 
   const user: IUser = await (
-    await fetch('https://api.noro.cc/v1/users/@me', {
+    await fetch('https://api.noro.cc/users/@me', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -20,13 +21,15 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
     ?.json()
     .catch(() => {});
   if (!user) return error(401, 'Unauthorized');
+  // save current user data to the store
+  currentUser.set(user);
 
   const guildId = params.guildId;
   const channelId = params.channelId;
 
   // Fetch guild
   const guild = (await (
-    await fetch(`https://api.noro.cc/v1/guilds/${guildId}`, {
+    await fetch(`https://api.noro.cc/guilds/${guildId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -53,7 +56,6 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
 
   // TODO: use the guild and channel fetching in the layout
   return {
-    user,
     guild,
     channels: allowedChannels,
     channel: TargetChannel,
