@@ -1,11 +1,14 @@
 <script lang="ts">
-  import type { IChannel, IGuild } from '$lib/interfaces/delta';
+  import type { IChannel, IGuild } from '$lib/types/delta';
   import Download from '$lib/svg/download.svelte';
   import { onDestroy, onMount } from 'svelte';
   import { currentUser, sidemenu } from '$lib/store';
   import functions from '$lib/api/tauri';
   import Menu from '$lib/svg/menu.svelte';
   import Close from '$lib/svg/close.svelte';
+  import Pin from '$lib/svg/pin.svelte';
+  import Unpin from '$lib/svg/unpin.svelte';
+  import { writable } from 'svelte/store';
 
   const {
     channel,
@@ -18,39 +21,50 @@
   } = $props();
 
   let updateAvailable = $state<boolean>();
+  const resizer = writable<HTMLDivElement>();
 
   onMount(async () => {
+    // mostly a check for development, but who knows if it'll be useful in the future for prod
+    if ($sidemenu?.dataset.pinned !== 'true') registerEvents();
+
+    // TODO: check if update is REQUIRED and if so just download/install it
+    if (updateAvailable === undefined) updateAvailable = await functions.checkForUpdate();
+  });
+
+  function registerEvents() {
     document.addEventListener('click', CloseMenu);
     document.addEventListener('auxclick', CloseMenu);
     // swipers and related logic
     document.addEventListener('touchstart', handlePointerDown);
     document.addEventListener('touchmove', handlePointerMove, { passive: false });
     document.addEventListener('touchend', handlePointerUp);
-
-    // TODO: check if update is REQUIRED and if so just download/install it
-    if (updateAvailable === undefined) updateAvailable = await functions.checkForUpdate();
-  });
-
-  function CloseMenu(e: Event) {
-    const target = e.target as HTMLElement;
-    if (
-      !$sidemenu ||
-      target.ariaLabel === 'menu-button' ||
-      ($sidemenu.contains(target) && target.tagName !== 'A')
-    )
-      return;
-    $sidemenu.dataset.open = 'false';
   }
 
-  onDestroy(() => {
+  function destroyEvents() {
     document.removeEventListener('click', CloseMenu);
     document.removeEventListener('auxclick', CloseMenu);
     document.removeEventListener('touchstart', handlePointerDown);
     document.removeEventListener('touchmove', handlePointerMove);
     document.removeEventListener('touchend', handlePointerUp);
-  });
+  }
 
-  // x, y, timestamp
+  onDestroy(destroyEvents);
+
+  // function for closing the menu and its logic/exceptions
+  function CloseMenu(e: Event) {
+    const target = e.target as HTMLElement;
+    if (
+      !$sidemenu ||
+      target.ariaLabel === 'menu-button' ||
+      ($sidemenu.contains(target) && target.tagName !== 'A') ||
+      target.role === 'separator'
+    )
+      return;
+    $sidemenu.dataset.open = 'false';
+  }
+
+  /// Menu Swiping Logic
+  /* x, y, timestamp */
   let start = [0, 0, 0];
   let current = [0, 0];
   let firstLeft = 0;
@@ -119,6 +133,43 @@
     }
   }
 
+  /// Menu Resizing Logic
+  let mousex = 0;
+  let leftWidth = 0;
+
+  const handleMouseDown = function (e: MouseEvent) {
+    // get current mouse position
+    mousex = e.clientX;
+    leftWidth = $sidemenu?.getBoundingClientRect().width || 0;
+
+    // attach helping listeners
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleMouseMove = function (e: MouseEvent) {
+    if (!$sidemenu) return;
+
+    const deltaX = e.clientX - mousex;
+    // set new width, if sidemenu elm exists ig
+    $sidemenu.style.width = leftWidth + deltaX + 'px';
+
+    // keep the cursor consistent when moving
+    document.body.style.cursor = 'ew-resize';
+    // disables the annoying select
+    document.body.style.userSelect = 'none';
+  };
+
+  const handleMouseUp = function () {
+    // reset styles
+    document.body.style.cursor = '';
+    document.body.style.userSelect = '';
+
+    // remove handlers
+    document.removeEventListener('mousemove', handleMouseMove);
+    document.removeEventListener('mouseup', handleMouseUp);
+  };
+
   async function updateAndDownload() {
     updateAvailable = false;
     alert('Downloading update...');
@@ -150,34 +201,58 @@
 
   <div
     bind:this={$sidemenu}
-    data-open={$sidemenu?.dataset.open || 'false'}
-    class="fixed top-0 left-0 h-full w-64 max-[440px]:w-full max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pr-0.5 b-r-1 b-black dark:b-white select-none ease"
+    data-pinned={$sidemenu?.dataset.pinned || 'false'}
+    data-open={$sidemenu?.dataset.pinned === 'true' ? 'true' : $sidemenu?.dataset.open || 'false'}
+    class="fixed top-0 left-0 h-full min-w-200px w-64 max-[440px]:w-full max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pr-0.5 b-r-1 b-black dark:b-white select-none ease resize-x"
   >
     <!-- h 44px -->
     <div class="w-full p-2 inline-flex">
-      <button
-        title="Close Menu"
-        class="pl-2"
-        onclick={() => {
-          if ($sidemenu) $sidemenu.dataset.open = 'false';
-        }}
-      >
-        <Close />
-      </button>
+      {#if $sidemenu?.dataset.pinned == 'false'}
+        <button
+          title="Close Menu"
+          class="pl-2"
+          onclick={() => {
+            if ($sidemenu) $sidemenu.dataset.open = 'false';
+          }}
+        >
+          <Close />
+        </button>
+      {/if}
       <h2 class="mx-auto text-lg text-center">{guild.name}</h2>
+      {#if $sidemenu?.dataset.pinned == 'true'}
+        <button
+          title="UnPin Menu"
+          onclick={() => {
+            registerEvents();
+            $sidemenu!.dataset.pinned = 'false';
+          }}
+        >
+          <Unpin />
+        </button>
+      {:else}
+        <button
+          title="Pin Menu"
+          onclick={() => {
+            destroyEvents();
+            $sidemenu!.dataset.pinned = 'true';
+          }}
+        >
+          <Pin />
+        </button>
+      {/if}
     </div>
     <nav class="*:w-full h-[calc(100dvh-95px)] text-start space-y-1 overflow-y-scroll">
       {#if channels}
         <!-- {#each Array.from({ length: 20 }), i (i)} -->
-          {#each channels as { id, name } (id)}
-            <a
-              href={`/channels/${guild.id}/${id}`}
-              class="block px-2 py-1 text-cyan text-right hover:bg-[var(--background-hover)] rounded-md {id ===
-                channel.id && 'active'}"
-            >
-              {name}
-            </a>
-          {/each}
+        {#each channels as { id, name } (id)}
+          <a
+            href={`/channels/${guild.id}/${id}`}
+            class="block px-2 py-1 text-cyan text-right hover:bg-[var(--background-hover)] rounded-md {id ===
+              channel.id && 'active'}"
+          >
+            {name}
+          </a>
+        {/each}
         <!-- {/each} -->
       {/if}
     </nav>
@@ -190,6 +265,16 @@
       <span>{$currentUser.username}</span>
     </div>
   </div>
+  {#if $sidemenu?.dataset.pinned == 'true'}
+    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+    <div
+      bind:this={$resizer}
+      role="separator"
+      class="fixed w-10px h-100dvh hover:bg-#cbd5e0 opacity-70 cursor-ew-resize z-999999"
+      style="transform: translateX({$sidemenu?.getBoundingClientRect().right - 5.5 || 0}px)"
+      onmousedown={handleMouseDown}
+    ></div>
+  {/if}
 </section>
 
 <style lang="postcss">

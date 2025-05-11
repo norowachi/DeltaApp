@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { sidemenu } from '$lib/store';
   import '../app.scss';
   import { onMount } from 'svelte';
 
@@ -10,7 +11,12 @@
   });
 </script>
 
-<div class="w-full flex flex-col justify-center items-center">
+<div
+  class="w-full flex flex-col"
+  style={$sidemenu?.dataset.pinned !== 'true'
+    ? 'justify-content: center; align-items: center;'
+    : ''}
+>
   {#if !mounted}
     <svg
       aria-hidden="true"
