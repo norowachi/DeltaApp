@@ -16,10 +16,10 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).catch(() => {})
+    }).catch(console.error)
   )
     ?.json()
-    .catch(() => {});
+    .catch(console.error);
   if (!user) return error(401, 'Unauthorized');
   // save current user data to the store
   currentUser.set(user);
@@ -33,10 +33,10 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
       headers: {
         Authorization: `Bearer ${token}`,
       },
-    }).catch(() => {})
+    }).catch(console.error)
   )
     ?.json()
-    .catch(() => {})) as IGuild;
+    .catch(console.error)) as IGuild;
 
   // send 404 if the guild is not found
   if (!guild) return error(404, 'Guild not found');

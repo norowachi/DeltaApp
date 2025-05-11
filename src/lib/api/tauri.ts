@@ -31,7 +31,7 @@ async function fetch(...params: Parameters<typeof window.fetch>): ReturnType<typ
 }
 
 async function checkForUpdate(): ReturnType<typeof native.checkForUpdate> {
-  return (await check().catch(() => {}))?.available || false;
+  return (await check().catch(() => null))?.available || false;
 }
 
 async function update(): ReturnType<typeof native.update> {

@@ -85,7 +85,7 @@
           body: JSON.stringify({ path: category.path }),
         })
           .then((res) => res.json().then((data: SearchResponse) => gifs.set(data.results)))
-          .catch(() => {});
+          .catch(console.error);
         return;
       }
 
@@ -103,7 +103,7 @@
 
     fetch('https://api.noro.cc/tenor')
       .then((res) => res.json().then((data: CategoryResponse) => categories.set(data.tags)))
-      .catch(() => {});
+      .catch(console.error);
 
     // abort old controller and reset a new one
     const NewController = new AbortController();

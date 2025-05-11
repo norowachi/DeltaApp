@@ -18,9 +18,9 @@ async function login(params: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ username, handle, password }),
-  }).catch(() => {});
+  }).catch(console.error);
 
-  const data = await auth?.json().catch(() => {});
+  const data = await auth?.json().catch(console.error);
 
   if (!data || !data.token) return { message: data.message || 'Internal Server Error' };
 
@@ -45,9 +45,9 @@ async function register(params: {
       'Content-Type': 'application/json',
     },
     body: JSON.stringify({ username, handle, password }),
-  }).catch(() => {});
+  }).catch(console.error);
 
-  const data = await auth?.json().catch(() => {});
+  const data = await auth?.json().catch(console.error);
 
   if (!data || !data.token) return { message: data.message || 'Internal Server Error' };
 
