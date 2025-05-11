@@ -8,7 +8,6 @@
   stroke-width="2"
   stroke-linecap="round"
   stroke-linejoin="round"
-  class="lucide lucide-pin-icon lucide-pin"
 >
   <path d="M12 17v5" />
   <path

@@ -4,10 +4,16 @@
   import { onDestroy, onMount } from 'svelte';
   import type { LayoutProps } from './$types';
   import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
-  import { currentUser, messages, theme } from '$lib/store';
+  import { currentUser, messages, sidemenu, theme } from '$lib/store';
   import { io, type Socket } from 'socket.io-client';
   import { writable } from 'svelte/store';
-  import { WebSocketOP, type IMessage } from '$lib/interfaces/delta';
+  import { WebSocketOP, type IMessage } from '$lib/types/delta';
+  // registering highlight languages
+  import hljs from 'highlight.js';
+  import svelte from 'highlight.svelte';
+
+  hljs.registerLanguage('svelte', svelte);
+  // end registering
 
   let { children, data }: LayoutProps = $props();
   const socket = writable<Socket>();
@@ -95,8 +101,17 @@
     console.log('[WS] Destroying socket');
     $socket?.disconnect();
   });
+
+  const MainSideMenuPinned = $derived(
+    (!!($sidemenu?.dataset.pinned === 'true') && $sidemenu?.clientWidth) || false,
+  );
 </script>
 
 <SideMenu channel={data.channel} guild={data.guild} channels={data.channels} />
-{@render children()}
+<div
+  style="width: calc(100dvw - {MainSideMenuPinned ||
+    0}px); transform: translateX({MainSideMenuPinned || 0}px);"
+>
+  {@render children()}
+</div>
 <ContextMenu />

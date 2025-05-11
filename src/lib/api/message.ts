@@ -1,4 +1,4 @@
-import type { IMessage } from '$lib/interfaces/delta';
+import type { IMessage } from '$lib/types/delta';
 import { error } from '@sveltejs/kit';
 import functions from './tauri';
 

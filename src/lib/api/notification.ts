@@ -6,7 +6,7 @@ import {
 } from '@tauri-apps/plugin-notification';
 import { invoke, isTauri } from '@tauri-apps/api/core';
 import { platform } from '@tauri-apps/plugin-os';
-import type { IMessage } from '$lib/interfaces/delta';
+import type { IMessage } from '$lib/types/delta';
 import { WebviewWindow } from '@tauri-apps/api/webviewWindow';
 
 export async function sendTauriNotification(

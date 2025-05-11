@@ -1,5 +1,5 @@
 import { writable } from 'svelte/store';
-import type { IMessage, IUser } from './interfaces/delta';
+import type { IMessage, IUser } from './types/delta';
 
 export const theme = writable<string>();
 export const currentUser = writable<IUser>();

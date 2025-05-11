@@ -4,7 +4,7 @@
   import Sun from '$lib/svg/sun.svelte';
   import Moon from '$lib/svg/moon.svelte';
   import { appContainer, messages, theme } from '$lib/store';
-  import type { IMessage } from '$lib/interfaces/delta';
+  import type { IMessage } from '$lib/types/delta';
 
   let menu = writable<HTMLElement>();
   let opened = writable<boolean>(false);

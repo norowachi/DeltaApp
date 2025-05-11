@@ -1,13 +1,13 @@
 <script lang="ts">
   import { sendMessage } from '$lib/api/message';
   import functions from '$lib/api/tauri';
-  import type { IEmbed } from '$lib/interfaces/delta';
+  import type { IEmbed } from '$lib/types/delta';
   import type {
     CATEGORY_OBJECT,
     CategoryResponse,
     GIF_OBJECT,
     SearchResponse,
-  } from '$lib/interfaces/tenor';
+  } from '$lib/types/tenor';
   import { onDestroy, onMount } from 'svelte';
   import { writable } from 'svelte/store';
 

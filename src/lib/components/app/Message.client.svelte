@@ -1,6 +1,6 @@
 <script lang="ts">
   import { formatContent } from '$lib/api/message';
-  import type { IMessage } from '$lib/interfaces/delta';
+  import type { IMessage } from '$lib/types/delta';
   import { chatBox, draft } from '$lib/store';
   import { error } from '@sveltejs/kit';
   import hljs from 'highlight.js';
@@ -30,7 +30,7 @@
 <!-- TODO: finish ephemeral shiz -->
 <div
   {id}
-  class="w-full px-2 rounded-md transition-colors duration-100 ease-in-out hover:bg-[var(--background-hover)]"
+  class="w-full p-1 rounded-md transition-colors duration-100 ease-in-out hover:bg-[var(--background-hover)]"
   style={ephemeral ? 'display: none;' : ''}
 >
   {#if !GroupUp}
@@ -82,28 +82,14 @@
         {:else if chunk.startsWith('```')}
           {#if chunk.endsWith('```')}
             {@const lines = chunk.split('\n')}
-            {@const language = hljs.listLanguages().includes(lines[0].replace(/```/g, ''))
-              ? lines[0].replace(/```/g, '')
-              : undefined}
-            {@const result = (
-              !!language
-                ? hljs.highlight(
-                    lines
-                      .slice(1, lines.length - 1)
-                      .join('\n')
-                      .trim(),
-                    {
-                      language,
-                    },
-                  )
-                : hljs.highlightAuto(
-                    lines
-                      .slice(1, lines.length - 1)
-                      .join('\n')
-                      .trim(),
-                  )
-            ).value.trim()}
-            <pre><code>{@html result}</code></pre>
+            {@const language = lines[0].replace(/```/g, '')}
+            {@const code = lines.slice(1).join('\n').replace(/```/g, '').trim()}
+            {@const result = hljs.autoDetection(language)
+              ? hljs.highlight(code, {
+                  language,
+                })
+              : hljs.highlightAuto(code)}
+            <pre><code>{@html result.value.trim()}</code></pre>
           {/if}
         {:else}
           {chunk}

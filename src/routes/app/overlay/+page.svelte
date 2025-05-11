@@ -2,7 +2,7 @@
 <script lang="ts">
   import { onMount } from 'svelte';
   import { listen } from '@tauri-apps/api/event';
-  import type { IMessage } from '$lib/interfaces/delta';
+  import type { IMessage } from '$lib/types/delta';
   import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
   import { writable } from 'svelte/store';
   import { formatContent } from '$lib/api/message';
