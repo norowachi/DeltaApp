@@ -48,6 +48,9 @@ importers:
       '@unocss/svelte-scoped':
         specifier: 66.1.0-beta.3
         version: 66.1.0-beta.3
+      highlight.svelte:
+        specifier: ^0.1.2
+        version: 0.1.2
       prettier:
         specifier: ^3.5.3
         version: 3.5.3
@@ -864,6 +867,9 @@ packages:
   highlight.js@11.11.1:
     resolution: {integrity: sha512-Xwwo44whKBVCYoliBQwaPvtd/2tYFkRQtXDWj1nackaV2JPXx3L0+Jvd8/qCJ2p+ML0/XVkJ2q+Mr+UVdpJK5w==}
     engines: {node: '>=12.0.0'}
+
+  highlight.svelte@0.1.2:
+    resolution: {integrity: sha512-bHAsFAgBGHLWaFENrEjUs/n0vcKv+7hy8zVi3STvuv1gEfTVZkKm/zyUzzzdOO13j0SXwIbarnytjGkTK2iROw==}
 
   immutable@5.1.1:
     resolution: {integrity: sha512-3jatXi9ObIsPGr3N5hGw/vWWcTkq6hUYhpQz4k0wLC+owqWi/LiugIw9x0EdNZ2yGedKN/HzePiBvaJRXa0Ujg==}
@@ -1905,6 +1911,8 @@ snapshots:
       duplexer: 0.1.2
 
   highlight.js@11.11.1: {}
+
+  highlight.svelte@0.1.2: {}
 
   immutable@5.1.1: {}
 
