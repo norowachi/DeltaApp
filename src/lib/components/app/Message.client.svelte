@@ -83,12 +83,12 @@
           {#if chunk.endsWith('```')}
             {@const lines = chunk.split('\n')}
             {@const language = lines[0].replace(/```/g, '')}
-            {@const code = lines.slice(1).join('\n').replace(/```/g, '').trim()}
+            {@const code = (n: number) => lines.slice(n).join('\n').replace(/```/g, '').trim()}
             {@const result = hljs.autoDetection(language)
-              ? hljs.highlight(code, {
+              ? hljs.highlight(code(1), {
                   language,
                 })
-              : hljs.highlightAuto(code)}
+              : hljs.highlightAuto(code(0))}
             <pre><code>{@html result.value.trim()}</code></pre>
           {/if}
         {:else}
