@@ -110,7 +110,6 @@
     contenteditable="true"
     tabindex="0"
     bind:this={$chatBox}
-    enterkeyhint="send"
     class="block mx-4 whitespace-pre-wrap p-2.5 max-h-300px w-full overflow-y-scroll resize-none text-gray-900 bg-white rounded-lg border-gray-300 dark:text-gray-100 dark:bg-#606060 outline-none ring-red focus:ring-2"
     placeholder="Your Message..."
     data-empty={!$draft}
