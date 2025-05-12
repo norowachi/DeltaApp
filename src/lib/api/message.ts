@@ -1,6 +1,7 @@
 import type { IMessage } from '$lib/types/delta';
 import { error } from '@sveltejs/kit';
 import functions from './tauri';
+import { currentUser } from '$lib/store';
 
 export async function sendMessage({
   content,
@@ -100,4 +101,28 @@ export function formatContent(content?: string) {
   }, content);
 
   return array.map((s) => (!!s ? s : ' '));
+}
+
+export async function deleteMessage({
+  guildId,
+  channelId,
+  id,
+}: Pick<IMessage, 'guildId' | 'channelId' | 'id'>) {
+  const token = localStorage.getItem('token');
+  if (!token) return error(401, 'Unauthorized');
+
+  const result = await fetch(
+    `https://api.noro.cc/channels/${guildId || '@me'}/${channelId}/messages/${id}`,
+    {
+      method: 'DELETE',
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    },
+  ).catch(console.error);
+
+  if (!result || !result.ok)
+    return error(result?.status || 500, result?.statusText || 'Internal Server Error');
+
+  return;
 }

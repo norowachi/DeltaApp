@@ -3,15 +3,18 @@
   import { writable } from 'svelte/store';
   import Sun from '$lib/svg/sun.svelte';
   import Moon from '$lib/svg/moon.svelte';
-  import { appContainer, messages, theme } from '$lib/store';
-  import type { IMessage } from '$lib/types/delta';
+  import { appContainer, currentUser, messages, theme } from '$lib/store';
+  import { Roles, type IMessage } from '$lib/types/delta';
+  import Clipboard from '$lib/svg/clipboard.svelte';
+  import Trash from '$lib/svg/trash.svelte';
+  import { deleteMessage } from '$lib/api/message';
 
   let menu = writable<HTMLElement>();
   let opened = writable<boolean>(false);
   let canOpenNative = writable<boolean>(false);
   let controller = writable<AbortController>();
 
-  let ClickedMessage = writable<IMessage>();
+  let ClickedMessage = writable<IMessage | undefined>();
 
   onMount(() => HandleTheme(false));
 
@@ -81,7 +84,10 @@
           .values()
           .filter((query) => query.contains(e.target as Node))
           .toArray();
-        const message = $messages.find((m) => messageParent.find((element) => m.id === element.id));
+        let element: Element | undefined;
+        const message = $messages.find(
+          (m) => (element = messageParent.find((element) => m.id === element.id)),
+        );
 
         if (!messageParent || !message) return;
         // set the clicked message
@@ -128,10 +134,10 @@
 <div
   bind:this={$menu}
   data-open={$opened}
-  class="context-menu absolute data-[open=false]:hidden data-[open=true]:block rounded-md border p-1 animation bg-gray-6 text-white border-black dark:border-white"
+  class="context-menu absolute data-[open=false]:hidden data-[open=true]:block rounded-md border p-1 animation bg-gray-6 text-white border-black dark:border-white space-y-1"
 >
   <!-- TODO: Move this shit into settings -->
-  <button onclick={() => HandleTheme(true)} class="*:space-x-1">
+  <button onclick={() => HandleTheme(true)} class="btn hover *:space-x-1">
     <p class="hidden dark:flex text-nowrap">
       <Sun />
       <span>Light Mode</span>
@@ -142,33 +148,23 @@
     </p>
   </button>
   <button
+    class="btn hover"
     onclick={() => {
       // TODO: something to tell the user that the copy was successful or so
       navigator.clipboard.writeText(
-        `${location.origin}/channels/${$ClickedMessage.guildId || '@me'}/${$ClickedMessage.channelId}/${$ClickedMessage.id}`,
+        `${location.origin}/channels/${$ClickedMessage!.guildId || '@me'}/${$ClickedMessage!.channelId}/${$ClickedMessage!.id}`,
       );
     }}
   >
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="2"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-    >
-      <rect width="8" height="4" x="8" y="2" rx="1" />
-      <path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-5.5" />
-      <path d="M4 13.5V6a2 2 0 0 1 2-2h2" />
-      <path
-        d="M13.378 15.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"
-      />
-    </svg>
-    <span>Copy Link</span>
+    <Clipboard />
+    <span>Copy Message Link</span>
   </button>
+  {#if $ClickedMessage?.author.id === $currentUser.id || $currentUser.guilds.find((guild) => guild.id === $ClickedMessage?.guildId && guild.ownerId === $currentUser.id) || $currentUser.roles & Roles.STAFF}
+    <button class="btn bg-red-6 hover:bg-red-9" onclick={() => deleteMessage($ClickedMessage!)}>
+      <Trash />
+      <span>Delete Message</span>
+    </button>
+  {/if}
 </div>
 
 <style lang="postcss">
@@ -195,9 +191,9 @@
     }
   }
 
-  :global .context-menu button {
-    @apply w-full relative flex justify-between cursor-pointer select-none items-center rounded-md px-2 py-1.5 data-[state]:py-1.5 data-[state]:pl-8 data-[state]:pr-2 text-sm outline-none data-[disabled]:pointer-events-none data-[disabled]:opacity-50 space-x-1;
-    &:hover {
+  .context-menu button.btn {
+    @apply w-full relative flex cursor-pointer select-none items-center rounded-md px-2 py-1.5 text-sm outline-none space-x-1;
+    &.hover:hover {
       @apply bg-[#cccccc] text-black;
     }
   }

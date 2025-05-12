@@ -1,6 +1,6 @@
 <script lang="ts">
   import SideMenu from '$lib/components/app/SideMenu.client.svelte';
-  import ContextMenu from '$lib/components/ContextMenu.client.svelte';
+  import ContextMenu from '$lib/components/app/ContextMenu.client.svelte';
   import { onDestroy, onMount } from 'svelte';
   import type { LayoutProps } from './$types';
   import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
@@ -57,9 +57,13 @@
 
       // on new messages add to the $messages store
       $socket.on('message', (message) => {
+        // channel checks ig
+        // if channelId is provided and it doesn't match the current channelId, ignore
+        if (message.d.channelId && message.d.channelId !== data.channel.id) return;
+
+        // add message to store
         if (message.op === WebSocketOP.MESSAGE_CREATE) {
           const md: IMessage = message.d;
-          if (md.channelId !== data.channel.id) return;
           // TODO: add a way to make messages show with gray text or so if they're still not sent
           messages.update((oldmsgs) => {
             const dupMsg = oldmsgs?.find((msg) => msg.id === md.id);
@@ -68,6 +72,18 @@
               : [...($messages || []), md]?.sort(
                   (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
                 );
+          });
+        } else if (message.op === WebSocketOP.MESSAGE_DELETE) {
+          // delete message from store
+          const md: Pick<IMessage, 'id'> = message.d;
+          messages.update((oldmsgs) => {
+            return oldmsgs?.filter((msg) => msg.id !== md.id);
+          });
+        } else if (message.op === WebSocketOP.MESSAGE_UPDATE) {
+          // update the message in the store
+          const md: IMessage = message.d;
+          messages.update((oldmsgs) => {
+            return oldmsgs?.map((msg) => (msg.id === md.id ? md : msg));
           });
         }
       });
