@@ -5,9 +5,9 @@
 
   let { guildId, channelId } = $props();
 
-  draft.subscribe((value) => {
-    if (value?.trim().length === 0) draft.set('');
-  });
+  //draft.subscribe((value) => {
+  //  if (value) draft.set('');
+  //});
 
   // send message
   async function OnClickSend() {
