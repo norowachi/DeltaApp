@@ -84,13 +84,11 @@
     const deltaX = current[0] - start[0];
     const deltaY = current[1] - start[1];
 
-    //// If vertical movement is greater, ignore the move
-    if (Math.abs(deltaY) /*>*/< Math.abs(deltaX)) {
-    //  $sidemenu.style.transform = '';
-    //  return (isSwiping = false);
-    //} else {
-        event.preventDefault();
-    }
+    // If vertical movement is greater, ignore the move
+    if (Math.abs(deltaY) > Math.abs(deltaX)) {
+      $sidemenu.style.transform = '';
+      return (isSwiping = false);
+    } else event.preventDefault();
 
     let newX = firstLeft + deltaX;
 
