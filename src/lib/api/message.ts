@@ -89,7 +89,7 @@ export async function getMessages({
 export function formatContent(content?: string) {
   if (!content) return [];
 
-  const regex = /<@\w+>|```([^`]*)```/g;
+  const regex = /<@\w+>|```[^`]*```/g;
   const array: (string | undefined)[] = [];
 
   const match = [...(content.match(regex) || [content]), undefined];

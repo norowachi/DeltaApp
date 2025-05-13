@@ -219,26 +219,28 @@
         </button>
       {/if}
       <h2 class="mx-auto text-lg text-center">{guild.name}</h2>
-      {#if $sidemenu?.dataset.pinned == 'true'}
-        <button
-          title="UnPin Menu"
-          onclick={() => {
-            registerEvents();
-            $sidemenu!.dataset.pinned = 'false';
-          }}
-        >
-          <Unpin />
-        </button>
-      {:else}
-        <button
-          title="Pin Menu"
-          onclick={() => {
-            destroyEvents();
-            $sidemenu!.dataset.pinned = 'true';
-          }}
-        >
-          <Pin />
-        </button>
+      {#if window.innerWidth > 500}
+        {#if $sidemenu?.dataset.pinned == 'true'}
+          <button
+            title="UnPin Menu"
+            onclick={() => {
+              registerEvents();
+              $sidemenu!.dataset.pinned = 'false';
+            }}
+          >
+            <Unpin />
+          </button>
+        {:else}
+          <button
+            title="Pin Menu"
+            onclick={() => {
+              destroyEvents();
+              $sidemenu!.dataset.pinned = 'true';
+            }}
+          >
+            <Pin />
+          </button>
+        {/if}
       {/if}
     </div>
     <nav class="*:w-full h-[calc(100dvh-95px)] text-start space-y-1 overflow-y-scroll">

@@ -20,9 +20,10 @@
     } = $props();
   const date = new Date(createdAt);
   // if same author and there is a time difference of 10 minutes
-  const GroupUp =
+  const GroupUp = $derived(
     lastMessage?.author.id === author.id &&
-    date.getTime() - new Date(lastMessage.createdAt).getTime() < 600000;
+      date.getTime() - new Date(lastMessage.createdAt).getTime() < 600000,
+  );
   if (!content && (embeds?.length || 0) === 0) error(400, 'Message missing content and embeds');
   const shortTime = date.toLocaleTimeString(undefined, { timeStyle: 'short' });
 </script>
@@ -79,18 +80,16 @@
           >
             {chunk.replace(/<|>/g, '')}
           </span>
-        {:else if chunk.startsWith('```')}
-          {#if chunk.endsWith('```')}
-            {@const lines = chunk.split('\n')}
-            {@const language = lines[0].replace(/```/g, '')}
-            {@const code = (n: number) => lines.slice(n).join('\n').replace(/```/g, '').trim()}
-            {@const result = hljs.autoDetection(language)
-              ? hljs.highlight(code(1), {
-                  language,
-                })
-              : hljs.highlightAuto(code(0))}
-            <pre><code>{@html result.value.trim()}</code></pre>
-          {/if}
+        {:else if /^```[\s\S]*```$/.test(chunk)}
+          {@const lines = chunk.split('\n')}
+          {@const language = lines[0].replace(/^```/g, '')}
+          {@const code = (n: number) => lines.slice(n).join('\n').replace(/```/g, '').trim()}
+          {@const result = hljs.autoDetection(language)
+            ? hljs.highlight(code(1), {
+                language,
+              })
+            : hljs.highlightAuto(code(0))}
+          <pre><code>{@html result.value.trim()}</code></pre>
         {:else}
           {chunk}
         {/if}

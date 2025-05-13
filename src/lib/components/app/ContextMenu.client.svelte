@@ -8,8 +8,11 @@
   import Clipboard from '$lib/svg/clipboard.svelte';
   import Trash from '$lib/svg/trash.svelte';
   import { deleteMessage } from '$lib/api/message';
+  import Eye from '$lib/svg/eye.svelte';
+  import PencilOff from '$lib/svg/pencilOff.svelte';
 
-  let menu = writable<HTMLElement>();
+  let menu = writable<HTMLElement | undefined>();
+  let dialog = writable<HTMLDialogElement | undefined>();
   let opened = writable<boolean>(false);
   let canOpenNative = writable<boolean>(false);
   let controller = writable<AbortController>();
@@ -61,8 +64,12 @@
       document.addEventListener(
         'click',
         () => {
+          if ($dialog)
+            if ($dialog.open && !$dialog.dataset.toggle) {
+              $dialog.close();
+            } else $dialog.dataset.toggle = '';
+
           opened.set(false);
-          canOpenNative.set(false);
         },
         { signal: NewController.signal },
       );
@@ -122,14 +129,63 @@
 
         // show menu
         opened.set(true);
-        canOpenNative.set(true);
       }
     },
     () => $controller?.abort(),
   );
 
   onDestroy(() => $controller?.abort());
+
+  const canDeleteMessages = $derived(
+    $ClickedMessage?.author.id === $currentUser.id ||
+      $currentUser.guilds.find(
+        (guild) => guild.id === $ClickedMessage?.guildId && guild.ownerId === $currentUser.id,
+      ),
+  );
 </script>
+
+<dialog
+  bind:this={$dialog}
+  class="min-w-64 bg-gray-6 text-white border border-black dark:border-white rounded-md py-4 px-8 space-y-3"
+  onclose={() => {
+    if (!$dialog) return;
+    Object.keys($dialog.dataset).map((key) => delete $dialog?.dataset[key]);
+  }}
+>
+  <p class="text-center">
+    <span>{$dialog?.dataset.message || 'Are You Sure?'}</span>
+    {#if $dialog?.dataset.note}
+      <br />
+      <span class="text-gray-400 text-sm">{$dialog?.dataset.note}</span>
+    {/if}
+  </p>
+  {#if $dialog?.dataset.buttons !== 'false'}
+    <form method="dialog" class="flex justify-between">
+      <button type="reset" class="px-2 py-1 h-34px rounded-md bg-#ff000033 hover:bg-red-9">
+        Cancel
+      </button>
+      <!-- svelte-ignore a11y_autofocus -->
+      <button
+        type="submit"
+        class="px-2 py-1 h-34px rounded-md bg-red-6 hover:bg-green transition-colors duration-800 ease-in-out"
+        autofocus
+        onclick={() => {
+          if (!$dialog) return;
+          // actions switch
+          switch ($dialog.dataset.action) {
+            case 'delete':
+              if ($ClickedMessage) deleteMessage($ClickedMessage);
+              break;
+            default:
+              break;
+          }
+        }}
+      >
+        Confirm
+      </button>
+    </form>
+  {/if}
+</dialog>
 
 <div
   bind:this={$menu}
@@ -150,7 +206,12 @@
   <button
     class="btn hover"
     onclick={() => {
-      // TODO: something to tell the user that the copy was successful or so
+      if ($dialog) {
+        $dialog.dataset.message = 'Message link has been copied to the clipboard!';
+        $dialog.dataset.buttons = 'false';
+        $dialog.showModal();
+      }
+
       navigator.clipboard.writeText(
         `${location.origin}/channels/${$ClickedMessage!.guildId || '@me'}/${$ClickedMessage!.channelId}/${$ClickedMessage!.id}`,
       );
@@ -159,12 +220,51 @@
     <Clipboard />
     <span>Copy Message Link</span>
   </button>
-  {#if $ClickedMessage?.author.id === $currentUser.id || $currentUser.guilds.find((guild) => guild.id === $ClickedMessage?.guildId && guild.ownerId === $currentUser.id) || $currentUser.roles & Roles.STAFF}
-    <button class="btn bg-red-6 hover:bg-red-9" onclick={() => deleteMessage($ClickedMessage!)}>
+  {#if canDeleteMessages || $currentUser.roles & Roles.STAFF}
+    <button
+      class="btn bg-red-6 hover:bg-red-9"
+      data-dialog
+      onclick={(e) => {
+        if (e.shiftKey) return deleteMessage($ClickedMessage!);
+        if (!$dialog) return;
+        $dialog.dataset.toggle = 'delete';
+        $dialog.dataset.message = 'Are you sure you want to delete this message?';
+        $dialog.dataset.note = 'Press Shift while clicking to delete a message instantly';
+        $dialog.dataset.action = 'delete';
+        $dialog.showModal();
+      }}
+    >
       <Trash />
-      <span>Delete Message</span>
+      <span>
+        Delete Message {!canDeleteMessages && $currentUser.roles & Roles.STAFF ? '(Force)' : ''}
+      </span>
     </button>
   {/if}
+  {#if $currentUser.roles & Roles.STAFF}
+    <button
+      class="btn hover:bg-amber hover:text-black"
+      onclick={() => {
+        if (!$dialog) return;
+        $dialog.dataset.toggle = 'view';
+        $dialog.dataset.message = $ClickedMessage?.content || 'No Content';
+        $dialog.dataset.buttons = 'false';
+        $dialog.dataset.action = 'none';
+        $dialog.showModal();
+      }}
+    >
+      <Eye />
+      <span>See Content</span>
+    </button>
+  {/if}
+  <button
+    class="btn hover"
+    onclick={() => {
+      canOpenNative.set(true);
+    }}
+  >
+    <PencilOff />
+    <span>Toggle Native Menu</span>
+  </button>
 </div>
 
 <style lang="postcss">
