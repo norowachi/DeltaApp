@@ -115,7 +115,7 @@
     data-empty={!$draft}
     spellcheck="true"
     style="height: auto;"
-    bind:innerText={$draft}
+    bind:textContent={$draft}
     oninput={(e) => {
       // TODO : Show a select menu above the chatbox for mentions
       // e.currentTarget.innerHTML = highlight($draft);
