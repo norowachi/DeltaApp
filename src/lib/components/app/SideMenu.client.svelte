@@ -84,10 +84,9 @@
     const deltaX = current[0] - start[0];
     const deltaY = current[1] - start[1];
 
-    // If vertical movement is greater, ignore the move
-    if (Math.abs(deltaY) > Math.abs(deltaX)) {
-      $sidemenu.style.transform = '';
-      return (isSwiping = false);
+    // If horizontal movement is greater, prevent default actions
+    if (Math.abs(deltaX) >= Math.abs(deltaY)) {
+      e.preventDefault();
     }
 
     let newX = firstLeft + deltaX;
@@ -135,12 +134,11 @@
 
   /// Menu Resizing Logic
   let mousex = 0;
-  let leftWidth = 0;
 
   const handleMouseDown = function (e: MouseEvent) {
     // get current mouse position
     mousex = e.clientX;
-    leftWidth = $sidemenu?.getBoundingClientRect().width || 0;
+    firstLeft = $sidemenu?.getBoundingClientRect().width || 0;
 
     // attach helping listeners
     document.addEventListener('mousemove', handleMouseMove);
@@ -152,9 +150,10 @@
 
     const deltaX = e.clientX - mousex;
     // set new width, if sidemenu elm exists ig
-    $sidemenu.style.width = leftWidth + deltaX + 'px';
+    $sidemenu.style.width = firstLeft + deltaX + 'px';
 
     // keep the cursor consistent when moving
+// TODO: make it show the cursor resizer/column on the side closest to the bar
     document.body.style.cursor = 'ew-resize';
     // disables the annoying select
     document.body.style.userSelect = 'none';
