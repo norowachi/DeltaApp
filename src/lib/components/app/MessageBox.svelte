@@ -5,10 +5,6 @@
 
   let { guildId, channelId } = $props();
 
-  //draft.subscribe((value) => {
-  //  if (value) draft.set('');
-  //});
-
   // send message
   async function OnClickSend() {
     if (!$chatBox) return;
@@ -116,6 +112,11 @@
     spellcheck="true"
     style="height: auto;"
     bind:textContent={$draft}
+    onpaste={(e) => {
+      e.preventDefault();
+      const text = e.clipboardData?.getData('text');
+      document.execCommand('insertText', false, text);
+    }}
     oninput={(e) => {
       // TODO : Show a select menu above the chatbox for mentions
       // e.currentTarget.innerHTML = highlight($draft);

@@ -3,9 +3,9 @@
 
   const { parse }: { parse: Record<string, unknown> } = $props();
 
-  const language = (parse.language || 'plaintext') as string;
+  const language = (parse.lang || 'plaintext') as string;
   const code = (parse.content || '') as string;
-  const qouted = parse.inQuote as boolean;
+
   const result = hljs.autoDetection(language)
     ? hljs.highlight(code, {
         language,
@@ -15,7 +15,7 @@
   console.log('Code', parse);
 </script>
 
-<pre class:border-l-3px={parse.inQuote}><code>{@html result.value.trim()}</code></pre>
+<pre><code>{@html result.value.trim()}</code></pre>
 
 <style lang="postcss">
   pre {

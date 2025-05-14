@@ -1,11 +1,9 @@
 <script lang="ts">
   import type { IMessage } from '$lib/types/delta';
-
   import { chatBox, draft } from '$lib/store';
   import { error } from '@sveltejs/kit';
-  import { rules } from 'discord-markdown-parser';
   import AstTree from './ASTTree.svelte';
-  import SimpleMarkdown from '@khanacademy/simple-markdown';
+  import parse from './parser/index';
 
   let {
     id,
@@ -20,23 +18,17 @@
     Partial<Pick<IMessage, 'content' | 'embeds' | 'ephemeral'>> & {
       lastMessage?: IMessage;
     } = $props();
+
   const date = new Date(createdAt);
+
   // if same author and there is a time difference of 10 minutes
   const GroupUp = $derived(
     lastMessage?.author.id === author.id &&
       date.getTime() - new Date(lastMessage.createdAt).getTime() < 600000,
   );
+
   if (!content && (embeds?.length || 0) === 0) error(400, 'Message missing content and embeds');
   const shortTime = date.toLocaleTimeString(undefined, { timeStyle: 'short' });
-
-  console.log('Message', {
-    id,
-    content,
-    mentions,
-  });
-
-  const newRules = { ...rules, };
-  const parse = SimpleMarkdown.parserFor(newRules);
 </script>
 
 <!-- TODO: finish ephemeral shiz -->

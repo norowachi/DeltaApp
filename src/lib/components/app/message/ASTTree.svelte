@@ -8,25 +8,27 @@
     parse,
     mentions,
   }: Pick<IMessage, 'mentions'> & { parse: { type: string } & Record<string, unknown> } = $props();
+
+  console.log('ASTTree', parse);
 </script>
 
 {#if parse.type === 'text'}
   {parse.content}
 {:else if parse.type === 'blockQuote'}
-  <blockquote class="border-l-3px border-solid border-alt-text pl-1">
+  <blockquote class="border-l-3px border-solid border-#bdc4de pl-1">
     {#each parse.content as (typeof parse)[] as p}
       {@const subParse = p as typeof parse}
       <ASTTree parse={subParse} {mentions} />
     {/each}
   </blockquote>
 {:else if parse.type === 'inlineCode'}
-  <code class="bg-main-darkest text-alt-text rounded-md p-1 b-solid">
+  <code class="bg-#1c1d23 text-#bdc4de rounded-md p-2px b-solid">
     {parse.content}
   </code>
 {:else if parse.type === 'br'}
   <br />
 {:else if parse.type === 'subtext'}
-  <span class="text-alt-text text-sm">
+  <span class="text-#bdc4de text-sm">
     {#each parse.content as (typeof parse)[] as p}
       {@const subParse = p as typeof parse}
       <ASTTree parse={subParse} {mentions} />
@@ -58,12 +60,6 @@
   {/if}
 {:else if parse.type === 'codeBlock'}
   <Code {parse} />
-  <pre
-    class="bg-main-darkest text-alt-text rounded-md p-1 border-alt-text border-solid overflow-x-auto w-full"
-    class:border-l-3px={parse.inQuote}
-    style="max-width: 100%; display: block;"><code class="whitespace-pre break-normal w-full block"
-      >{parse.content}</code
-    ></pre>
 {:else if parse.type === 'strong'}
   <strong>
     {#each parse.content as (typeof parse)[] as p}
@@ -93,9 +89,7 @@
     {/each}
   </s>
 {:else if parse.type === 'spoiler'}
-  <span
-    class="bg-main-darkest text-alt-text rounded-md p-1 b-solid blur-4 hover:blur-0 transition-all duration-100 ease-in-out"
-  >
+  <span class="p-1 blur-4 hover:blur-0 transition-all duration-100 ease-in-out">
     {#each parse.content as (typeof parse)[] as p}
       {@const subParse = p as typeof parse}
       <ASTTree parse={subParse} {mentions} />
