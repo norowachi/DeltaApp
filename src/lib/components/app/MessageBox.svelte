@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Tenor from './Tenor.client.svelte';
+  import Tenor from './menus/TenorMenu.svelte';
   import { sendMessage } from '$lib/api/message';
   import { chatBox, draft } from '$lib/store';
 
@@ -119,7 +119,6 @@
     oninput={(e) => {
       // TODO : Show a select menu above the chatbox for mentions
       // e.currentTarget.innerHTML = highlight($draft);
-
       // const sel = window.getSelection();
       // if (sel) {
       //   const range = document.createRange();
@@ -131,10 +130,10 @@
     }}
     onkeydown={(e) => {
       if ('virtualKeyboard' in navigator) return e.preventDefault();
-      //if (!e.shiftKey && e.key === 'Enter') {
-      //  e.preventDefault();
-      //  OnClickSend();
-      //}
+      if (!e.shiftKey && e.key === 'Enter') {
+        e.preventDefault();
+        OnClickSend();
+      }
       return;
     }}
   ></div>

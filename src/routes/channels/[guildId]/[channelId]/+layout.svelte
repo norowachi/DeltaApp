@@ -1,6 +1,6 @@
 <script lang="ts">
-  import SideMenu from '$lib/components/app/SideMenu.client.svelte';
-  import ContextMenu from '$lib/components/app/ContextMenu.client.svelte';
+  import SideMenu from '$lib/components/app/menus/SideMenu.svelte';
+  import ContextMenu from '$lib/components/app/menus/ContextMenu.svelte';
   import { onDestroy, onMount } from 'svelte';
   import type { LayoutProps } from './$types';
   import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';

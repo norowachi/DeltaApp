@@ -33,17 +33,6 @@ a {
   }
 }
 
-pre {
-  border: 1 solid gray;
-  background: var(--higher-color);
-  padding: 0.2rem 0.4rem;
-  border-radius: 0.2rem;
-  font-family: monospace;
-  & code {
-    white-space: pre-wrap;
-  }
-}
-
 ::-webkit-scrollbar {
   width: 3px;
 }

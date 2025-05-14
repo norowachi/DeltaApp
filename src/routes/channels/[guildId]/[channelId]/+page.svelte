@@ -1,8 +1,8 @@
 <script lang="ts">
-  import Message from '$lib/components/app/Message.client.svelte';
+  import Message from '$lib/components/app/message/Message.svelte';
   import { onMount } from 'svelte';
   import type { PageProps } from './$types';
-  import MessageBox from '$lib/components/app/MessageBox.client.svelte';
+  import MessageBox from '$lib/components/app/MessageBox.svelte';
   import { afterNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import { getMessages } from '$lib/api/message';

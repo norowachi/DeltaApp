@@ -1,7 +1,7 @@
 <script lang="ts">
   import { page } from '$app/state';
-  import LoginForm from '../lib/components/LoginForm.client.svelte';
-  import RegisterForm from '../lib/components/RegisterForm.client.svelte';
+  import LoginForm from '../lib/components/LoginForm.svelte';
+  import RegisterForm from '../lib/components/RegisterForm.svelte';
 
   let ShowRegister = $state(false);
 </script>

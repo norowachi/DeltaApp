@@ -1,9 +1,11 @@
 <script lang="ts">
-  import { formatContent } from '$lib/api/message';
   import type { IMessage } from '$lib/types/delta';
+
   import { chatBox, draft } from '$lib/store';
   import { error } from '@sveltejs/kit';
-  import hljs from 'highlight.js';
+  import { rules } from 'discord-markdown-parser';
+  import AstTree from './ASTTree.svelte';
+  import SimpleMarkdown from '@khanacademy/simple-markdown';
 
   let {
     id,
@@ -14,8 +16,8 @@
     ephemeral,
     mentions,
     lastMessage,
-  }: Pick<IMessage, 'id' | 'author' | 'createdAt'> &
-    Partial<Pick<IMessage, 'content' | 'embeds' | 'mentions' | 'ephemeral'>> & {
+  }: Pick<IMessage, 'id' | 'author' | 'createdAt' | 'mentions'> &
+    Partial<Pick<IMessage, 'content' | 'embeds' | 'ephemeral'>> & {
       lastMessage?: IMessage;
     } = $props();
   const date = new Date(createdAt);
@@ -26,6 +28,15 @@
   );
   if (!content && (embeds?.length || 0) === 0) error(400, 'Message missing content and embeds');
   const shortTime = date.toLocaleTimeString(undefined, { timeStyle: 'short' });
+
+  console.log('Message', {
+    id,
+    content,
+    mentions,
+  });
+
+  const newRules = { ...rules, };
+  const parse = SimpleMarkdown.parserFor(newRules);
 </script>
 
 <!-- TODO: finish ephemeral shiz -->
@@ -35,7 +46,7 @@
   style={ephemeral ? 'display: none;' : ''}
 >
   {#if !GroupUp}
-    <div class="w-full inline-flex items-center mx-auto pt-1">
+    <div id={author.id} class="w-full inline-flex items-center mx-auto pt-1">
       <img
         src={author.avatar || 'https://api.noro.cc/images/delta-0.png'}
         alt={author.username}
@@ -73,26 +84,8 @@
 
   {#if content}
     <div class="text-wrap break-words px-2 whitespace-pre-line">
-      {#each formatContent(content.trim()) as chunk, i (i)}
-        {#if mentions && Object.values(mentions).includes(chunk.slice(2, -1))}
-          <span
-            class="bg-purple-500 hover:bg-purple-700 text-dark rounded-md cursor-pointer transition-colors duration-300 px-4px py-2px"
-          >
-            {chunk.replace(/<|>/g, '')}
-          </span>
-        {:else if /^```[\s\S]*```$/.test(chunk)}
-          {@const lines = chunk.split('\n')}
-          {@const language = lines[0].replace(/^```/g, '')}
-          {@const code = (n: number) => lines.slice(n).join('\n').replace(/```/g, '').trim()}
-          {@const result = hljs.autoDetection(language)
-            ? hljs.highlight(code(1), {
-                language,
-              })
-            : hljs.highlightAuto(code(0))}
-          <pre><code>{@html result.value.trim()}</code></pre>
-        {:else}
-          {chunk}
-        {/if}
+      {#each parse(content) as chunk, i (i)}
+        <AstTree parse={chunk} {mentions} />
       {/each}
     </div>
   {/if}
