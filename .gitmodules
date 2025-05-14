@@ -1,0 +1,3 @@
+[submodule "src/lib/app/message/parser"]
+	path = src/lib/app/message/parser
+	url = https://github.com/norowachi/discord-markdown-parser.git
