@@ -93,7 +93,7 @@
       <ASTTree parse={subParse} {mentions} />
     {/each}
   </span>
-{:else if parse.type === 'link'}
+{:else if parse.type === 'link' || parse.type === "url" || parse.type === "autolink"}
   <a href={parse.target as string} title={parse.title as string} class="text-blue">
     {(parse.content as (typeof parse)[])[0].content}
   </a>
