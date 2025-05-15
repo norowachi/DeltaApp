@@ -11,8 +11,6 @@
         language,
       })
     : hljs.highlightAuto(code);
-
-  console.log('Code', parse);
 </script>
 
 <pre><code>{@html result.value.trim()}</code></pre>

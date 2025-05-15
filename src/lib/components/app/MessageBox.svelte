@@ -130,7 +130,7 @@
       // }
     }}
     onkeydown={(e) => {
-      if ('virtualKeyboard' in navigator) return e.preventDefault();
+      if ('virtualKeyboard' in navigator) return;
       if (!e.shiftKey && e.key === 'Enter') {
         e.preventDefault();
         OnClickSend();

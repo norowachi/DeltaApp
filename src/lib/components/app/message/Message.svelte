@@ -73,31 +73,30 @@
 			{shortTime}
 		</time>
 	{/if} -->
-
-  {#if content}
-    <div class="text-wrap break-words px-2 whitespace-pre-line">
+  <div class="text-wrap break-words ml-50px pr-2 whitespace-pre-line">
+    {#if content}
       {#each parse(content) as chunk, i (i)}
         <AstTree parse={chunk} {mentions} />
       {/each}
-    </div>
-  {/if}
+    {/if}
 
-  {#if embeds && embeds.length > 0}
-    <div class="px-2 pb-2 {GroupUp ? 'pt-1' : ''}">
-      {#each embeds as embed}
-        {#if embed.type === 'image'}
-          <img
-            src={embed.image!.url}
-            alt={embed.image!.url}
-            width={embed.image!.width}
-            height={embed.image!.height}
-            class="rounded-md max-w-90% pointer-events-none"
-            loading="lazy"
-          />
-        {/if}
-      {/each}
-    </div>
-  {/if}
+    {#if embeds && embeds.length > 0}
+      <div class="pb-2 {GroupUp ? 'pt-1' : ''}">
+        {#each embeds as embed}
+          {#if embed.type === 'image'}
+            <img
+              src={embed.image!.url}
+              alt={embed.image!.url}
+              width={embed.image!.width}
+              height={embed.image!.height}
+              class="rounded-md max-w-90% pointer-events-none"
+              loading="lazy"
+            />
+          {/if}
+        {/each}
+      </div>
+    {/if}
+  </div>
 </div>
 
 <!-- <style lang="postcss">

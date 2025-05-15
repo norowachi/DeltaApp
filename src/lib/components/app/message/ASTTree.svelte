@@ -8,8 +8,6 @@
     parse,
     mentions,
   }: Pick<IMessage, 'mentions'> & { parse: { type: string } & Record<string, unknown> } = $props();
-
-  console.log('ASTTree', parse);
 </script>
 
 {#if parse.type === 'text'}
