@@ -146,7 +146,7 @@
 
 <dialog
   bind:this={$dialog}
-  class="min-w-64 bg-gray-6 text-white border border-black dark:border-white rounded-md py-4 px-8 space-y-3"
+  class="min-w-64 whitespace-pre-line bg-gray-6 text-white border border-black dark:border-white rounded-md py-4 px-8 space-y-3"
   onclose={() => {
     if (!$dialog) return;
     Object.keys($dialog.dataset).map((key) => delete $dialog?.dataset[key]);

@@ -103,20 +103,15 @@
   </button>
   <div
     role="textbox"
-    contenteditable="true"
+    contenteditable="plaintext-only"
     tabindex="0"
     bind:this={$chatBox}
-    class="block mx-4 whitespace-pre-wrap p-2.5 max-h-300px w-full overflow-y-scroll resize-none text-gray-900 bg-white rounded-lg border-gray-300 dark:text-gray-100 dark:bg-#606060 outline-none ring-red focus:ring-2"
+    class="block mx-4 whitespace-pre-line p-2.5 max-h-300px w-full overflow-y-scroll resize-none text-gray-900 bg-white rounded-lg border-gray-300 dark:text-gray-100 dark:bg-#606060 outline-none ring-red focus:ring-2"
     placeholder="Your Message..."
     data-empty={!$draft}
     spellcheck="true"
     style="height: auto;"
     bind:textContent={$draft}
-    onpaste={(e) => {
-      e.preventDefault();
-      const text = e.clipboardData?.getData('text');
-      document.execCommand('insertText', false, text);
-    }}
     oninput={(e) => {
       // TODO : Show a select menu above the chatbox for mentions
       // e.currentTarget.innerHTML = highlight($draft);
@@ -163,7 +158,7 @@
 </div>
 
 <style type="postcss">
-  div[contenteditable='true'][data-empty='true']:before {
+  div[contenteditable][data-empty='true']:before {
     position: absolute;
     content: attr(placeholder);
     color: #aaa;
