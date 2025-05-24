@@ -1,14 +1,7 @@
 {
   "identifier": "desktop-capability",
-  "platforms": [
-    "macOS",
-    "windows",
-    "linux"
-  ],
-  "windows": [
-    "main",
-    "message_overlay"
-  ],
+  "platforms": ["macOS", "windows", "linux"],
+  "windows": ["main", "message_overlay"],
   "permissions": [
     "updater:default",
     "core:window:allow-show",

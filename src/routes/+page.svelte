@@ -36,7 +36,6 @@
   </LoginForm>
 {/if}
 
-
 <style>
   @keyframes animate-gradient {
     0% {
@@ -48,7 +47,16 @@
   }
   .gradient {
     animation: animate-gradient 3s linear infinite;
-    background: linear-gradient(90deg, #ff0000, #00ff00, #0000ff, #ffff00, #00ffff, #ff00ff, #ff0000);
+    background: linear-gradient(
+      90deg,
+      #ff0000,
+      #00ff00,
+      #0000ff,
+      #ffff00,
+      #00ffff,
+      #ff00ff,
+      #ff0000
+    );
     background-size: 200% 100%;
     color: transparent;
     -webkit-background-clip: text;

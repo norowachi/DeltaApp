@@ -1,6 +1,7 @@
 **DISCLAIMER;** This is a modified version of `discord-markdown-parser` to fit with silycat/delta's use
 
 ---
+
 # `discord-markdown-parser`
 
 [![Discord](https://img.shields.io/discord/555474311637499955?label=discord)](https://discord.gg/rf5qN7C)
@@ -14,26 +15,26 @@ Designed to be used for [discord-html-transcripts](https://github.com/ItzDerock/
 
 `discord-markdown-parser` will parse any given string into an [AST tree](https://en.wikipedia.org/wiki/Abstract_syntax_tree) and supports:
 
--   links
--   block quotes
--   inline quotes
--   code blocks
--   inline code
--   italics (em)
--   spoilers
--   timestamps
--   bold
--   strikethrough
--   underline
--   channel mentions
--   user mentions
--   role mentions
--   @everyone
--   @here
--   emojis
--   slash command mentions
--   guild navigation mentions
--   & more
+- links
+- block quotes
+- inline quotes
+- code blocks
+- inline code
+- italics (em)
+- spoilers
+- timestamps
+- bold
+- strikethrough
+- underline
+- channel mentions
+- user mentions
+- role mentions
+- @everyone
+- @here
+- emojis
+- slash command mentions
+- guild navigation mentions
+- & more
 
 ## Usage
 

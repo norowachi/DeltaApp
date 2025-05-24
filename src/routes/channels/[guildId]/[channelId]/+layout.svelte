@@ -4,13 +4,15 @@
   import { onDestroy, onMount } from 'svelte';
   import type { LayoutProps } from './$types';
   import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
-  import { currentUser, messages, sidemenu, theme } from '$lib/store';
+  import { currentUser, messages, sidemenu, theme } from '$lib/store.svelte';
   import { io, type Socket } from 'socket.io-client';
   import { writable } from 'svelte/store';
   import { WebSocketOP, type IMessage } from '$lib/types/delta';
   // registering highlight languages
   import hljs from 'highlight.js';
   import svelte from 'highlight.svelte';
+  import TopBar from '$lib/components/app/TopBar.svelte';
+  import MembersMenu from '$lib/components/app/menus/MembersMenu.svelte';
 
   hljs.registerLanguage('svelte', svelte);
   // end registering
@@ -123,7 +125,9 @@
   );
 </script>
 
-<SideMenu channel={data.channel} guild={data.guild} channels={data.channels} />
+<TopBar {...data} />
+<MembersMenu {...data} />
+<SideMenu {...data} />
 <div
   style="width: calc(100dvw - {MainSideMenuPinned ||
     0}px); transform: translateX({MainSideMenuPinned || 0}px);"

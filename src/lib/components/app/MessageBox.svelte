@@ -1,7 +1,7 @@
 <script lang="ts">
   import Tenor from './menus/TenorMenu.svelte';
   import { sendMessage } from '$lib/api/message';
-  import { chatBox, draft } from '$lib/store';
+  import { chatBox, draft, heights } from '$lib/store.svelte';
 
   let { guildId, channelId } = $props();
 
@@ -32,37 +32,10 @@
       tab?.querySelector('input')?.focus();
     } else tab.style.display = 'none';
   }
-
-  // rules list
-  const rules = [
-    // { regex: /#/g, className: 'hashtag' },
-    { regex: /@[^\s@]+/g, className: 'mention' },
-  ];
-
-  // escape HTML ig
-  function escapeHtml(str: string) {
-    const div = document.createElement('div');
-    div.innerText = str;
-    return div.innerHTML;
-  }
-
-  // Highlight text based on rules
-  function highlight(text: any) {
-    let escaped = escapeHtml(text);
-
-    rules
-      .filter(({ regex }) => regex.test(escaped))
-      .forEach((rule) => {
-        escaped = escaped.replace(rule.regex, (match) => {
-          return `<span class="${rule.className}" spellcheck="false">${match}</span>`;
-        });
-      });
-
-    return escaped;
-  }
 </script>
 
 <div
+  bind:clientHeight={heights[1]}
   class="overflow-hidden w-full inline-flex items-center py-2 px-3 bg-gray-50 dark:bg-#1F1F1F rounded-0 bottom-0"
 >
   <button
@@ -82,8 +55,8 @@
   </button>
   <div
     id="gifs-tab"
-    class="absolute h-lg max-h-[calc(100dvh-60px)] bottom-60px overflow-y-auto snap-y snap-proximity"
-    style="display: none;"
+    class="absolute h-lg overflow-y-auto snap-y snap-proximity"
+    style="display: none; max-height: calc(100dvh - {heights[1]}px); bottom: {heights[1]}px;"
   >
     <Tenor {guildId} {channelId} />
   </div>

@@ -1,14 +1,9 @@
 <script lang="ts">
   import type { IChannel, IGuild } from '$lib/types/delta';
-  import Download from '$lib/svg/download.svelte';
-  import { onDestroy, onMount } from 'svelte';
-  import { currentUser, sidemenu } from '$lib/store';
-  import functions from '$lib/api/tauri';
-  import Menu from '$lib/svg/menu.svelte';
-  import Close from '$lib/svg/close.svelte';
-  import Pin from '$lib/svg/pin.svelte';
-  import Unpin from '$lib/svg/unpin.svelte';
+  import { currentUser, heights, sidemenu } from '$lib/store.svelte';
   import { writable } from 'svelte/store';
+  import { destroyEvents, registerEvents } from './functions.svelte';
+  import { Pin, PinOff, X } from '@lucide/svelte';
 
   const {
     channel,
@@ -20,120 +15,10 @@
     channels: Pick<IChannel, 'id' | 'name' | 'type'>[];
   } = $props();
 
-  let updateAvailable = $state<boolean>();
   const resizer = writable<HTMLDivElement>();
 
-  onMount(async () => {
-    // mostly a check for development, but who knows if it'll be useful in the future for prod
-    if ($sidemenu?.dataset.pinned !== 'true') registerEvents();
-
-    // TODO: check if update is REQUIRED and if so just download/install it
-    if (updateAvailable === undefined) updateAvailable = await functions.checkForUpdate();
-  });
-
-  function registerEvents() {
-    document.addEventListener('click', CloseMenu);
-    document.addEventListener('auxclick', CloseMenu);
-    // swipers and related logic
-    document.addEventListener('touchstart', handlePointerDown);
-    document.addEventListener('touchmove', handlePointerMove, { passive: false });
-    document.addEventListener('touchend', handlePointerUp);
-  }
-
-  function destroyEvents() {
-    document.removeEventListener('click', CloseMenu);
-    document.removeEventListener('auxclick', CloseMenu);
-    document.removeEventListener('touchstart', handlePointerDown);
-    document.removeEventListener('touchmove', handlePointerMove);
-    document.removeEventListener('touchend', handlePointerUp);
-  }
-
-  onDestroy(destroyEvents);
-
-  // function for closing the menu and its logic/exceptions
-  function CloseMenu(e: Event) {
-    const target = e.target as HTMLElement;
-    if (
-      !$sidemenu ||
-      target.ariaLabel === 'menu-button' ||
-      ($sidemenu.contains(target) && target.tagName !== 'A') ||
-      target.role === 'separator'
-    )
-      return;
-    $sidemenu.dataset.open = 'false';
-  }
-
-  /// Menu Swiping Logic
-  /* x, y, timestamp */
-  let start = [0, 0, 0];
-  let current = [0, 0];
-  let firstLeft = 0;
-  let isSwiping = false;
-
-  function handlePointerDown(event: TouchEvent) {
-    if (!$sidemenu) return;
-    start = [event.changedTouches[0].clientX, event.changedTouches[0].clientY, Date.now()];
-    firstLeft = $sidemenu.getBoundingClientRect().left;
-    isSwiping = true;
-  }
-
-  function handlePointerMove(event: TouchEvent) {
-    if (!isSwiping || !$sidemenu) return;
-    current = [event.changedTouches[0].clientX, event.changedTouches[0].clientY];
-
-    const deltaX = current[0] - start[0];
-    const deltaY = current[1] - start[1];
-
-    // If vertical movement is greater, ignore the move
-    if (Math.abs(deltaY) > Math.abs(deltaX)) {
-      $sidemenu.style.transform = '';
-      return (isSwiping = false);
-    } else event.preventDefault();
-
-    let newX = firstLeft + deltaX;
-
-    // if swipe is beyond the item width, return to default
-    if (Math.abs(newX) >= $sidemenu.clientWidth || newX >= 0)
-      return ($sidemenu.style.transform = '');
-
-    $sidemenu.style.transitionDuration = '0ms';
-
-    $sidemenu.style.transform = 'translateX(' + newX + 'px)';
-  }
-
-  function handlePointerUp(event: TouchEvent) {
-    if (!isSwiping || !$sidemenu) return;
-    $sidemenu.style.transitionDuration = '';
-    isSwiping = false;
-    // TODO: better logic for the x-axis only swipes
-    // if (Math.abs(start[1] - current[1]) >= 30) return ($sidemenu.style.transform = '');
-    const isOpened = $sidemenu.dataset.open === 'true';
-    const end = event.changedTouches[0].clientX;
-    const diff = end - start[0];
-    const bounding = Math.abs($sidemenu.getBoundingClientRect().right);
-    const timelimit = 300;
-
-    $sidemenu.style.transform = '';
-
-    // not opened & from left to right
-    if (!isOpened && diff > 0) {
-      // if its dragged beyond the middle of the screen
-      if (bounding >= $sidemenu.clientWidth / 2 || Date.now() - start[2] <= timelimit) {
-        return ($sidemenu.dataset.open = 'true');
-      } else {
-        return ($sidemenu.dataset.open = 'false');
-      }
-    } else if (isOpened && diff < 0) {
-      // if its dragged beyond the middle of the screen
-      if (bounding <= $sidemenu.clientWidth / 2 || Date.now() - start[2] <= timelimit) {
-        return ($sidemenu.dataset.open = 'false');
-      } else {
-        return ($sidemenu.dataset.open = 'true');
-      }
-    }
-  }
-
   /// Menu Resizing Logic
+  let firstLeft = 0;
   let mousex = 0;
 
   const handleMouseDown = function (e: MouseEvent) {
@@ -154,7 +39,7 @@
     $sidemenu.style.width = firstLeft + deltaX + 'px';
 
     // keep the cursor consistent when moving
-// TODO: make it show the cursor resizer/column on the side closest to the bar
+    // TODO: make it show the cursor resizer/column on the side closest to the bar
     document.body.style.cursor = 'ew-resize';
     // disables the annoying select
     document.body.style.userSelect = 'none';
@@ -169,115 +54,82 @@
     document.removeEventListener('mousemove', handleMouseMove);
     document.removeEventListener('mouseup', handleMouseUp);
   };
-
-  async function updateAndDownload() {
-    updateAvailable = false;
-    alert('Downloading update...');
-    functions.update();
-  }
 </script>
 
-<section class="relative w-full bg-white dark:bg-#1F1F1F max-h-40px m-0">
-  <div>
-    <!-- TODO: change this ugly format -->
-    <span class="text-lg float-right py-1.5 px-2">{guild.name} #{channel.name}</span>
-    <button
-      aria-label="menu-button"
-      title="Toggle Menu"
-      class="ml-2 p-2 float-left"
-      onclick={() => {
-        if ($sidemenu)
-          $sidemenu.dataset.open = $sidemenu.dataset.open === 'true' ? 'false' : 'true';
-      }}
-    >
-      <Menu />
-    </button>
-    {#if updateAvailable}
-      <button title="Update" class="custom p-2 float-left" onclick={updateAndDownload}>
-        <Download />
+<div
+  bind:this={$sidemenu}
+  data-pinned={$sidemenu?.dataset.pinned || 'false'}
+  data-open={$sidemenu?.dataset.pinned === 'true' ? 'true' : $sidemenu?.dataset.open || 'false'}
+  class="fixed top-0 left-0 h-full min-w-200px w-64 max-[440px]:w-full max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pr-0.5 b-r-1 b-black dark:b-white select-none ease resize-x"
+>
+  <!-- h 44px -->
+  <div class="w-full h-50px p-2 inline-flex items-center">
+    {#if $sidemenu?.dataset.pinned == 'false'}
+      <button
+        title="Close Menu"
+        class="pl-2"
+        onclick={() => {
+          if ($sidemenu) $sidemenu.dataset.open = 'false';
+        }}
+      >
+        <X />
       </button>
     {/if}
-  </div>
-
-  <div
-    bind:this={$sidemenu}
-    data-pinned={$sidemenu?.dataset.pinned || 'false'}
-    data-open={$sidemenu?.dataset.pinned === 'true' ? 'true' : $sidemenu?.dataset.open || 'false'}
-    class="fixed top-0 left-0 h-full min-w-200px w-64 max-[440px]:w-full max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pr-0.5 b-r-1 b-black dark:b-white select-none ease resize-x"
-  >
-    <!-- h 44px -->
-    <div class="w-full p-2 inline-flex">
-      {#if $sidemenu?.dataset.pinned == 'false'}
+    <h2 class="mx-auto text-lg text-center">{guild.name}</h2>
+    {#if window.innerWidth > 500}
+      {#if $sidemenu?.dataset.pinned == 'true'}
         <button
-          title="Close Menu"
-          class="pl-2"
+          title="UnPin Menu"
           onclick={() => {
-            if ($sidemenu) $sidemenu.dataset.open = 'false';
+            registerEvents();
+            $sidemenu!.dataset.pinned = 'false';
           }}
         >
-          <Close />
+          <PinOff />
+        </button>
+      {:else}
+        <button
+          title="Pin Menu"
+          onclick={() => {
+            destroyEvents();
+            $sidemenu!.dataset.pinned = 'true';
+          }}
+        >
+          <Pin />
         </button>
       {/if}
-      <h2 class="mx-auto text-lg text-center">{guild.name}</h2>
-      {#if window.innerWidth > 500}
-        {#if $sidemenu?.dataset.pinned == 'true'}
-          <button
-            title="UnPin Menu"
-            onclick={() => {
-              registerEvents();
-              $sidemenu!.dataset.pinned = 'false';
-            }}
-          >
-            <Unpin />
-          </button>
-        {:else}
-          <button
-            title="Pin Menu"
-            onclick={() => {
-              destroyEvents();
-              $sidemenu!.dataset.pinned = 'true';
-            }}
-          >
-            <Pin />
-          </button>
-        {/if}
-      {/if}
-    </div>
-    <nav class="*:w-full h-[calc(100dvh-95px)] text-start space-y-1 overflow-y-scroll">
-      {#if channels}
-        <!-- {#each Array.from({ length: 20 }), i (i)} -->
-        {#each channels as { id, name } (id)}
-          <a
-            href={`/channels/${guild.id}/${id}`}
-            class="block px-2 py-1 text-cyan text-right hover:bg-[var(--background-hover)] rounded-md {id ===
-              channel.id && 'active'}"
-          >
-            {name}
-          </a>
-        {/each}
-        <!-- {/each} -->
-      {/if}
-    </nav>
-    <div id="user-settings" class="fixed w-full h-50px bg-[var(--background-hover)] bottom-0">
-      <img
-        class="w-8 h-8 rounded-full float-left m-1"
-        src={$currentUser.avatar}
-        alt="User Avatar"
-      />
-      <span>{$currentUser.username}</span>
-    </div>
+    {/if}
   </div>
-  {#if $sidemenu?.dataset.pinned == 'true'}
-    <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-    <div
-      bind:this={$resizer}
-      role="separator"
-      class="fixed w-10px h-100dvh hover:bg-#cbd5e0 opacity-70 cursor-ew-resize z-999999"
-      style="transform: translateX({$sidemenu?.getBoundingClientRect().right - 5.5 || 0}px)"
-      onmousedown={handleMouseDown}
-    ></div>
-  {/if}
-</section>
+  <!-- h 100%-(100px + extra empty space) -->
+  <nav class="*:w-full h-[calc(100dvh-102px)] text-start space-y-1 overflow-y-scroll">
+    {#if channels}
+      {#each channels as { id, name } (id)}
+        <a
+          href={`/channels/${guild.id}/${id}`}
+          class="block px-2 py-1 text-cyan text-right hover:bg-[var(--background-hover)] rounded-md {id ===
+            channel.id && 'active'}"
+        >
+          {name}
+        </a>
+      {/each}
+    {/if}
+  </nav>
+  <!-- h 50px -->
+  <div id="user-settings" class="fixed w-full h-50px bg-[var(--background-hover)] bottom-0">
+    <img class="w-8 h-8 rounded-full float-left m-1" src={$currentUser.avatar} alt="User Avatar" />
+    <span>{$currentUser.username}</span>
+  </div>
+</div>
+{#if $sidemenu?.dataset.pinned == 'true'}
+  <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+  <div
+    bind:this={$resizer}
+    role="separator"
+    class="fixed w-10px h-100dvh hover:bg-#cbd5e0 opacity-70 cursor-ew-resize z-999999"
+    style="transform: translateX({$sidemenu?.getBoundingClientRect().right - 5.5 || 0}px)"
+    onmousedown={handleMouseDown}
+  ></div>
+{/if}
 
 <style lang="postcss">
   [data-open='true'] {
@@ -298,9 +150,5 @@
       color: lime;
       pointer-events: none;
     }
-  }
-
-  :global button[title='Update'] svg {
-    color: rgb(71, 152, 71);
   }
 </style>

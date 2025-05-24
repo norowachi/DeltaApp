@@ -1,7 +1,7 @@
 import type { IMessage } from '$lib/types/delta';
 import { error } from '@sveltejs/kit';
 import functions from './tauri';
-import { currentUser } from '$lib/store';
+import { currentUser } from '$lib/store.svelte';
 
 export async function sendMessage({
   content,

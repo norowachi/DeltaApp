@@ -5,9 +5,10 @@
   import type { IMessage } from '$lib/types/delta';
   import { getCurrentWebviewWindow } from '@tauri-apps/api/webviewWindow';
   import { writable } from 'svelte/store';
-  import { formatContent } from '$lib/api/message';
+  import parse from '$lib/components/app/message/parser/index';
   import { goto } from '$app/navigation';
   import { isTauri } from '@tauri-apps/api/core';
+  import AstTree from '$lib/components/app/message/ASTTree.svelte';
 
   const currentWindow = getCurrentWebviewWindow();
   const message = writable<IMessage>();
@@ -49,7 +50,7 @@
 
   function message_content() {
     const content = $message?.content?.trim();
-    if (!content) return;
+    if (!content) return '';
     return content.substring(0, 37) + (content.length > 37 ? '...' : '');
   }
 
@@ -80,16 +81,8 @@
     </div>
 
     <div class="px-2px">
-      {#each formatContent(message_content()) as chunk, i (i)}
-        {#if $message.mentions && Object.values($message.mentions).includes(chunk.slice(2, -1))}
-          <span
-            class="bg-purple-500 hover:bg-purple-700 text-dark rounded-md cursor-pointer transition-colors duration-300 px-4px py-2px"
-          >
-            {chunk.replace(/<|>/g, '')}
-          </span>
-        {:else}
-          {chunk}
-        {/if}
+      {#each parse(message_content()) as chunk, i (i)}
+        <AstTree parse={chunk} mentions={$message.mentions} />
       {/each}
     </div>
   {/if}

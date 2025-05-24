@@ -93,8 +93,12 @@
       <ASTTree parse={subParse} {mentions} />
     {/each}
   </span>
-{:else if parse.type === 'link' || parse.type === "url" || parse.type === "autolink"}
-  <a href={parse.target as string} title={parse.title as string} class="text-blue">
+{:else if parse.type === 'url' || parse.type === 'autolink'}
+  <a
+    target={(parse.target as string).startsWith(origin) ? '' : '_blank'}
+    href={parse.target as string}
+    title={parse.title as string}
+  >
     {(parse.content as (typeof parse)[])[0].content}
   </a>
 {:else if parse.type === 'user'}

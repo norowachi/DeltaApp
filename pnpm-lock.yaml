@@ -11,6 +11,9 @@ importers:
       '@khanacademy/simple-markdown':
         specifier: ^2.0.3
         version: 2.0.3(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+      '@lucide/svelte':
+        specifier: ^0.511.0
+        version: 0.511.0(svelte@5.22.4)
       '@tauri-apps/api':
         specifier: ^2.3.0
         version: 2.3.0
@@ -290,6 +293,11 @@ packages:
     peerDependencies:
       react: ^18.2.0
       react-dom: ^18.2.0
+
+  '@lucide/svelte@0.511.0':
+    resolution: {integrity: sha512-aLCSPMUJmHlCuLXzXENXa4Z1NV2mN1iAZAFKk4bEbey+/MdsNlu+/DqwVkgW3Yvj6p8y8Vn5xZ2v9CLmPlA6Vw==}
+    peerDependencies:
+      svelte: ^5
 
   '@parcel/watcher-android-arm64@2.5.1':
     resolution: {integrity: sha512-KF8+j9nNbUN8vzOFDpRMsaKBHZ/mcjEjMToVMJOhTozkDonQFFrRcfdLWn6yWKCmJKmdVxSgHiYvTCef4/qcBA==}
@@ -1347,6 +1355,10 @@ snapshots:
       '@khanacademy/perseus-utils': 2.0.2
       react: 18.3.1
       react-dom: 18.3.1(react@18.3.1)
+
+  '@lucide/svelte@0.511.0(svelte@5.22.4)':
+    dependencies:
+      svelte: 5.22.4
 
   '@parcel/watcher-android-arm64@2.5.1':
     optional: true

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { sidemenu } from '$lib/store';
+  import { sidemenu } from '$lib/store.svelte';
   import '../app.scss';
   import { onMount } from 'svelte';
 

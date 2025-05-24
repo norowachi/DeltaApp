@@ -1,15 +1,10 @@
 <script lang="ts">
   import { onDestroy, onMount } from 'svelte';
   import { writable } from 'svelte/store';
-  import Sun from '$lib/svg/sun.svelte';
-  import Moon from '$lib/svg/moon.svelte';
-  import { appContainer, currentUser, messages, theme } from '$lib/store';
+  import { currentUser, messageContainer, messages, theme } from '$lib/store.svelte';
   import { Roles, type IMessage } from '$lib/types/delta';
-  import Clipboard from '$lib/svg/clipboard.svelte';
-  import Trash from '$lib/svg/trash.svelte';
   import { deleteMessage } from '$lib/api/message';
-  import Eye from '$lib/svg/eye.svelte';
-  import PencilOff from '$lib/svg/pencilOff.svelte';
+  import { ClipboardPen, Eye, Moon, PencilOff, Sun, Trash2 } from '@lucide/svelte';
 
   let menu = writable<HTMLElement | undefined>();
   let dialog = writable<HTMLDialogElement | undefined>();
@@ -58,8 +53,6 @@
       if ($controller) $controller.abort();
       controller.set(NewController);
 
-      const messageContainer = $appContainer || document.documentElement;
-
       // hide menu if its open
       document.addEventListener(
         'click',
@@ -74,7 +67,7 @@
         { signal: NewController.signal },
       );
       // open the context menu
-      messageContainer.addEventListener('contextmenu', contextMenu, {
+      $messageContainer.addEventListener('contextmenu', contextMenu, {
         signal: NewController.signal,
       });
 
@@ -193,23 +186,24 @@
   class="context-menu absolute data-[open=false]:hidden data-[open=true]:block rounded-md border p-1 animation bg-gray-6 text-white border-black dark:border-white space-y-1"
 >
   <!-- TODO: Move this shit into settings -->
-  <button onclick={() => HandleTheme(true)} class="btn hover *:space-x-1">
-    <p class="hidden dark:flex text-nowrap">
-      <Sun />
-      <span>Light Mode</span>
-    </p>
-    <p class="flex dark:hidden text-nowrap">
+  <button onclick={() => HandleTheme(true)} class="btn hover">
+    {#if $theme == 'dark'}
       <Moon />
       <span>Dark Mode</span>
-    </p>
+    {:else}
+      <Sun />
+      <span>Light Mode</span>
+    {/if}
   </button>
   <button
     class="btn hover"
     onclick={() => {
       if ($dialog) {
+        $dialog.dataset.toggle = 'clipboard';
         $dialog.dataset.message = 'Message link has been copied to the clipboard!';
         $dialog.dataset.buttons = 'false';
         $dialog.showModal();
+        setTimeout(() => $dialog?.close(), 1000);
       }
 
       navigator.clipboard.writeText(
@@ -217,7 +211,7 @@
       );
     }}
   >
-    <Clipboard />
+    <ClipboardPen />
     <span>Copy Message Link</span>
   </button>
   {#if canDeleteMessages || $currentUser.roles & Roles.STAFF}
@@ -234,7 +228,7 @@
         $dialog.showModal();
       }}
     >
-      <Trash />
+      <Trash2 />
       <span>
         Delete Message {!canDeleteMessages && $currentUser.roles & Roles.STAFF ? '(Force)' : ''}
       </span>
@@ -248,7 +242,6 @@
         $dialog.dataset.toggle = 'view';
         $dialog.dataset.message = $ClickedMessage?.content || 'No Content';
         $dialog.dataset.buttons = 'false';
-        $dialog.dataset.action = 'none';
         $dialog.showModal();
       }}
     >

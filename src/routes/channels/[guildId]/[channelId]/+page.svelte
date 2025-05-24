@@ -1,12 +1,12 @@
 <script lang="ts">
   import Message from '$lib/components/app/message/Message.svelte';
-  import { onMount } from 'svelte';
+  import { onDestroy, onMount } from 'svelte';
   import type { PageProps } from './$types';
   import MessageBox from '$lib/components/app/MessageBox.svelte';
   import { afterNavigate, replaceState } from '$app/navigation';
   import { page } from '$app/state';
   import { getMessages } from '$lib/api/message';
-  import { appContainer, chatBox, messageContainer, messageLinking, messages } from '$lib/store';
+  import { chatBox, heights, messageContainer, messageLinking, messages } from '$lib/store.svelte';
   import { listen } from '@tauri-apps/api/event';
   import { getCurrentWindow } from '@tauri-apps/api/window';
   import { isTauri } from '@tauri-apps/api/core';
@@ -20,10 +20,10 @@
   let tempAround = $state<boolean>(false);
 
   onMount(async () => {
-    const hash = page.url.hash?.replace('#', '');
-    messageLinking.set(hash);
+    // const hash = page.url.hash?.replace('#', '');
+    // messageLinking.set(hash);
     // load messages
-    if (!$messages.length && data.messages && !hash) {
+    if (!$messages.length && data.messages && !$messageLinking) {
       messages.set(data.messages.messages);
       MessageMaxPages = data.messages.pages === data.messages.currentPage;
     }
@@ -85,6 +85,9 @@
     // for now it's not a big deal as we just join the whole guild's room
   });
 
+  // remove the message linking on page change
+  onDestroy(() => messageLinking.set(''));
+
   messageLinking.subscribe(async (messageId) => {
     if (!messageId) return;
     // get around a message if its not in the store
@@ -118,7 +121,6 @@
         const element = document.getElementById(messageId);
         if (element) {
           observer.disconnect();
-          messageLinking.set('');
           setTimeout(() => {
             element.scrollIntoView({
               behavior: msg ? 'smooth' : 'instant',
@@ -156,7 +158,7 @@
   $effect(() => {
     $messages && $messageContainer;
     if ($messages && $messageContainer) {
-      if (tempAround && !page.url.hash?.replace('#', '')) {
+      if (tempAround && !$messageLinking) {
         // container > ul > last element, scroll to it
         $messageContainer.firstElementChild?.lastElementChild?.scrollIntoView({
           inline: 'end',
@@ -180,11 +182,10 @@
     }
   });
 
-  function ChatLength(entries: ResizeObserverEntry[]) {
-    const target = entries[0].target as HTMLTextAreaElement;
-    if (!$appContainer) return;
+  function ChatLength() {
+    if (!$messageContainer.parentElement) return;
 
-    $appContainer.style.height = 'calc(100dvh - 56px - ' + target.clientHeight + 'px)';
+    $messageContainer.parentElement.style.height = `calc(100dvh - ${heights[0]}px - ${heights[1]}px)`;
 
     if ($messageContainer) {
       $messageContainer.scrollTo({
@@ -235,9 +236,8 @@
 </script>
 
 <main
-  bind:this={$appContainer}
   class="flex flex-col-reverse w-full"
-  style="height: calc(100dvh - 100px)"
+  style="height: calc(100dvh - {heights[0]}px - {heights[1]}px)"
 >
   <section
     bind:this={$messageContainer}
