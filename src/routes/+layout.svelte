@@ -14,7 +14,6 @@
         ((window.matchMedia(`(prefers-color-scheme: dark)`).matches ? 'dark' : 'light') as any),
     );
     theme.subscribe((value) => {
-      console.log(value);
       if (!value) return;
       localStorage.setItem('theme', value);
 
@@ -25,13 +24,21 @@
     });
 
     // appearance settings
-    const appearance: IAppearance = JSON.parse(localStorage.getItem('appearance') || '{}');
-    if (appearance.css) {
+    const settings: IAppearance = JSON.parse(localStorage.getItem('appearance') || '{}');
+    appearance.set(settings);
+
+    appearance.subscribe((settings) => {
+      if (!settings) return;
+      const str = JSON.stringify(settings);
+      localStorage.setItem('appearance', str);
+
       // load the custom CSS if it exists
-      Object.entries(appearance.css).forEach(([key, value]) => {
-        document.documentElement.style.setProperty(key, value);
-      });
-    }
+      if (settings.css) {
+        Object.entries(settings.css).forEach(([key, value]) => {
+          document.documentElement.style.setProperty(key, value);
+        });
+      }
+    });
   });
 </script>
 
