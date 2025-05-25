@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { appearance, sidemenu, theme } from '$lib/store.svelte';
+  import { appearance, theme } from '$lib/store.svelte';
   import '../app.scss';
   import { onMount } from 'svelte';
 
@@ -44,7 +44,9 @@
 
 <div
   class="w-full flex flex-col"
-  style={!$appearance?.sideMenuPinned ? 'justify-content: center; align-items: center;' : ''}
+  style={!mounted || !$appearance?.sideMenuPinned
+    ? 'justify-content: center; align-items: center;'
+    : ''}
 >
   {#if !mounted}
     <svg
