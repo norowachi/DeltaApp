@@ -1,7 +1,6 @@
 export const prerender = false;
 export const ssr = false;
 import { error, redirect } from '@sveltejs/kit';
-import type { IGuild, IUser } from '$lib/types/delta';
 import { getMessages } from '$lib/api/message.js';
 import type { LayoutLoad } from './$types';
 import { currentUser } from '$lib/store.svelte';

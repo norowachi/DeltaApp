@@ -4,10 +4,9 @@
   import { onDestroy, onMount } from 'svelte';
   import type { LayoutProps } from './$types';
   import { sendTauriNotification, showMessageOverlay } from '$lib/api/notification';
-  import { currentUser, messages, sidemenu, theme } from '$lib/store.svelte';
+  import { appearance, currentUser, messages, sidemenu, theme } from '$lib/store.svelte';
   import { io, type Socket } from 'socket.io-client';
   import { writable } from 'svelte/store';
-  import { WebSocketOP, type IMessage } from '$lib/types/delta';
   // registering highlight languages
   import hljs from 'highlight.js';
   import svelte from 'highlight.svelte';
@@ -120,17 +119,14 @@
     $socket?.disconnect();
   });
 
-  const MainSideMenuPinned = $derived(
-    (!!($sidemenu?.dataset.pinned === 'true') && $sidemenu?.clientWidth) || false,
-  );
+  const MainSideMenuPinned = $derived(($appearance?.sideMenuPinned && $sidemenu?.clientWidth) || 0);
 </script>
 
 <TopBar {...data} />
 <MembersMenu {...data} />
 <SideMenu {...data} />
 <div
-  style="width: calc(100dvw - {MainSideMenuPinned ||
-    0}px); transform: translateX({MainSideMenuPinned || 0}px);"
+  style="width: calc(100dvw - {MainSideMenuPinned}px); transform: translateX({MainSideMenuPinned}px);"
 >
   {@render children()}
 </div>

@@ -1,7 +1,5 @@
 <script lang="ts">
-  import type { IMessage, IUser } from '$lib/types/delta';
-
-  const { mentions }: Pick<IUser, 'id'> & Pick<IMessage, 'mentions'> = $props();
+  const { id, mentions }: Pick<IUser, 'id'> & Pick<IMessage, 'mentions'> = $props();
 </script>
 
 <span

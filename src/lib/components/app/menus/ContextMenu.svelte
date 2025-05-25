@@ -1,133 +1,107 @@
 <script lang="ts">
-  import { onDestroy, onMount } from 'svelte';
+  import { onMount } from 'svelte';
   import { writable } from 'svelte/store';
   import { currentUser, messageContainer, messages, theme } from '$lib/store.svelte';
-  import { Roles, type IMessage } from '$lib/types/delta';
   import { deleteMessage } from '$lib/api/message';
   import { ClipboardPen, Eye, Moon, PencilOff, Sun, Trash2 } from '@lucide/svelte';
+  import { Roles } from '$lib/types/values';
 
   let menu = writable<HTMLElement | undefined>();
   let dialog = writable<HTMLDialogElement | undefined>();
   let opened = writable<boolean>(false);
   let canOpenNative = writable<boolean>(false);
-  let controller = writable<AbortController>();
 
   let ClickedMessage = writable<IMessage | undefined>();
+  let ClickedElement = writable<HTMLElement | null>(null);
 
-  onMount(() => HandleTheme(false));
+  onMount(() => {
+    // hide menu if its open
+    document.addEventListener('click', () => {
+      if ($dialog)
+        if ($dialog.open && !$dialog.dataset.toggle) {
+          $dialog.close();
+        } else $dialog.dataset.toggle = '';
 
-  function HandleTheme(toggle = true) {
-    // get old theme
-    let oldOption = localStorage.getItem('theme');
-    if (!oldOption) {
-      oldOption = window.matchMedia(`(prefers-color-scheme: dark)`).matches ? 'dark' : 'light';
-      localStorage.setItem('theme', oldOption);
+      ClickedMessage.set(undefined);
+      $ClickedElement?.style.removeProperty('background-color');
+      ClickedElement.set(null);
+
+      opened.set(false);
+    });
+    // open the context menu
+    $messageContainer.addEventListener('contextmenu', contextMenu);
+  });
+
+  // opened.subscribe((open) => {
+  //   // when the menu is closed
+  //   // reset ClickedMessage & ClickedElement
+
+  //   ClickedMessage.set(undefined);
+  //   ClickedElement.set(null);
+  // });
+
+  function contextMenu(e: MouseEvent) {
+    if ($canOpenNative || !$menu) {
+      opened.set(false);
+      canOpenNative.set(false);
+      return;
     }
-    // init new theme
-    let newOption;
-    // if its a toggle
-    if (toggle) {
-      // switch themes and save
-      newOption = oldOption === 'dark' ? 'light' : 'dark';
-      localStorage.setItem('theme', newOption);
-    }
-    // toggle the "dark" class
-    document.body.classList.toggle(
-      'dark',
-      newOption === 'dark' || (!toggle && oldOption === 'dark'),
-    );
-    // toggle the "light" class
-    document.body.classList.toggle(
-      'light',
-      newOption === 'light' || (!toggle && oldOption === 'light'),
-    );
-    theme.set(newOption || oldOption);
-  }
 
-  menu.subscribe(
-    (menu) => {
-      if (!menu) return;
+    // check if a message was the target clicked, if not ignore
+    const messageParent = document
+      .querySelectorAll(`div[id^="m"]`)
+      .values()
+      .filter((query) => query.contains(e.target as Node))
+      .toArray();
+    const message = $messages.find((m) => messageParent.find((element) => m.id === element.id));
 
-      // abort old controller and reset a new one
-      const NewController = new AbortController();
-      if ($controller) $controller.abort();
-      controller.set(NewController);
+    if (!messageParent || !message) return;
+    // set the clicked message
+    ClickedMessage.set(message);
 
-      // hide menu if its open
-      document.addEventListener(
-        'click',
-        () => {
-          if ($dialog)
-            if ($dialog.open && !$dialog.dataset.toggle) {
-              $dialog.close();
-            } else $dialog.dataset.toggle = '';
-
-          opened.set(false);
-        },
-        { signal: NewController.signal },
-      );
-      // open the context menu
-      $messageContainer.addEventListener('contextmenu', contextMenu, {
-        signal: NewController.signal,
-      });
-
-      function contextMenu(e: MouseEvent) {
-        if ($canOpenNative || !menu) {
-          opened.set(false);
-          canOpenNative.set(false);
-          return;
-        }
-
-        // check if a message was the target clicked, if not ignore
-        const messageParent = document
-          .querySelectorAll(`div[id^="m"]`)
-          .values()
-          .filter((query) => query.contains(e.target as Node))
-          .toArray();
-        let element: Element | undefined;
-        const message = $messages.find(
-          (m) => (element = messageParent.find((element) => m.id === element.id)),
-        );
-
-        if (!messageParent || !message) return;
-        // set the clicked message
-        ClickedMessage.set(message);
-
-        e.preventDefault();
-
-        // Calculate the dimensions of the menu
-        //? Displaying it since `display: none` elements return 0
-        menu.style.display = 'block';
-        const menuWidth = menu.clientWidth;
-        const menuHeight = menu.clientHeight;
-        menu.style.display = '';
-
-        // Determine position for the menu
-        let posX = e.pageX;
-        let posY = e.pageY;
-
-        // Check if the menu goes beyond the right edge of the window
-        if (posX + menuWidth >= window.innerWidth) {
-          posX = window.innerWidth - menuWidth * 1.1;
-        }
-
-        // Check if the menu goes beyond the bottom edge of the window
-        if (posY + menuHeight >= window.innerHeight) {
-          posY = window.innerHeight - menuHeight;
-        }
-
-        // Set the position of the menu
-        menu.style.left = posX + 'px';
-        menu.style.top = posY + 'px';
-
-        // show menu
-        opened.set(true);
+    ClickedElement.update((old) => {
+      // remove the old highlight
+      if (old) {
+        old.style.removeProperty('background-color');
       }
-    },
-    () => $controller?.abort(),
-  );
+      return document.querySelector(`div[id="${message?.id}"]`);
+    });
+    if ($ClickedElement)
+      $ClickedElement.style.setProperty(
+        'background-color',
+        'color-mix(in oklab, var(--background-hover) 50%, var(--higher-color) 30%)',
+      );
 
-  onDestroy(() => $controller?.abort());
+    e.preventDefault();
+
+    // Calculate the dimensions of the menu
+    //? Displaying it since `display: none` elements return 0
+    $menu.style.display = 'block';
+    const menuWidth = $menu.clientWidth;
+    const menuHeight = $menu.clientHeight;
+    $menu.style.display = '';
+
+    // Determine position for the menu
+    let posX = e.pageX;
+    let posY = e.pageY;
+
+    // Check if the menu goes beyond the right edge of the window
+    if (posX + menuWidth >= window.innerWidth) {
+      posX = window.innerWidth - menuWidth * 1.1;
+    }
+
+    // Check if the menu goes beyond the bottom edge of the window
+    if (posY + menuHeight >= window.innerHeight) {
+      posY = window.innerHeight - menuHeight;
+    }
+
+    // Set the position of the menu
+    $menu.style.left = posX + 'px';
+    $menu.style.top = posY + 'px';
+
+    // show menu
+    opened.set(true);
+  }
 
   const canDeleteMessages = $derived(
     $ClickedMessage?.author.id === $currentUser.id ||
@@ -186,8 +160,8 @@
   class="context-menu absolute data-[open=false]:hidden data-[open=true]:block rounded-md border p-1 animation bg-gray-6 text-white border-black dark:border-white space-y-1"
 >
   <!-- TODO: Move this shit into settings -->
-  <button onclick={() => HandleTheme(true)} class="btn hover">
-    {#if $theme == 'dark'}
+  <button onclick={() => theme.set($theme === 'dark' ? 'light' : 'dark')} class="btn hover">
+    {#if $theme == 'light'}
       <Moon />
       <span>Dark Mode</span>
     {:else}

@@ -1,6 +1,5 @@
 <script lang="ts">
   import { membersmenu } from '$lib/store.svelte';
-  import type { IChannel } from '$lib/types/delta';
   import { X } from '@lucide/svelte';
 
   const { channel }: { channel: IChannel } = $props();

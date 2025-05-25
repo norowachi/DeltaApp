@@ -1,8 +1,6 @@
 <script lang="ts">
-  import type { IChannel, IGuild } from '$lib/types/delta';
-  import { currentUser, heights, sidemenu } from '$lib/store.svelte';
+  import { appearance, currentUser, sidemenu } from '$lib/store.svelte';
   import { writable } from 'svelte/store';
-  import { destroyEvents, registerEvents } from './functions.svelte';
   import { Pin, PinOff, X } from '@lucide/svelte';
 
   const {
@@ -58,13 +56,12 @@
 
 <div
   bind:this={$sidemenu}
-  data-pinned={$sidemenu?.dataset.pinned || 'false'}
-  data-open={$sidemenu?.dataset.pinned === 'true' ? 'true' : $sidemenu?.dataset.open || 'false'}
+  data-open={$appearance?.sideMenuPinned ? 'true' : $sidemenu?.dataset.open || 'false'}
   class="fixed top-0 left-0 h-full min-w-200px w-64 max-[440px]:w-full max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pr-0.5 b-r-1 b-black dark:b-white select-none ease resize-x"
 >
   <!-- h 44px -->
   <div class="w-full h-50px p-2 inline-flex items-center">
-    {#if $sidemenu?.dataset.pinned == 'false'}
+    {#if !$appearance?.sideMenuPinned}
       <button
         title="Close Menu"
         class="pl-2"
@@ -77,23 +74,17 @@
     {/if}
     <h2 class="mx-auto text-lg text-center">{guild.name}</h2>
     {#if window.innerWidth > 500}
-      {#if $sidemenu?.dataset.pinned == 'true'}
+      {#if $appearance?.sideMenuPinned}
         <button
           title="UnPin Menu"
-          onclick={() => {
-            registerEvents();
-            $sidemenu!.dataset.pinned = 'false';
-          }}
+          onclick={() => appearance.update((a) => ({ ...a, sideMenuPinned: false }))}
         >
           <PinOff />
         </button>
       {:else}
         <button
           title="Pin Menu"
-          onclick={() => {
-            destroyEvents();
-            $sidemenu!.dataset.pinned = 'true';
-          }}
+          onclick={() => appearance.update((a) => ({ ...a, sideMenuPinned: true }))}
         >
           <Pin />
         </button>
@@ -120,7 +111,7 @@
     <span>{$currentUser.username}</span>
   </div>
 </div>
-{#if $sidemenu?.dataset.pinned == 'true'}
+{#if $appearance?.sideMenuPinned}
   <!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
   <div
     bind:this={$resizer}

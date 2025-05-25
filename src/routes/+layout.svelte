@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { sidemenu } from '$lib/store.svelte';
+  import { appearance, sidemenu, theme } from '$lib/store.svelte';
   import '../app.scss';
   import { onMount } from 'svelte';
 
@@ -8,14 +8,36 @@
 
   onMount(async () => {
     mounted = true;
+
+    theme.set(
+      localStorage.getItem('theme') ||
+        ((window.matchMedia(`(prefers-color-scheme: dark)`).matches ? 'dark' : 'light') as any),
+    );
+    theme.subscribe((value) => {
+      console.log(value);
+      if (!value) return;
+      localStorage.setItem('theme', value);
+
+      // toggle the "dark" class
+      document.body.classList.toggle('dark', value === 'dark');
+      // toggle the "light" class
+      document.body.classList.toggle('light', value === 'light');
+    });
+
+    // appearance settings
+    const appearance: IAppearance = JSON.parse(localStorage.getItem('appearance') || '{}');
+    if (appearance.css) {
+      // load the custom CSS if it exists
+      Object.entries(appearance.css).forEach(([key, value]) => {
+        document.documentElement.style.setProperty(key, value);
+      });
+    }
   });
 </script>
 
 <div
   class="w-full flex flex-col"
-  style={$sidemenu?.dataset.pinned !== 'true'
-    ? 'justify-content: center; align-items: center;'
-    : ''}
+  style={!$appearance?.sideMenuPinned ? 'justify-content: center; align-items: center;' : ''}
 >
   {#if !mounted}
     <svg

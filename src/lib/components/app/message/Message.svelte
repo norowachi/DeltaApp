@@ -1,6 +1,5 @@
 <script lang="ts">
-  import type { IMessage } from '$lib/types/delta';
-  import { chatBox, draft } from '$lib/store.svelte';
+  import { chatBox } from '$lib/store.svelte';
   import { error } from '@sveltejs/kit';
   import AstTree from './ASTTree.svelte';
   import parse from './parser/index';
@@ -53,7 +52,6 @@
         <button
           onclick={() => {
             $chatBox?.focus();
-            // draft.update((d) => (d ? d + '' : '') + `<@${author.username}>`);
           }}
           class="text-gray-700 dark:text-gray-200 text-lg font-bold cursor-pointer hover:underline"
         >

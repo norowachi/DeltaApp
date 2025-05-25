@@ -1,4 +1,4 @@
-export enum WebSocketOP {
+enum WebSocketOP {
   HELLO = 0,
   MESSAGE_CREATE = 1,
   MESSAGE_UPDATE = 2,
@@ -7,13 +7,8 @@ export enum WebSocketOP {
 
 // User & Member Interfaces
 
-export enum Roles {
-  STAFF = 1 << 0, // user is a staff member
-  BOT = 1 << 1, // user is a bot
-  VERIFIED = 1 << 2, // user (whether bot or not) is verified
-}
 
-export interface PrivateUser {
+interface PrivateUser {
   id: string;
   username: string;
   handle: string;
@@ -25,7 +20,7 @@ export interface PrivateUser {
   system: boolean;
 }
 
-export interface IUser {
+interface IUser {
   id: string;
   username: string;
   handle: string;
@@ -40,7 +35,7 @@ export interface IUser {
   guilds: IGuild[];
 }
 
-export interface IMember {
+interface IMember {
   id: string;
   user: PrivateUser;
   guildId: string;
@@ -49,7 +44,7 @@ export interface IMember {
 }
 
 // Message Interface
-export interface IMessage {
+interface IMessage {
   id: string;
   content: string;
   embeds: IEmbed[];
@@ -65,7 +60,7 @@ export interface IMessage {
   };
 }
 
-export interface IEmbed {
+interface IEmbed {
   type: 'image' | 'video' | 'link';
   title?: string;
   url?: string;
@@ -79,7 +74,7 @@ export interface IEmbed {
 }
 
 // Guild & Channel Interface
-export interface IGuild {
+interface IGuild {
   id: string;
   name: string;
   icon: string | null;
@@ -91,13 +86,13 @@ export interface IGuild {
 }
 
 //! Important
-export enum ChannelTypes {
+enum ChannelTypes {
   DM = 0,
   TEXT = 1,
   VOICE = 2,
 }
 
-export interface IChannel {
+interface IChannel {
   id: string;
   name: string;
   stickyMessage?: IMessage;
