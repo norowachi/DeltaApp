@@ -1,10 +1,3 @@
-enum WebSocketOP {
-  HELLO = 0,
-  MESSAGE_CREATE = 1,
-  MESSAGE_UPDATE = 2,
-  MESSAGE_DELETE = 3,
-}
-
 // User & Member Interfaces
 
 
