@@ -3,6 +3,7 @@
   import { appearance, heights, membersmenu, sidemenu } from '$lib/store.svelte';
   import { onDestroy, onMount } from 'svelte';
   import { Download, Menu, UsersRound } from '@lucide/svelte';
+  import { currentMonitor } from '@tauri-apps/api/window';
 
   const {
     channel,
@@ -97,9 +98,9 @@
     [$sidemenu, $membersmenu].map((CurrentMenu, i, arr) => {
       // if the other menu is opened, ignore the swipe
       if (arr[(i + 1) % arr.length].dataset.open === 'true') return;
+      if (CurrentMenu.ariaLabel === 'sidemenu' && $appearance?.sideMenuPinned) return;
 
       let newX = firstPos[i] + deltaX;
-      // if (i === 1) newX = firstPos[i] - deltaX; // members menu is on the right side, so we need to invert the diff
 
       // if swipe is beyond the item width, return to default
       if (
@@ -126,6 +127,9 @@
 
     menu.style.transitionDuration = '';
     menu.style.transform = '';
+
+    // check if the menu is the sidemenu & if it is pinned
+    if (menu.ariaLabel === 'sidemenu' && $appearance?.sideMenuPinned) return;
 
     let bounding = Math.abs(
       menu.ariaLabel === 'membersmenu'
