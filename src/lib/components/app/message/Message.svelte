@@ -12,9 +12,8 @@
     author,
     createdAt,
     ephemeral,
-    mentions,
     lastMessage,
-  }: Pick<IMessage, 'id' | 'author' | 'createdAt' | 'mentions'> &
+  }: Pick<IMessage, 'id' | 'author' | 'createdAt'> &
     Partial<Pick<IMessage, 'content' | 'embeds' | 'ephemeral'>> & {
       lastMessage?: IMessage;
     } = $props();
@@ -68,7 +67,7 @@
   <div class="text-wrap break-words ml-50px pr-2 whitespace-pre-line">
     {#if content}
       {#each parse(content) as chunk, i (i)}
-        <AstTree parse={chunk} {mentions} />
+        <AstTree parse={chunk} />
       {/each}
     {/if}
 

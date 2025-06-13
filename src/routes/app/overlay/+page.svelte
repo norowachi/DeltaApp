@@ -81,7 +81,7 @@
 
     <div class="px-2px">
       {#each parse(message_content()) as chunk, i (i)}
-        <AstTree parse={chunk} mentions={$message.mentions} />
+        <AstTree parse={chunk} />
       {/each}
     </div>
   {/if}

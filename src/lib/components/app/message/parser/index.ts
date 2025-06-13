@@ -12,6 +12,7 @@ import {
   subtext,
   text,
   url,
+  user,
 } from './rules';
 
 // rules normal users can use
@@ -33,6 +34,7 @@ export const rules: Record<string, ParserRule> = {
   spoiler,
   heading,
   subtext,
+  user,
 };
 
 const parser = SimpleMarkdown.parserFor(rules, { inline: true });

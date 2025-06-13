@@ -65,3 +65,10 @@ export const HeadingRegex = /^(#{1,3}) +([^\n]+?)(\n|$)/;
  * @example -# Subtext
  */
 export const SubtextRegex = /^-# +([^\n]+?)(\n|$)/;
+
+/**
+ * Matches user mentions in the format <@username> or <@id>
+ *
+ * @example <@noro> or <@u1234567890>
+ */
+export const UserMentionRegex = /^<@(\w+)>/;
