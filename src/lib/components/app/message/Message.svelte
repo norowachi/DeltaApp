@@ -3,6 +3,7 @@
   import { error } from '@sveltejs/kit';
   import AstTree from './ASTTree.svelte';
   import parse from './parser/index';
+  import UserAvatar from '../UserAvatar.svelte';
 
   let {
     id,
@@ -33,21 +34,14 @@
 <!-- TODO: finish ephemeral shiz -->
 <div
   {id}
-  class="w-full p-1 rounded-md transition-colors duration-100 ease-in-out hover:bg-[var(--background-hover)]"
+  class="w-full px-1 py-1px rounded-md transition-colors duration-100 ease-in-out hover:bg-[var(--background-hover)]"
   style={ephemeral ? 'display: none;' : ''}
 >
   {#if !GroupUp}
-    <div id={author.id} class="w-full inline-flex items-center mx-auto pt-1">
-      <img
-        src={author.avatar || 'https://api.noro.cc/images/delta-0.png'}
-        alt={author.username}
-        height="40"
-        width="40"
-        class="rounded-full select-none max-w-40px max-h-40px"
-        loading="lazy"
-        onerror={(e) =>
-          ((e.currentTarget as HTMLImageElement).src = 'https://api.noro.cc/images/delta-0.png')}
-      />
+    <div id={author.id} class="w-full flex items-center mx-auto pt-2px">
+      <div class="mb--30px">
+        <UserAvatar {author} />
+      </div>
       <h3 class="ml-10px">
         <button
           onclick={() => {

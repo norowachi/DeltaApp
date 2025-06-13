@@ -266,7 +266,7 @@
         </li>
       {/if}
       {#each $messages as { id, content, embeds, author, createdAt, ephemeral, mentions }, i (id)}
-        <li class="mb-1px {i === $messages.length - 1 ? 'pb-5' : ''}">
+        <li class="mb-0.5px {i === $messages.length - 1 ? 'pb-5' : ''}">
           <Message
             {id}
             {content}

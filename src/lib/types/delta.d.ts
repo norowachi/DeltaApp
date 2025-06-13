@@ -1,6 +1,5 @@
 // User & Member Interfaces
 
-
 interface PrivateUser {
   id: string;
   username: string;
@@ -28,6 +27,7 @@ interface IUser {
   guilds: IGuild[];
 }
 
+// TODO: use the member interface in guilds, backend-wise too
 interface IMember {
   id: string;
   user: PrivateUser;

@@ -48,17 +48,28 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
   // send 404 if the channel is not found
   if (!TargetChannel) return error(404, 'Channel not found');
 
+  // Fetch guild members
+  // TODO: use the member interface in guilds, backend-wise too
+  let members: { members?: IUser[] } | undefined = await (
+    await fetch(`https://api.noro.cc/guilds/${guildId}/members`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).catch(console.error)
+  )
+    ?.json()
+    .catch(console.error);
+  if (!members || !members.members) error(404, 'No members found');
+
   // Fetch messages
   let messages = await getMessages({ guildId, channelId, fetch });
 
-  // if (!messages?.length) return error(404, "Cloudn't fetch messages");
-
-  // TODO: use the guild and channel fetching in the layout
   return {
     guild,
     channels: allowedChannels,
     channel: TargetChannel,
     messages,
+    members: members.members,
     token,
   };
 };

@@ -57,7 +57,8 @@
 <div
   bind:this={$sidemenu}
   data-open={$appearance?.sideMenuPinned ? 'true' : $sidemenu?.dataset.open || 'false'}
-  class="fixed top-0 left-0 h-full min-w-200px w-64 max-[440px]:w-full max-w-100dvh bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pr-0.5 b-r-1 b-black dark:b-white select-none ease resize-x"
+  class="fixed top-0 left-0 h-full min-w-200px w-64 max-[440px]:w-full max-w-100dvw bg-white dark:bg-#1F1F1F transition-transform duration-300 z-999999 pr-0.5 b-r-1 b-black dark:b-white select-none ease resize-x"
+  aria-label="sidemenu"
 >
   <!-- h 44px -->
   <div class="w-full h-50px p-2 inline-flex items-center">

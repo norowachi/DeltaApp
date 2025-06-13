@@ -68,18 +68,20 @@
   /* x, y, timestamp */
   let start = [0, 0, 0];
   let current = [0, 0];
-  let firstLeft = 0;
+  let firstPos = [0, 0];
   let isSwiping = false;
+  let menu: HTMLElement | undefined;
 
   function handlePointerDown(event: TouchEvent) {
-    if (!$sidemenu || $appearance?.sideMenuPinned) return;
+    if (!$sidemenu || !$membersmenu) return;
     start = [event.changedTouches[0].clientX, event.changedTouches[0].clientY, Date.now()];
-    firstLeft = $sidemenu.getBoundingClientRect().left;
+    firstPos[0] = $sidemenu.getBoundingClientRect().left;
+    firstPos[1] = $membersmenu.getBoundingClientRect().left;
     isSwiping = true;
   }
 
   function handlePointerMove(event: TouchEvent) {
-    if (!isSwiping || !$sidemenu) return;
+    if (!isSwiping || !$sidemenu || !$membersmenu) return;
     current = [event.changedTouches[0].clientX, event.changedTouches[0].clientY];
 
     const deltaX = current[0] - start[0];
@@ -88,48 +90,75 @@
     // If vertical movement is greater, ignore the move
     if (Math.abs(deltaY) > Math.abs(deltaX)) {
       $sidemenu.style.transform = '';
+      $membersmenu.style.transform = '';
       return (isSwiping = false);
     } else event.preventDefault();
 
-    let newX = firstLeft + deltaX;
+    [$sidemenu, $membersmenu].map((CurrentMenu, i, arr) => {
+      // if the other menu is opened, ignore the swipe
+      if (arr[(i + 1) % arr.length].dataset.open === 'true') return;
 
-    // if swipe is beyond the item width, return to default
-    if (Math.abs(newX) >= $sidemenu.clientWidth || newX >= 0)
-      return ($sidemenu.style.transform = '');
+      let newX = firstPos[i] + deltaX;
+      // if (i === 1) newX = firstPos[i] - deltaX; // members menu is on the right side, so we need to invert the diff
 
-    $sidemenu.style.transitionDuration = '0ms';
+      // if swipe is beyond the item width, return to default
+      if (
+        Math.abs(newX) >= CurrentMenu.clientWidth ||
+        (i === 0 && newX >= 0) ||
+        (i === 1 && newX <= 0)
+      )
+        return (CurrentMenu.style.transform = '');
 
-    $sidemenu.style.transform = 'translateX(' + newX + 'px)';
+      CurrentMenu.style.transitionDuration = '0ms';
+
+      CurrentMenu.style.transform = 'translateX(' + newX + 'px)';
+
+      menu = CurrentMenu;
+    });
   }
 
   function handlePointerUp(event: TouchEvent) {
-    if (!isSwiping || !$sidemenu) return;
-    $sidemenu.style.transitionDuration = '';
+    if (!isSwiping || !menu) return;
     isSwiping = false;
-    // TODO: better logic for the x-axis only swipes
-    // if (Math.abs(start[1] - current[1]) >= 30) return ($sidemenu.style.transform = '');
-    const isOpened = $sidemenu.dataset.open === 'true';
     const end = event.changedTouches[0].clientX;
-    const diff = end - start[0];
-    const bounding = Math.abs($sidemenu.getBoundingClientRect().right);
     const timelimit = 300;
+    let diff = end - start[0];
 
-    $sidemenu.style.transform = '';
+    menu.style.transitionDuration = '';
+    menu.style.transform = '';
 
+    let bounding = Math.abs(
+      menu.ariaLabel === 'membersmenu'
+        ? menu.getBoundingClientRect().left
+        : menu.getBoundingClientRect().right,
+    );
+
+    const isOpened = menu.dataset.open === 'true';
+
+    let clientWidth = menu.clientWidth;
+
+    // members menu is on the right side, so we need to invert the diff
+    if (menu.ariaLabel === 'membersmenu') {
+      diff = -diff;
+      clientWidth = -clientWidth;
+      bounding = -bounding;
+    }
+
+    //? Comments here reference the logic of the sidemenu only
     // not opened & from left to right
     if (!isOpened && diff > 0) {
       // if its dragged beyond the middle of the screen
-      if (bounding >= $sidemenu.clientWidth / 2 || Date.now() - start[2] <= timelimit) {
-        return ($sidemenu.dataset.open = 'true');
+      if (bounding >= clientWidth / 2 || Date.now() - start[2] <= timelimit) {
+        return (menu.dataset.open = 'true');
       } else {
-        return ($sidemenu.dataset.open = 'false');
+        return (menu.dataset.open = 'false');
       }
     } else if (isOpened && diff < 0) {
       // if its dragged beyond the middle of the screen
-      if (bounding <= $sidemenu.clientWidth / 2 || Date.now() - start[2] <= timelimit) {
-        return ($sidemenu.dataset.open = 'false');
+      if (bounding <= clientWidth / 2 || Date.now() - start[2] <= timelimit) {
+        return (menu.dataset.open = 'false');
       } else {
-        return ($sidemenu.dataset.open = 'true');
+        return (menu.dataset.open = 'true');
       }
     }
   }

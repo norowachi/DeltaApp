@@ -12,7 +12,7 @@
   import svelte from 'highlight.svelte';
   import TopBar from '$lib/components/app/TopBar.svelte';
   import MembersMenu from '$lib/components/app/menus/MembersMenu.svelte';
-    import { WebSocketOP } from '$lib/types/values';
+  import { WebSocketOP } from '$lib/types/values';
 
   hljs.registerLanguage('svelte', svelte);
   // end registering
