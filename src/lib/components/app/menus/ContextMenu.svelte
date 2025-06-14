@@ -17,14 +17,15 @@
   onMount(() => {
     // hide menu if its open
     document.addEventListener('click', () => {
-      if ($dialog)
-        if ($dialog.open && !$dialog.dataset.toggle) {
-          $dialog.close();
-        } else $dialog.dataset.toggle = '';
-
-      ClickedMessage.set(undefined);
       $ClickedElement?.style.removeProperty('background-color');
-      ClickedElement.set(null);
+
+      if ($dialog && $dialog.open)
+        if (!$dialog.dataset.toggle) {
+          $dialog.close();
+        } else {
+          $dialog.dataset.toggle = '';
+          colorClickedElement();
+        }
 
       opened.set(false);
     });
@@ -32,13 +33,13 @@
     $messageContainer.addEventListener('contextmenu', contextMenu);
   });
 
-  // opened.subscribe((open) => {
-  //   // when the menu is closed
-  //   // reset ClickedMessage & ClickedElement
-
-  //   ClickedMessage.set(undefined);
-  //   ClickedElement.set(null);
-  // });
+  function colorClickedElement() {
+    if ($ClickedElement)
+      $ClickedElement.style.setProperty(
+        'background-color',
+        'color-mix(in oklab, var(--background-hover) 50%, var(--higher-color) 30%)',
+      );
+  }
 
   function contextMenu(e: MouseEvent) {
     if ($canOpenNative || !$menu) {
@@ -66,11 +67,8 @@
       }
       return document.querySelector(`div[id="${message?.id}"]`);
     });
-    if ($ClickedElement)
-      $ClickedElement.style.setProperty(
-        'background-color',
-        'color-mix(in oklab, var(--background-hover) 50%, var(--higher-color) 30%)',
-      );
+
+    colorClickedElement();
 
     e.preventDefault();
 
@@ -115,6 +113,7 @@
   bind:this={$dialog}
   class="min-w-64 whitespace-pre-line bg-gray-6 text-white border border-black dark:border-white rounded-md py-4 px-8 space-y-3"
   onclose={() => {
+    $ClickedElement?.style.removeProperty('background-color');
     if (!$dialog) return;
     Object.keys($dialog.dataset).map((key) => delete $dialog?.dataset[key]);
   }}
