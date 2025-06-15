@@ -95,8 +95,6 @@
       return (isSwiping = false);
     } else event.preventDefault();
 
-    navigator.virtualKeyboard.hide();
-
     [$sidemenu, $membersmenu].map((CurrentMenu, i, arr) => {
       // if the other menu is opened, ignore the swipe
       if (arr[(i + 1) % arr.length].dataset.open === 'true') return;
