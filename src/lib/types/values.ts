@@ -6,7 +6,9 @@ export enum Roles {
 
 export enum WebSocketOP {
   HELLO = 0,
-  MESSAGE_CREATE = 1,
-  MESSAGE_UPDATE = 2,
-  MESSAGE_DELETE = 3,
+  JOIN = 1,
+  LEAVE = 2,
+  MESSAGE_CREATE = 3,
+  MESSAGE_UPDATE = 4,
+  MESSAGE_DELETE = 5,
 }

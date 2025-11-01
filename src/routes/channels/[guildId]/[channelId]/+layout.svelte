@@ -41,15 +41,6 @@
 
     // register events if not registered
     if ($socket && !$socket.hasListeners('message')) {
-      // on connection
-      $socket.on('connect', () => {
-        console.log('[WS] Connected to the server');
-        $socket.emit(
-          'join',
-          data.channels.map((c) => c.id),
-        );
-      });
-
       // heartbeat/ping
       $socket.on('ping', (callback) => {
         // ack ping
@@ -59,34 +50,53 @@
 
       // on new messages add to the $messages store
       $socket.on('message', (message) => {
-        // channel checks ig
-        // if channelId is provided and it doesn't match the current channelId, ignore
-        if (message.d.channelId && message.d.channelId !== data.channel.id) return;
-
         // add message to store
-        if (message.op === WebSocketOP.MESSAGE_CREATE) {
-          const md: IMessage = message.d;
-          // TODO: add a way to make messages show with gray text or so if they're still not sent
-          messages.update((oldmsgs) => {
-            const dupMsg = oldmsgs?.find((msg) => msg.id === md.id);
-            return dupMsg
-              ? $messages
-              : [...($messages || []), md]?.sort(
-                  (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
-                );
-          });
-        } else if (message.op === WebSocketOP.MESSAGE_DELETE) {
-          // delete message from store
-          const md: Pick<IMessage, 'id'> = message.d;
-          messages.update((oldmsgs) => {
-            return oldmsgs?.filter((msg) => msg.id !== md.id);
-          });
-        } else if (message.op === WebSocketOP.MESSAGE_UPDATE) {
-          // update the message in the store
-          const md: IMessage = message.d;
-          messages.update((oldmsgs) => {
-            return oldmsgs?.map((msg) => (msg.id === md.id ? md : msg));
-          });
+        switch (message.op) {
+          case WebSocketOP.HELLO: {
+            console.log('[WS] Connected to the server');
+
+            $socket.send({
+              op: WebSocketOP.JOIN,
+              d: { channels: data.channels.map((c) => c.id) },
+            });
+            break;
+          }
+          case WebSocketOP.MESSAGE_CREATE: {
+            // channel checks ig
+            // if channelId is provided and it doesn't match the current channelId, ignore
+            if (message.d.channelId && message.d.channelId !== data.channel.id) return;
+
+            const md: IMessage = message.d;
+            // TODO: add a way to make messages show with gray text or so if they're still not sent
+            messages.update((oldmsgs) => {
+              const dupMsg = oldmsgs?.find((msg) => msg.id === md.id);
+              return dupMsg
+                ? $messages
+                : [...($messages || []), md]?.sort(
+                    (a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime(),
+                  );
+            });
+            break;
+          }
+          case WebSocketOP.MESSAGE_DELETE: {
+            // delete message from store
+            const md: Pick<IMessage, 'id'> = message.d;
+            messages.update((oldmsgs) => {
+              return oldmsgs?.filter((msg) => msg.id !== md.id);
+            });
+            break;
+          }
+          case WebSocketOP.MESSAGE_UPDATE: {
+            // update the message in the store
+            const md: IMessage = message.d;
+            messages.update((oldmsgs) => {
+              // return new message data if IDs match
+              return oldmsgs?.map((msg) => (msg.id === md.id ? md : msg));
+            });
+            break;
+          }
+          default:
+            console.warn('[WS] Unknown message op:', message.op);
         }
       });
 
