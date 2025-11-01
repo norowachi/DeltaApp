@@ -28,12 +28,32 @@
 
   if (!content && (embeds?.length || 0) === 0) error(400, 'Message missing content and embeds');
   const shortTime = date.toLocaleTimeString(undefined, { timeStyle: 'short' });
+  const lastMessageDate = (lastMessage && new Date(lastMessage?.createdAt || 0)) || date;
+  const isSameDay = $derived(
+    lastMessageDate.getDay() === date.getDay() &&
+      lastMessageDate.getMonth() === date.getMonth() &&
+      lastMessageDate.getFullYear() === date.getFullYear(),
+  );
 </script>
+
+{#if !isSameDay}
+  <div
+    class="w-[calc(100%-2rem)] text-center b-b-1 b-solid border-[var(--other-background)] text-xs mx-1rem my-10px leading-0.1px pointer-none opacity-60"
+  >
+    <strong class="p-x-10px bg-[var(--background-color)] select-none">
+      {date.toLocaleDateString(undefined, {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric',
+      })}
+    </strong>
+  </div>
+{/if}
 
 <!-- TODO: finish ephemeral shiz -->
 <div
   {id}
-  class="w-full px-1 py-1px rounded-md transition-colors duration-100 ease-in-out hover:bg-[var(--background-hover)]"
+  class="w-full px-1 py-1px transition-colors duration-100 ease-in-out hover:bg-[var(--background-hover)]"
   style={ephemeral ? 'display: none;' : ''}
 >
   {#if !GroupUp}
