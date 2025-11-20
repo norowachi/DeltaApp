@@ -12,7 +12,7 @@ pub async fn login(
     password: String,
 ) -> serde_json::Value {
     let res = reqwest::Client::new()
-        .post("https://api.noro.cc/auth/login")
+        .post("https://api.deltaapp.net/auth/login")
         .header("Content-Type", "application/json")
         .json(&json!(
             {
@@ -34,7 +34,7 @@ pub async fn register(
     password: String,
 ) -> serde_json::Value {
     let res = reqwest::Client::new()
-        .post("https://api.noro.cc/auth/register")
+        .post("https://api.deltaapp.net/auth/register")
         .header("Content-Type", "application/json")
         .json(&json!(
             {

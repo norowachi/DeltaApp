@@ -61,7 +61,7 @@
   {#if $message}
     <div class="w-full inline-flex items-center justify-start mx-auto pt-1">
       <img
-        src={$message.author.avatar || 'https://api.noro.cc/images/delta-0.png'}
+        src={$message.author.avatar || 'https://api.deltaapp.net/images/delta-0.png'}
         alt={$message.author.username}
         height="40"
         width="40"

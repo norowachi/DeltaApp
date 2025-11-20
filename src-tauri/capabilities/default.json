@@ -9,7 +9,7 @@
       "identifier": "http:default",
       "allow": [
         {
-          "url": "https://api.noro.cc/*"
+          "url": "https://api.deltaapp.net/*"
         }
       ]
     },

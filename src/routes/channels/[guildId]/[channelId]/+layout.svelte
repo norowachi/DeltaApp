@@ -32,7 +32,7 @@
     // connect to the websocket if not connected
     if (!$socket || !$socket.connected)
       socket.set(
-        io('wss://api.noro.cc', {
+        io('wss://api.deltaapp.net', {
           auth: {
             token: data.token,
           },

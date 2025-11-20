@@ -11,7 +11,7 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
   if (!token) return redirect(303, '/');
 
   const user: IUser = await (
-    await fetch('https://api.noro.cc/users/@me', {
+    await fetch('https://api.deltaapp.net/users/@me', {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -28,7 +28,7 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
 
   // Fetch guild
   const guild = (await (
-    await fetch(`https://api.noro.cc/guilds/${guildId}`, {
+    await fetch(`https://api.deltaapp.net/guilds/${guildId}`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -51,7 +51,7 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
   // Fetch guild members
   // TODO: use the member interface in guilds, backend-wise too
   let members: { members?: IUser[] } | undefined = await (
-    await fetch(`https://api.noro.cc/guilds/${guildId}/members`, {
+    await fetch(`https://api.deltaapp.net/guilds/${guildId}/members`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },

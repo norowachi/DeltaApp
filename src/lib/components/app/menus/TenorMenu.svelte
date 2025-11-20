@@ -20,7 +20,7 @@
       next: input_next,
     };
 
-    const res = await functions.fetch('https://api.noro.cc/tenor', {
+    const res = await functions.fetch('https://api.deltaapp.net/tenor', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -70,7 +70,7 @@
     query.subscribe(async (value) => {
       const category = $categories.find(({ name }) => name.replace('#', '') === value);
       if (category) {
-        fetch('https://api.noro.cc/tenor', {
+        fetch('https://api.deltaapp.net/tenor', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -94,7 +94,7 @@
       return;
     });
 
-    fetch('https://api.noro.cc/tenor')
+    fetch('https://api.deltaapp.net/tenor')
       .then((res) => res.json().then((data: CategoryResponse) => categories.set(data.tags)))
       .catch(console.error);
 

@@ -3,12 +3,12 @@
 </script>
 
 <img
-  src={author.avatar || 'https://api.noro.cc/images/delta-0.png'}
+  src={author.avatar || 'https://api.deltaapp.net/images/delta-0.png'}
   alt={author.username}
   height="40"
   width="40"
   class="rounded-full select-none max-w-40px max-h-40px"
   loading="lazy"
   onerror={(e) =>
-    ((e.currentTarget as HTMLImageElement).src = 'https://api.noro.cc/images/delta-0.png')}
+    ((e.currentTarget as HTMLImageElement).src = 'https://api.deltaapp.net/images/delta-0.png')}
 />

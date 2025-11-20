@@ -12,7 +12,7 @@ async function login(params: {
   if (!username && !handle) return { message: 'No login method provided ' };
   if (!password) return { message: 'No password provided' };
 
-  const auth = await fetch('https://api.noro.cc/auth/login', {
+  const auth = await fetch('https://api.deltaapp.net/auth/login', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -39,7 +39,7 @@ async function register(params: {
   if (!username && !handle) return { message: 'No login method provided' };
   if (!password) return { message: 'No password provided' };
 
-  const auth = await fetch('https://api.noro.cc/auth/register', {
+  const auth = await fetch('https://api.deltaapp.net/auth/register', {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
