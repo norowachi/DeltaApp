@@ -1,9 +1,9 @@
-name: "release"
+name: "development release"
 
 on:
   push:
     branches:
-      - release
+      - dev
     paths:
       - "src/**"
       - "src-tauri/**"
@@ -125,10 +125,10 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         with:
-          tagName: v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
-          releaseName: "App v__VERSION__"
+          tagName: dev-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
+          releaseName: "App dev-v__VERSION__"
           releaseBody: "See the assets to download this version and install."
-          releaseDraft: false
+          releaseDraft: true
           prerelease: false
           args: ${{ matrix.args }}
           retryAttempts: 1
