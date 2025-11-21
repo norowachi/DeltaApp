@@ -32,7 +32,7 @@ jobs:
           - platform: "windows-latest"
             args: ""
           - platform: "ubuntu-latest"
-            args: "--verbose"
+            args: ""
             mobile: "android"
           # can't test without an apple account
           #- platform: "macos-26"
