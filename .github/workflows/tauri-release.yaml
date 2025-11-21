@@ -134,6 +134,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY }}
           NDK_HOME: ${{ steps.setup-ndk.outputs.ndk-path }}
         with:
+          projectPath: ./
           tagName: dev-v__VERSION__ # the action automatically replaces \_\_VERSION\_\_ with the app version.
           releaseName: "App dev-v__VERSION__"
           releaseBody: "See the assets to download this version and install."
