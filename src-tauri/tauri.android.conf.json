@@ -8,40 +8,7 @@
     "beforeBuildCommand": "pnpm build",
     "frontendDist": "../build"
   },
-  "app": {
-    "windows": [
-      {
-        "label": "main",
-        "title": "Delta",
-        "center": true,
-        "width": 800,
-        "height": 600
-      },
-      {
-        "label": "message_overlay",
-        "title": "Message Overlay",
-        "url": "/app/overlay",
-        "decorations": false,
-        "alwaysOnTop": true,
-        "resizable": false,
-        "transparent": true,
-        "create": false,
-        "visible": false,
-        "contentProtected": true,
-        "dragDropEnabled": false,
-        "skipTaskbar": true,
-        "closable": false,
-        "focus": false,
-        "width": 300,
-        "height": 100,
-        "y": 0,
-        "x": 0
-      }
-    ],
-    "security": {
-      "csp": null
-    }
-  },
+  "app": {},
   "bundle": {
     "active": true,
     "targets": "all",

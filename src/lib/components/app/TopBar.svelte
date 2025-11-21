@@ -3,7 +3,6 @@
   import { appearance, heights, membersmenu, sidemenu } from '$lib/store.svelte';
   import { onDestroy, onMount } from 'svelte';
   import { Download, Menu, UsersRound } from '@lucide/svelte';
-  import { currentMonitor } from '@tauri-apps/api/window';
 
   const {
     channel,
