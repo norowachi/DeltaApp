@@ -1,3 +1,3 @@
-package cc.noro.delta
+package net.deltaapp
 
 class MainActivity : TauriActivity()

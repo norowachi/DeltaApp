@@ -11,7 +11,7 @@
   <application
     android:icon="@mipmap/ic_launcher"
     android:label="@string/app_name"
-    android:theme="@style/Theme.delta_app"
+    android:theme="@style/Theme.delta"
     android:usesCleartextTraffic="${usesCleartextTraffic}">
     <activity
       android:windowSoftInputMode="adjustResize"

@@ -1,4 +1,4 @@
-/src/main/java/cc/noro/delta/generated
+/src/main/java/net/deltaapp/generated
 /src/main/jniLibs/**/*.so
 /src/main/assets/tauri.conf.json
 /tauri.build.gradle.kts

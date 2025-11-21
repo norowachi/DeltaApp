@@ -120,6 +120,7 @@ jobs:
           pnpm dlx @tauri-apps/cli ${{ matrix.mobile }} init
 
       - name: setup Android signing
+        if: matrix.mobile == 'android'
         run: |
           cd src-tauri/gen/android
           echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" > keystore.properties
