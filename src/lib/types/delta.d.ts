@@ -1,3 +1,5 @@
+import { ChannelTypes } from './values';
+
 // User & Member Interfaces
 
 interface PrivateUser {
@@ -78,14 +80,7 @@ interface IGuild {
   deleted: boolean;
 }
 
-//! Important
-enum ChannelTypes {
-  DM = 0,
-  TEXT = 1,
-  VOICE = 2,
-}
-
-interface IChannel {
+export interface IChannel {
   id: string;
   name: string;
   stickyMessage?: IMessage;
@@ -93,4 +88,5 @@ interface IChannel {
   guildId: string;
   members: string[];
   type: ChannelTypes;
+  permissions: number;
 }

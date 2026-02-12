@@ -7,12 +7,13 @@
   import { appearance, currentUser, messages, sidemenu, theme } from '$lib/store.svelte';
   import { io, type Socket } from 'socket.io-client';
   import { writable } from 'svelte/store';
-  // registering highlight languages
-  import hljs from 'highlight.js';
-  import svelte from 'highlight.svelte';
   import TopBar from '$lib/components/app/TopBar.svelte';
   import MembersMenu from '$lib/components/app/menus/MembersMenu.svelte';
   import { WebSocketOP } from '$lib/types/values';
+
+  // registering highlight languages
+  import hljs from 'highlight.js';
+  import svelte from 'highlight.svelte';
 
   hljs.registerLanguage('svelte', svelte);
   // end registering

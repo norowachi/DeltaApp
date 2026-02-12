@@ -4,6 +4,7 @@ import { error, redirect } from '@sveltejs/kit';
 import { getMessages } from '$lib/api/message.js';
 import type { LayoutLoad } from './$types';
 import { currentUser } from '$lib/store.svelte';
+import { ChannelPermissions } from '$lib/types/values';
 
 export const load: LayoutLoad = async ({ params, fetch }) => {
   const token = localStorage.getItem('token');
@@ -41,7 +42,10 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
   if (!guild) return error(404, 'Guild not found');
 
   // Filter out channels that the user is not a member of
-  const allowedChannels = guild.channels.filter((channel) => channel.members.includes(user.id));
+  const allowedChannels = guild.channels.filter(
+    (channel) =>
+      channel.members.includes(user.id) || channel.permissions & ChannelPermissions.PUBLIC,
+  );
   // Find the target channel
   const TargetChannel = allowedChannels.find((channel) => channel.id === channelId);
 

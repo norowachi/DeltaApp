@@ -2,6 +2,7 @@
   import { membersmenu } from '$lib/store.svelte';
   import { X } from '@lucide/svelte';
   import UserAvatar from '../UserAvatar.svelte';
+  import { ChannelPermissions } from '$lib/types/values';
 
   const { channel, members }: { channel: IChannel; members: IUser[] } = $props();
 </script>
@@ -26,7 +27,7 @@
   </div>
   <div class="m-2">
     <!-- TODO: open user profile or perform some action on click -->
-    {#each members.filter((m) => channel.members.includes(m.id)) as member}
+    {#each members.filter((m) => channel.members.includes(m.id) || channel.permissions & ChannelPermissions.PUBLIC) as member}
       <button
         class="w-full flex items-center px-2 py-1 rounded-md cursor-pointer hover:bg-[var(--background-hover)] gap-2"
         onclick={() => console.log(`Clicked on member: ${member.username}`)}

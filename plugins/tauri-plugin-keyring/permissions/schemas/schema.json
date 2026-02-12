@@ -49,7 +49,7 @@
           "minimum": 1.0
         },
         "description": {
-          "description": "Human-readable description of what the permission does. Tauri convention is to use <h4> headings in markdown content for Tauri documentation generation purposes.",
+          "description": "Human-readable description of what the permission does. Tauri convention is to use `<h4>` headings in markdown content for Tauri documentation generation purposes.",
           "type": [
             "string",
             "null"
@@ -111,7 +111,7 @@
           "type": "string"
         },
         "description": {
-          "description": "Human-readable description of what the permission does. Tauri internal convention is to use <h4> headings in markdown content for Tauri documentation generation purposes.",
+          "description": "Human-readable description of what the permission does. Tauri internal convention is to use `<h4>` headings in markdown content for Tauri documentation generation purposes.",
           "type": [
             "string",
             "null"
@@ -295,69 +295,82 @@
       "type": "string",
       "oneOf": [
         {
-          "description": "Allows connecting and sending messages through a WebSocket",
+          "description": "Allows connecting and sending messages through a WebSocket\n#### This permission set includes:\n\n- `allow-set-password`\n- `allow-set-password-with-target`\n- `allow-get-password`\n- `allow-get-password-with-target`\n- `allow-delete-password`\n- `allow-delete-password-with-target`",
           "type": "string",
-          "const": "allow-all"
+          "const": "allow-all",
+          "markdownDescription": "Allows connecting and sending messages through a WebSocket\n#### This permission set includes:\n\n- `allow-set-password`\n- `allow-set-password-with-target`\n- `allow-get-password`\n- `allow-get-password-with-target`\n- `allow-delete-password`\n- `allow-delete-password-with-target`"
         },
         {
           "description": "Enables the delete_password command without any pre-configured scope.",
           "type": "string",
-          "const": "allow-delete-password"
+          "const": "allow-delete-password",
+          "markdownDescription": "Enables the delete_password command without any pre-configured scope."
         },
         {
           "description": "Denies the delete_password command without any pre-configured scope.",
           "type": "string",
-          "const": "deny-delete-password"
+          "const": "deny-delete-password",
+          "markdownDescription": "Denies the delete_password command without any pre-configured scope."
         },
         {
           "description": "Enables the delete_password_with_target command without any pre-configured scope.",
           "type": "string",
-          "const": "allow-delete-password-with-target"
+          "const": "allow-delete-password-with-target",
+          "markdownDescription": "Enables the delete_password_with_target command without any pre-configured scope."
         },
         {
           "description": "Denies the delete_password_with_target command without any pre-configured scope.",
           "type": "string",
-          "const": "deny-delete-password-with-target"
+          "const": "deny-delete-password-with-target",
+          "markdownDescription": "Denies the delete_password_with_target command without any pre-configured scope."
         },
         {
           "description": "Enables the get_password command without any pre-configured scope.",
           "type": "string",
-          "const": "allow-get-password"
+          "const": "allow-get-password",
+          "markdownDescription": "Enables the get_password command without any pre-configured scope."
         },
         {
           "description": "Denies the get_password command without any pre-configured scope.",
           "type": "string",
-          "const": "deny-get-password"
+          "const": "deny-get-password",
+          "markdownDescription": "Denies the get_password command without any pre-configured scope."
         },
         {
           "description": "Enables the get_password_with_target command without any pre-configured scope.",
           "type": "string",
-          "const": "allow-get-password-with-target"
+          "const": "allow-get-password-with-target",
+          "markdownDescription": "Enables the get_password_with_target command without any pre-configured scope."
         },
         {
           "description": "Denies the get_password_with_target command without any pre-configured scope.",
           "type": "string",
-          "const": "deny-get-password-with-target"
+          "const": "deny-get-password-with-target",
+          "markdownDescription": "Denies the get_password_with_target command without any pre-configured scope."
         },
         {
           "description": "Enables the set_password command without any pre-configured scope.",
           "type": "string",
-          "const": "allow-set-password"
+          "const": "allow-set-password",
+          "markdownDescription": "Enables the set_password command without any pre-configured scope."
         },
         {
           "description": "Denies the set_password command without any pre-configured scope.",
           "type": "string",
-          "const": "deny-set-password"
+          "const": "deny-set-password",
+          "markdownDescription": "Denies the set_password command without any pre-configured scope."
         },
         {
           "description": "Enables the set_password_with_target command without any pre-configured scope.",
           "type": "string",
-          "const": "allow-set-password-with-target"
+          "const": "allow-set-password-with-target",
+          "markdownDescription": "Enables the set_password_with_target command without any pre-configured scope."
         },
         {
           "description": "Denies the set_password_with_target command without any pre-configured scope.",
           "type": "string",
-          "const": "deny-set-password-with-target"
+          "const": "deny-set-password-with-target",
+          "markdownDescription": "Denies the set_password_with_target command without any pre-configured scope."
         }
       ]
     }
