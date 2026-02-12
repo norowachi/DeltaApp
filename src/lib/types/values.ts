@@ -12,3 +12,13 @@ export enum WebSocketOP {
   MESSAGE_UPDATE = 4,
   MESSAGE_DELETE = 5,
 }
+
+export enum ChannelTypes {
+  DM = 0,
+  TEXT = 1,
+  VOICE = 2,
+}
+
+export enum ChannelPermissions {
+  PUBLIC = 1 << 0,
+}

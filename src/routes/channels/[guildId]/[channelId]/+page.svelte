@@ -170,7 +170,7 @@
         showScrollButton = false;
         return;
       } else if (
-        $messageContainer.scrollHeight - 3 * window.innerHeight <=
+        $messageContainer.scrollHeight - 2 * window.innerHeight <=
         $messageContainer.scrollTop
       ) {
         // if user scrolled up 2x their viewport or more, don't scroll down
@@ -198,7 +198,7 @@
 
   async function onContainerScroll() {
     // if user scrolled up 2x their viewport or more
-    if ($messageContainer.scrollHeight - 3 * window.innerHeight > $messageContainer.scrollTop) {
+    if ($messageContainer.scrollHeight - 2 * window.innerHeight > $messageContainer.scrollTop) {
       showScrollButton = true;
     } else if (!tempAround) {
       showScrollButton = false;
