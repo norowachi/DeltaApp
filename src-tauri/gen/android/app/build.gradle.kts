@@ -41,6 +41,7 @@ android {
     }
     buildTypes {
         getByName("debug") {
+            signingConfig = signingConfigs.getByName("debug")
             manifestPlaceholders["usesCleartextTraffic"] = "true"
             isDebuggable = true
             isJniDebuggable = true

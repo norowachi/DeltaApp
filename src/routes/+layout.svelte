@@ -1,5 +1,7 @@
 <script lang="ts">
+  import { goto } from '$app/navigation';
   import { appearance, theme } from '$lib/store.svelte';
+  import { listen } from '@tauri-apps/api/event';
   import '../app.scss';
   import { onMount } from 'svelte';
 
@@ -39,7 +41,28 @@
         });
       }
     });
+
+    // handle deep links
+    await listen('deep-link://new-url', (event) => {
+      const url = event.payload as string;
+      handleDeepLink(url);
+    });
+
+    // cold start handling
+    if (window.location.href.startsWith('https://deltaapp.net')) {
+      handleDeepLink(window.location.href);
+    }
   });
+
+  function handleDeepLink(url: string) {
+    try {
+      const { pathname, search } = new URL(url);
+      // handle the deep link based on the path and search parameters
+      goto(pathname + search);
+    } catch (error) {
+      console.error('Failed to handle deep link:', error);
+    }
+  }
 </script>
 
 <div
