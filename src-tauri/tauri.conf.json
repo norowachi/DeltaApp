@@ -61,6 +61,11 @@
         "installMode": "passive"
       },
       "endpoints": ["https://github.com/norowachi/DeltaApp/releases/latest/download/latest.json"]
+    },
+    "deep-link": {
+      "desktop": {
+        "schemes": ["deltaapp"]
+      }
     }
   }
 }
