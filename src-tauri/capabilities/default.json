@@ -15,6 +15,7 @@
     },
     "keyring:allow-all",
     "notification:default",
-    "os:default"
+    "os:default",
+    "opener:default"
   ]
 }

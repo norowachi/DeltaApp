@@ -180,7 +180,7 @@
       }
 
       navigator.clipboard.writeText(
-        `${location.origin}/channels/${$ClickedMessage!.guildId || '@me'}/${$ClickedMessage!.channelId}/${$ClickedMessage!.id}`,
+        `https://deltaapp.net/channels/${$ClickedMessage!.guildId || '@me'}/${$ClickedMessage!.channelId}/${$ClickedMessage!.id}`,
       );
     }}
   >

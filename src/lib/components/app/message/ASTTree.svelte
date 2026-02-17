@@ -1,7 +1,9 @@
 <script lang="ts">
+  import { openUrl } from '@tauri-apps/plugin-opener';
   import ASTTree from './ASTTree.svelte';
   import Code from './content/Code.svelte';
   import User from './content/User.svelte';
+  import { isTauri } from '@tauri-apps/api/core';
 
   const { parse }: { parse: { type: string } & Record<string, unknown> } = $props();
 </script>
@@ -90,9 +92,17 @@
     {/each}
   </span>
 {:else if parse.type === 'url' || parse.type === 'autolink'}
+  {@const isOrigin = (parse.target as string).startsWith(origin)}
   <a
-    target={(parse.target as string).startsWith(origin) ? '' : '_blank'}
     href={parse.target as string}
+    target={isOrigin ? '' : '_blank'}
+    onclick={async (e) => {
+      if (isTauri() && !isOrigin) {
+        e.preventDefault();
+        // TODO: maybe add warnings for external links?
+        await openUrl(parse.target as string);
+      }
+    }}
     title={parse.title as string}
   >
     {(parse.content as (typeof parse)[])[0].content}
