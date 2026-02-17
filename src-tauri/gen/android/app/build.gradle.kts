@@ -38,10 +38,16 @@ android {
             storeFile = file(keystoreProperties["storeFile"] as String)
             storePassword = keystoreProperties["password"] as String
         }
+        create("debugging") {
+            storeFile = file("${System.getProperty("user.home")}/.android/debug.keystore")
+            storePassword = "android"
+            keyAlias = "debugkey"
+            keyPassword = "android"
+        }
     }
     buildTypes {
         getByName("debug") {
-            signingConfig = signingConfigs.getByName("debug")
+            signingConfig = signingConfigs.getByName("debugging")
             manifestPlaceholders["usesCleartextTraffic"] = "true"
             isDebuggable = true
             isJniDebuggable = true
