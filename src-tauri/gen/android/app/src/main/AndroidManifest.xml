@@ -18,13 +18,27 @@
       android:configChanges="orientation|keyboardHidden|keyboard|screenSize|locale|smallestScreenSize|screenLayout|uiMode"
       android:launchMode="singleTask"
       android:label="@string/main_activity_title"
-      android:name=".MainActivity"
+      android:name="net.deltaapp.MainActivity"
       android:exported="true">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
         <category android:name="android.intent.category.LAUNCHER" />
         <!-- AndroidTV support -->
         <category android:name="android.intent.category.LEANBACK_LAUNCHER" />
+      </intent-filter>
+      <!-- HTTPS deep linking suppoer -->
+      <intent-filter android:autoVerify="true">
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="https" android:host="deltaapp.net" android:pathPrefix="/" />
+      </intent-filter>
+      <!-- Custom Scheme -->
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+        <data android:scheme="deltaapp" android:host="open" />
       </intent-filter>
     </activity>
 
