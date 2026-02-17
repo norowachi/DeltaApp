@@ -64,6 +64,8 @@
       <h3 class="ml-10px">
         <button
           onclick={() => {
+            // TODO: add a way to open the user profile
+            // or mention on click (mobile only?)
             $chatBox?.focus();
           }}
           class="text-gray-700 dark:text-gray-200 text-lg font-bold cursor-pointer hover:underline"
