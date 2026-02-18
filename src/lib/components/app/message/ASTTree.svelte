@@ -4,8 +4,26 @@
   import Code from './content/Code.svelte';
   import User from './content/User.svelte';
   import { isTauri } from '@tauri-apps/api/core';
+  import { goto } from '$app/navigation';
 
   const { parse }: { parse: { type: string } & Record<string, unknown> } = $props();
+
+  function open(
+    event: MouseEvent & {
+      currentTarget: EventTarget & HTMLAnchorElement;
+    },
+  ) {
+    event.preventDefault();
+    // TODO: maybe add warnings for external links?
+    const url = new URL(event.currentTarget.href);
+    if (isTauri()) {
+      openUrl(url.href);
+    } else {
+      if ([location.origin, 'deltaapp.net', 's.ily.cat', 'tauri.localhost'].includes(origin))
+        goto(url.pathname + url.hash + url.search);
+      else window.open(url.href, '_blank');
+    }
+  }
 </script>
 
 {#if parse.type === 'text'}
@@ -100,19 +118,7 @@
     {/each}
   </span>
 {:else if parse.type === 'url' || parse.type === 'autolink'}
-  {@const isOrigin = (parse.target as string).startsWith(origin)}
-  <a
-    href={parse.target as string}
-    target={isOrigin ? '' : '_blank'}
-    onclick={async (e) => {
-      if (isTauri() && !isOrigin) {
-        e.preventDefault();
-        // TODO: maybe add warnings for external links?
-        await openUrl(parse.target as string);
-      }
-    }}
-    title={parse.title as string}
-  >
+  <a href={parse.target as string} target="_blank" onclick={open} title={parse.title as string}>
     {(parse.content as (typeof parse)[])[0].content}
   </a>
 {:else if parse.type === 'user'}
