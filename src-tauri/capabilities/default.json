@@ -16,6 +16,14 @@
     "keyring:allow-all",
     "notification:default",
     "os:default",
-    "opener:default"
+    "opener:default",
+    {
+      "identifier": "opener:allow-open-url",
+      "allow": [
+        {
+          "url": "deltaapp://open/*"
+        }
+      ]
+    }
   ]
 }

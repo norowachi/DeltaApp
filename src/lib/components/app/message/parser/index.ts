@@ -10,6 +10,7 @@ import {
   spoiler,
   strikethrough,
   subtext,
+  smoltext,
   text,
   url,
   user,
@@ -34,6 +35,7 @@ export const rules: Record<string, ParserRule> = {
   spoiler,
   heading,
   subtext,
+  smoltext,
   user,
 };
 

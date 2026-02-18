@@ -1,4 +1,5 @@
 import { writable } from 'svelte/store';
+import type { IUser, IMessage } from './types/delta';
 
 /**
  * heights for the [top bar, message bar]

@@ -18,7 +18,7 @@
 
     const response = await functions.register({
       username: formData.get('username') as string,
-      //handle: formData.get('handle/email') as string,
+      handle: formData.get('handle') as string,
       password: formData.get('password') as string,
     });
 

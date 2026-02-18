@@ -10,6 +10,7 @@
   import TopBar from '$lib/components/app/TopBar.svelte';
   import MembersMenu from '$lib/components/app/menus/MembersMenu.svelte';
   import { WebSocketOP } from '$lib/types/values';
+  import type { IMessage } from '$lib/types/delta';
 
   // registering highlight languages
   import hljs from 'highlight.js';

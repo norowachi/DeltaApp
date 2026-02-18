@@ -3,6 +3,7 @@
   import { appearance, heights, membersmenu, sidemenu } from '$lib/store.svelte';
   import { onDestroy, onMount } from 'svelte';
   import { Download, Menu, UsersRound } from '@lucide/svelte';
+  import type { IChannel, IGuild } from '$lib/types/delta';
 
   const {
     channel,
@@ -163,6 +164,8 @@
       } else {
         return (menu.dataset.open = 'true');
       }
+    } else {
+      return (menu.dataset.open = isOpened ? 'true' : 'false');
     }
   }
 </script>

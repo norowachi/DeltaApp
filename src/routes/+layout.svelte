@@ -1,15 +1,19 @@
 <script lang="ts">
+  import { onMount } from 'svelte';
+  import { listen } from '@tauri-apps/api/event';
   import { goto } from '$app/navigation';
   import { appearance, theme } from '$lib/store.svelte';
-  import { listen } from '@tauri-apps/api/event';
+  import { NSFWClient } from '$lib/api/nsfw/nsfw.client';
   import '../app.scss';
-  import { onMount } from 'svelte';
+  import { isTauri } from '@tauri-apps/api/core';
 
   let { children } = $props();
   let mounted = $state(false);
 
   onMount(async () => {
     mounted = true;
+    // load nsfw client
+    new NSFWClient();
 
     theme.set(
       localStorage.getItem('theme') ||
@@ -42,15 +46,17 @@
       }
     });
 
-    // handle deep links
-    await listen('deep-link://new-url', (event) => {
-      const url = event.payload as string;
-      handleDeepLink(url);
-    });
+    if (isTauri()) {
+      // handle deep links
+      await listen('deep-link://new-url', (event) => {
+        const url = event.payload as string;
+        handleDeepLink(url);
+      });
 
-    // cold start handling
-    if (window.location.href.startsWith('https://deltaapp.net')) {
-      handleDeepLink(window.location.href);
+      // cold start handling
+      if (['deltaapp.net', 'tauri.localhost'].includes(window.location.origin)) {
+        handleDeepLink(window.location.href);
+      }
     }
   });
 
