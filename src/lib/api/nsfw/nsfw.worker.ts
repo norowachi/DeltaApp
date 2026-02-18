@@ -1,6 +1,5 @@
 /// <reference lib="webworker" />
 
-import { dev } from '$app/environment';
 import * as nsfwjs from 'nsfwjs';
 import * as tf from '@tensorflow/tfjs';
 import { setWasmPaths } from '@tensorflow/tfjs-backend-wasm';
@@ -8,7 +7,7 @@ import '@tensorflow/tfjs-backend-wasm';
 
 // set local wasm paths for tfjs
 setWasmPaths('/tfjs-wasm/');
-if (!dev) tf.enableProdMode();
+tf.enableProdMode();
 
 let model: nsfwjs.NSFWJS | null = null;
 
