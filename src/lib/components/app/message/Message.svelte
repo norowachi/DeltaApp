@@ -4,6 +4,7 @@
   import AstTree from './ASTTree.svelte';
   import parse from './parser/index';
   import UserAvatar from '../UserAvatar.svelte';
+  import type { IMessage } from '$lib/types/delta';
 
   let {
     id,

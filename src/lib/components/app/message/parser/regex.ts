@@ -67,6 +67,13 @@ export const HeadingRegex = /^(#{1,3}) +([^\n]+?)(\n|$)/;
 export const SubtextRegex = /^-# +([^\n]+?)(\n|$)/;
 
 /**
+ * Matches stupid "subsubtext" in markdown headings.
+ *
+ * @example --# Smol Text
+ */
+export const SmoltextRegex = /^--# +([^\n]+?)(\n|$)/;
+
+/**
  * Matches user mentions in the format <@username> or <@id>
  *
  * @example <@noro> or <@u1234567890>

@@ -11,3 +11,4 @@ export { url } from './url';
 export { em } from './em';
 export { br } from './br';
 export { user } from './mentions/user';
+export { smoltext } from './smoltext';

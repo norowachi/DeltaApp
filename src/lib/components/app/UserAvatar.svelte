@@ -1,4 +1,6 @@
 <script lang="ts">
+  import type { IUser } from '$lib/types/delta';
+
   const { author }: { author: Pick<IUser, 'avatar' | 'username'> } = $props();
 </script>
 

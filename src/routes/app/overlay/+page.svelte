@@ -8,11 +8,12 @@
   import { goto } from '$app/navigation';
   import { isTauri } from '@tauri-apps/api/core';
   import AstTree from '$lib/components/app/message/ASTTree.svelte';
+  import type { IMessage } from '$lib/types/delta';
 
   const currentWindow = getCurrentWebviewWindow();
   const message = writable<IMessage>();
   let bar: HTMLDivElement;
-  let timeout: number;
+  let timeout: NodeJS.Timeout;
 
   onMount(() => {
     if (!isTauri()) return goto('/');

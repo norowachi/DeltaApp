@@ -31,6 +31,14 @@
     {/each}
     <br />
   </span>
+{:else if parse.type === 'smoltext'}
+  <span class="text-#bdc4de text-[10px]">
+    {#each parse.content as (typeof parse)[] as p}
+      {@const subParse = p as typeof parse}
+      <ASTTree parse={subParse} />
+    {/each}
+    <br />
+  </span>
 {:else if parse.type === 'heading'}
   {#if parse.level === 1}
     <h1 class="text-2xl font-bold">

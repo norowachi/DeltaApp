@@ -5,13 +5,14 @@ import { getMessages } from '$lib/api/message.js';
 import type { LayoutLoad } from './$types';
 import { currentUser } from '$lib/store.svelte';
 import { ChannelPermissions } from '$lib/types/values';
+import type { IUser, IGuild } from '$lib/types/delta';
 
 export const load: LayoutLoad = async ({ params, fetch }) => {
   const token = localStorage.getItem('token');
 
   if (!token) return redirect(303, '/');
 
-  const user: IUser = await (
+  const user: IUser | void = await (
     await fetch('https://api.deltaapp.net/users/@me', {
       headers: {
         Authorization: `Bearer ${token}`,
@@ -20,7 +21,10 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
   )
     ?.json()
     .catch(console.error);
-  if (!user) return error(401, 'Unauthorized');
+  if (!user || !user.id) {
+    alert('401 Unauthorized | Redirecting to login');
+    return redirect(303, '/auth/logout');
+  }
   // save current user data to the store
   currentUser.set(user);
 
@@ -42,12 +46,12 @@ export const load: LayoutLoad = async ({ params, fetch }) => {
   if (!guild) return error(404, 'Guild not found');
 
   // Filter out channels that the user is not a member of
-  const allowedChannels = guild.channels.filter(
+  const allowedChannels = guild.channels?.filter(
     (channel) =>
       channel.members.includes(user.id) || channel.permissions & ChannelPermissions.PUBLIC,
   );
   // Find the target channel
-  const TargetChannel = allowedChannels.find((channel) => channel.id === channelId);
+  const TargetChannel = allowedChannels?.find((channel) => channel.id === channelId);
 
   // send 404 if the channel is not found
   if (!TargetChannel) return error(404, 'Channel not found');

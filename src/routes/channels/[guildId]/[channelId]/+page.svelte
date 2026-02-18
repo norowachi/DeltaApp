@@ -265,7 +265,7 @@
           </svg>
         </li>
       {/if}
-      {#each $messages as { id, content, embeds, author, createdAt, ephemeral, mentions }, i (id)}
+      {#each $messages as { id, content, embeds, author, createdAt, ephemeral }, i (id)}
         <li class="mb-0.5px {i === $messages.length - 1 ? 'pb-5' : ''}">
           <Message
             {id}
@@ -274,7 +274,6 @@
             {author}
             {createdAt}
             {ephemeral}
-            {mentions}
             lastMessage={$messages[i - 1]}
           />
         </li>
