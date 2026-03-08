@@ -1,3 +1,5 @@
+# ⚠️ Project is now on **Standby** to focus on Delta rewrite ⚠️
+
 # Delta App
 silly version @ https://s.ily.cat
 
